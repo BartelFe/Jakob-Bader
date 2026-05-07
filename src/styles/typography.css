@@ -1,0 +1,96 @@
+/* ─── Typography Utilities ──────────────────────────────────────────────
+   Reusable type-classes. Use these in JSX to keep voice consistent.
+   ───────────────────────────────────────────────────────────────────── */
+
+.serif {
+  font-family: var(--serif);
+  font-weight: 400;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.78em;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.headline-display {
+  font-family: var(--serif);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
+  font-weight: 400;
+}
+
+.headline-section {
+  font-family: var(--serif);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-display);
+  font-weight: 400;
+}
+
+.headline-sub {
+  font-family: var(--serif);
+  font-size: var(--fs-sub);
+  line-height: 1.1;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.body-text {
+  font-family: var(--sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-base);
+  font-weight: 300;
+}
+
+.body-text-large {
+  font-family: var(--sans);
+  font-size: var(--fs-body-lg);
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+.pull-quote {
+  font-family: var(--serif);
+  font-size: var(--fs-pull);
+  line-height: 1.3;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Link with terracotta underline draw — brief §9 microinteractions */
+.link-draw {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+.link-draw::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t-base) var(--ease-out-quart);
+}
+.link-draw:hover::after,
+.link-draw:focus-visible::after {
+  transform: scaleX(1);
+}

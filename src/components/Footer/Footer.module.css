@@ -1,0 +1,57 @@
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 64px var(--gutter) 48px;
+  background: var(--bg-stone);
+  color: var(--paper-on-deep-soft);
+  border-top: 1px solid var(--line-on-deep);
+  font-size: var(--fs-body-sm);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--paper-on-deep);
+}
+
+.brandMark {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.copyright {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+}
+
+.links {
+  display: flex;
+  gap: 28px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+
+.link {
+  opacity: 0.62;
+  transition: opacity var(--t-base);
+}
+.link:hover,
+.link:focus-visible {
+  opacity: 1;
+  color: var(--accent-soft);
+}
+
+@media (max-width: 720px) {
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+}

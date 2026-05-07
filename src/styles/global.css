@@ -1,0 +1,87 @@
+/* ─── Global Layout ────────────────────────────────────────────────────
+   Container and surface utilities used across sections.
+   ───────────────────────────────────────────────────────────────────── */
+
+@import './tokens.css';
+@import './reset.css';
+@import './typography.css';
+
+.container {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container-prose {
+  max-width: var(--max-prose);
+}
+
+/* Surface modifiers — use on <section> to swap deep/paper rhythm */
+.surface-deep {
+  background: var(--bg-deep);
+  color: var(--paper-on-deep);
+}
+
+.surface-stone {
+  background: var(--bg-stone);
+  color: var(--paper-on-deep);
+}
+
+.surface-paper {
+  background: var(--bg-paper);
+  color: var(--ink);
+}
+
+.surface-paper-warm {
+  background: var(--bg-paper-warm);
+  color: var(--ink);
+}
+
+/* Subtle SVG-noise grain on deep surfaces (brief §11 grain layer).
+   Inline base64 so we don't ship an extra HTTP request. */
+.surface-deep::before,
+.surface-stone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
+  z-index: 0;
+}
+
+.surface-deep,
+.surface-stone {
+  position: relative;
+  isolation: isolate;
+}
+
+.surface-deep > *,
+.surface-stone > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reveal helper — apply with class .reveal, then JS toggles .is-revealed.
+   Default state holds layout (no opacity-collapse). */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity var(--t-slow) var(--ease-out-quart),
+    transform var(--t-slow) var(--ease-out-quart);
+}
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

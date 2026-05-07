@@ -1,0 +1,227 @@
+.person {
+  padding: clamp(120px, 16vh, 220px) var(--gutter);
+  background: var(--bg-paper);
+  color: var(--ink);
+}
+
+.intro {
+  max-width: var(--max);
+  margin: 0 auto clamp(60px, 8vh, 120px);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+}
+
+.headline {
+  font-family: var(--serif);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-display);
+  font-weight: 400;
+  max-width: 1180px;
+}
+
+.headlineEm {
+  font-style: italic;
+}
+
+.spread {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: clamp(48px, 6vw, 120px);
+  max-width: var(--max);
+  margin: 0 auto;
+  align-items: start;
+}
+
+.portrait {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  background: var(--bg-paper-warm);
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bio {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 640px;
+}
+
+.bio p {
+  font-size: var(--fs-body-lg);
+  line-height: 1.55;
+}
+
+.bio p:first-child {
+  font-family: var(--serif);
+  font-size: var(--fs-pull);
+  font-style: italic;
+  line-height: 1.35;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.bio strong {
+  font-weight: 500;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line-on-paper-strong);
+}
+
+.timelineItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timelineItem strong {
+  font-family: var(--serif);
+  font-size: clamp(28px, 2.4vw, 38px);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.timelineItem span {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Pull-quote spread */
+.second {
+  margin-top: clamp(80px, 10vh, 140px);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(40px, 5vw, 88px);
+  max-width: var(--max);
+  margin-inline: auto;
+  align-items: center;
+}
+
+.secondText {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.6vw, 56px);
+  line-height: 1.2;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.secondText strong {
+  font-weight: 500;
+  font-style: normal;
+}
+
+.secondImg {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  background: var(--bg-paper-warm);
+}
+
+.secondImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Lineage wall */
+.lineage {
+  margin-top: clamp(80px, 10vh, 140px);
+  max-width: var(--max);
+  margin-inline: auto;
+  border-top: 1px solid var(--line-on-paper-strong);
+  padding-top: clamp(48px, 6vh, 96px);
+}
+
+.lineageTitle {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 32px;
+}
+
+.lineageWall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4px;
+  border: 1px solid var(--line-on-paper);
+}
+
+.lineageItem {
+  padding: 28px 24px;
+  border-right: 1px solid var(--line-on-paper);
+  border-bottom: 1px solid var(--line-on-paper);
+  background: var(--bg-paper);
+  transition: background-color var(--t-base);
+  cursor: default;
+  position: relative;
+}
+
+.lineageItem:hover {
+  background: var(--bg-paper-warm);
+}
+
+.lineageName {
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.lineageReason {
+  font-family: var(--sans);
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--ink-soft);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    opacity var(--t-base),
+    max-height var(--t-base);
+}
+
+.lineageItem:hover .lineageReason,
+.lineageItem:focus-within .lineageReason {
+  opacity: 1;
+  max-height: 96px;
+}
+
+@media (max-width: 1080px) {
+  .spread,
+  .second {
+    grid-template-columns: 1fr;
+  }
+  .timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .timeline {
+    grid-template-columns: 1fr;
+  }
+}

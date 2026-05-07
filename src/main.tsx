@@ -1,0 +1,19 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+
+import { App } from './App';
+import './styles/global.css';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Root container #root not found in index.html');
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+      <Analytics />
+    </BrowserRouter>
+  </StrictMode>,
+);

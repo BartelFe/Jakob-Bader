@@ -1,0 +1,219 @@
+.akademie {
+  padding: clamp(120px, 16vh, 220px) var(--gutter);
+  position: relative;
+  isolation: isolate;
+  border-top: 1px solid var(--line-on-deep);
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(48px, 6vw, 120px);
+  max-width: var(--max);
+  margin: 0 auto clamp(60px, 8vh, 120px);
+  align-items: end;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  opacity: 0.62;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--serif);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-display);
+  font-weight: 400;
+}
+
+.titleEm {
+  font-style: italic;
+}
+
+.blurb {
+  font-size: var(--fs-body-lg);
+  line-height: 1.55;
+  color: var(--paper-on-deep-soft);
+  max-width: 540px;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(40px, 5vw, 88px);
+  max-width: var(--max);
+  margin: 0 auto;
+  align-items: start;
+}
+
+.program {
+  border-top: 1px solid var(--line-on-deep);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  gap: 32px;
+  padding: 28px 0;
+  align-items: center;
+  border-bottom: 1px solid var(--line-on-deep);
+  transition: padding-left var(--t-base) var(--ease-out-quart);
+}
+
+.row:hover {
+  padding-left: 12px;
+}
+
+.rowPast {
+  opacity: 0.5;
+}
+
+.date {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.rowTitle {
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.rowTitleEm {
+  font-style: italic;
+}
+
+.speaker {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--sans);
+  font-size: var(--fs-body-sm);
+  color: var(--paper-on-deep-soft);
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--line-on-deep-strong);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tagLive {
+  border-color: var(--accent);
+  color: var(--accent-soft);
+}
+
+.aside {
+  position: sticky;
+  top: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.photo {
+  background: var(--bg-paper-warm);
+  aspect-ratio: 4/3;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Phase-1 typographic placeholder for the missing vortrag photo (brief
+   §3 — typographic where assets are missing). */
+.photoPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, #2a2826 0%, #18181a 100%);
+  color: var(--paper-on-deep-soft);
+  text-align: center;
+  padding: 32px;
+}
+
+.photoPlaceholderInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.photoPlaceholderEm {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.1;
+}
+
+.photoPlaceholderMono {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.info strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--paper-on-deep-soft);
+  margin-bottom: 4px;
+}
+
+.info p {
+  font-family: var(--serif);
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.info a {
+  color: var(--accent-soft);
+}
+
+@media (max-width: 1080px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+  .aside {
+    position: static;
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 720px) {
+  .intro {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 20px 0;
+  }
+  .row:hover {
+    padding-left: 0;
+  }
+}
