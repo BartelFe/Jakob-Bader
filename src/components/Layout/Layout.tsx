@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
+import { Loader } from '../Loader/Loader';
 
 import styles from './Layout.module.css';
 
@@ -32,6 +33,7 @@ export function Layout() {
 
   return (
     <div className={styles.shell}>
+      <Loader />
       <a className="skip-link" href="#main">
         Zum Inhalt springen
       </a>
