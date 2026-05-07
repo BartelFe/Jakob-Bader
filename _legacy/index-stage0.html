@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jakob Bader Architektur — Mut zum Raum</title>
+<meta name="description" content="Jakob Bader Architektur JBA — Münchner Architekturbüro im Kunstareal Maxvorstadt. Architektur als Kulturpraxis. Akademie, Werk, Dialog.">
+<meta property="og:title" content="Jakob Bader Architektur — Mut zum Raum">
+<meta property="og:description" content="Architektur ist die stärkste Form der Zivilisation. Wir bauen sie.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="/jba-logo.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-deep: #0d0d0c;
+  --bg-stone: #18181a;
+  --bg-paper: #f4ede0;
+  --bg-paper-warm: #ebe2d1;
+  --ink: #161614;
+  --ink-soft: #4a4642;
+  --paper-on-deep: #f4ede0;
+  --paper-on-deep-soft: rgba(244, 237, 224, 0.62);
+  --accent: #c44e2c;
+  --accent-soft: #e89978;
+  --line-on-deep: rgba(244, 237, 224, 0.14);
+  --line-on-paper: rgba(22, 22, 20, 0.12);
+  --serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --max: 1640px;
+  --gutter: clamp(20px, 5vw, 88px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { background: var(--bg-deep); color: var(--paper-on-deep); }
+body {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+
+::selection { background: var(--accent); color: var(--paper-on-deep); }
+
+.container { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+.serif { font-family: var(--serif); font-weight: 400; }
+.mono { font-family: var(--mono); font-size: 0.78em; letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* ─── HEADER + NAV ────────────────────────────────────────────────── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px var(--gutter);
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+.site-header.is-scrolled {
+  background: rgba(13, 13, 12, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.brand {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--serif); font-size: 21px; letter-spacing: 0.01em;
+}
+.brand-mark {
+  width: 38px; height: 38px;
+}
+.brand-mark svg { width: 100%; height: 100%; }
+.brand-mark circle, .brand-mark path { stroke: var(--paper-on-deep); }
+.brand-text { font-style: italic; }
+.brand-sub { font-family: var(--mono); font-size: 10px; opacity: 0.55; letter-spacing: 0.18em; }
+
+.site-nav { display: flex; gap: 36px; }
+.site-nav a {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  opacity: 0.62; transition: opacity 0.3s; position: relative;
+}
+.site-nav a:hover { opacity: 1; }
+.site-nav a::after {
+  content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 1px;
+  background: var(--accent); transition: width 0.4s ease;
+}
+.site-nav a:hover::after { width: 100%; }
+
+.next-akademie {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  border: 1px solid var(--line-on-deep);
+  border-radius: 999px;
+  font-size: 12px;
+  transition: border-color 0.3s, background 0.3s;
+}
+.next-akademie:hover { border-color: var(--accent); background: rgba(196, 78, 44, 0.08); }
+.next-akademie .pulse {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.4); }
+}
+
+/* ─── ARCHITEKTOUREN BANNER ────────────────────────────────────────── */
+.archi-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 99;
+  background: var(--accent);
+  color: var(--paper-on-deep);
+  padding: 11px var(--gutter);
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  transform: translateY(-100%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.archi-banner.is-visible { transform: translateY(0); }
+.archi-banner.is-visible ~ .site-header { top: 38px; }
+.archi-banner-marker { font-weight: 500; opacity: 0.78; }
+.archi-banner-link { text-decoration: underline; text-underline-offset: 3px; }
+.archi-banner-link:hover { text-decoration-thickness: 2px; }
+
+/* ─── HERO ─────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 140px var(--gutter) 80px;
+  overflow: hidden;
+}
+.hero-canvas {
+  position: absolute;
+  top: 0; right: 0;
+  width: 65%; height: 100%;
+  z-index: 1;
+}
+.hero-canvas canvas { width: 100%; height: 100%; display: block; }
+.hero::before {
+  content: ''; position: absolute; inset: 0; z-index: 2;
+  background: linear-gradient(90deg,
+    var(--bg-deep) 0%,
+    var(--bg-deep) 28%,
+    rgba(13, 13, 12, 0.5) 50%,
+    transparent 75%);
+  pointer-events: none;
+}
+.hero-content {
+  position: relative; z-index: 3;
+  max-width: 1200px;
+}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 14px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 38px; height: 1px;
+  background: var(--paper-on-deep-soft);
+  display: inline-block;
+}
+.hero-headline {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(72px, 13vw, 220px);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  margin-bottom: 40px;
+}
+.hero-headline em {
+  font-style: italic;
+  color: var(--accent-soft);
+}
+.hero-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(20px, 2.4vw, 32px);
+  line-height: 1.45;
+  max-width: 720px;
+  margin-bottom: 56px;
+  color: var(--paper-on-deep-soft);
+}
+.hero-quote {
+  border-left: 1px solid var(--line-on-deep);
+  padding: 14px 0 14px 28px;
+  max-width: 580px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--paper-on-deep-soft);
+}
+.hero-quote cite {
+  display: block;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  font-style: normal;
+  margin-top: 14px;
+  opacity: 0.55;
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 40px; left: var(--gutter);
+  z-index: 3;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.5;
+  display: flex; align-items: center; gap: 10px;
+  animation: scrollHint 2.4s infinite ease-in-out;
+}
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 0.85; }
+}
+.hero-scroll::before { content: '↓'; font-size: 14px; }
+
+/* ─── DIAGNOSE ──────────────────────────────────────────────────────── */
+.diagnose {
+  background: var(--bg-deep);
+  padding: 200px var(--gutter);
+  position: relative;
+  border-top: 1px solid var(--line-on-deep);
+}
+.diagnose-grid {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 100px;
+  align-items: end;
+}
+.diagnose-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 28px;
+}
+.diagnose-number {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(96px, 16vw, 280px);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--accent-soft);
+}
+.diagnose-number-unit {
+  display: block;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 24px;
+  color: var(--paper-on-deep-soft);
+}
+.diagnose-text {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 52px);
+  line-height: 1.25;
+  font-weight: 300;
+}
+.diagnose-text em {
+  font-style: italic;
+  color: var(--accent-soft);
+}
+.diagnose-coda {
+  margin-top: 48px;
+  max-width: 560px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--paper-on-deep-soft);
+}
+
+/* ─── MANIFEST DIVIDERS ───────────────────────────────────────────── */
+.manifest {
+  padding: 160px var(--gutter);
+  text-align: center;
+  position: relative;
+  background: var(--bg-deep);
+}
+.manifest::before, .manifest::after {
+  content: '';
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  width: 1px; height: 60px;
+  background: var(--line-on-deep);
+}
+.manifest::before { top: 60px; }
+.manifest::after { bottom: 60px; }
+.manifest-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(36px, 5.5vw, 96px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.manifest-text strong {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--accent-soft);
+}
+
+/* ─── WERK ─────────────────────────────────────────────────────────── */
+.werk {
+  background: var(--bg-paper);
+  color: var(--ink);
+  padding: 160px 0 200px;
+}
+.werk-intro {
+  max-width: var(--max);
+  margin: 0 auto 100px;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 80px;
+  align-items: end;
+}
+.werk-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 24px;
+}
+.werk-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+.werk-blurb {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.45;
+  max-width: 540px;
+  color: var(--ink-soft);
+}
+
+.project-hero {
+  max-width: var(--max);
+  margin: 0 auto 140px;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+  gap: 80px;
+  align-items: center;
+}
+.project-hero-img {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--bg-paper-warm);
+}
+.project-hero-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-hero:hover .project-hero-img img { transform: scale(1.04); }
+.project-hero-meta {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 28px;
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.project-hero-name {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(40px, 5.5vw, 88px);
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  margin-bottom: 28px;
+}
+.project-hero-name em { font-style: italic; }
+.project-hero-desc {
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+  color: var(--ink-soft);
+  max-width: 540px;
+}
+.project-hero-prize {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 14px 22px;
+  background: var(--ink);
+  color: var(--bg-paper);
+  border-radius: 999px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+.project-hero-prize::before {
+  content: '★'; color: var(--accent-soft); font-size: 14px;
+}
+
+.project-grid {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 80px 40px;
+}
+.project-card { display: flex; flex-direction: column; }
+.project-card.span-7 { grid-column: span 7; }
+.project-card.span-5 { grid-column: span 5; }
+.project-card.span-6 { grid-column: span 6; }
+.project-card.span-8 { grid-column: span 8; }
+.project-card.span-4 { grid-column: span 4; }
+.project-card.offset-1 { grid-column: 2 / span 7; }
+
+.project-img {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-paper-warm);
+  margin-bottom: 24px;
+}
+.project-img.tall { aspect-ratio: 3 / 4; }
+.project-img.wide { aspect-ratio: 4 / 3; }
+.project-img.square { aspect-ratio: 1; }
+.project-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-card:hover .project-img img { transform: scale(1.05); }
+.project-card-meta {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 10px;
+}
+.project-card-name {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(24px, 2.6vw, 38px);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.project-card-name em { font-style: italic; }
+.project-card-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 480px;
+}
+
+/* ─── AKADEMIE ──────────────────────────────────────────────────────── */
+.akademie {
+  background: var(--bg-deep);
+  padding: 200px 0;
+  position: relative;
+}
+.akademie-intro {
+  max-width: var(--max);
+  margin: 0 auto 120px;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 100px;
+  align-items: end;
+}
+.akademie-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 24px;
+}
+.akademie-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+.akademie-title em { font-style: italic; color: var(--accent-soft); }
+.akademie-blurb {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.45;
+  max-width: 580px;
+  color: var(--paper-on-deep-soft);
+}
+.akademie-blurb strong {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--paper-on-deep);
+}
+
+.akademie-body {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 100px;
+  align-items: start;
+}
+
+.akademie-program {
+  border-top: 1px solid var(--line-on-deep);
+}
+.program-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 30px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line-on-deep);
+  align-items: baseline;
+  transition: opacity 0.4s, transform 0.4s;
+  position: relative;
+}
+.program-row:hover { transform: translateX(8px); }
+.program-row.is-past { opacity: 0.42; }
+.program-date {
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: 0.08em;
+}
+.program-title {
+  font-family: var(--serif); font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 400; line-height: 1.25;
+}
+.program-title em { font-style: italic; color: var(--accent-soft); }
+.program-speaker {
+  display: block;
+  font-family: var(--sans); font-size: 13px;
+  margin-top: 6px;
+  color: var(--paper-on-deep-soft);
+}
+.program-tag {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 5px 10px;
+  border: 1px solid var(--line-on-deep);
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--paper-on-deep-soft);
+}
+.program-tag.is-live {
+  border-color: var(--accent);
+  color: var(--accent-soft);
+  display: flex; align-items: center; gap: 6px;
+}
+.program-tag.is-live::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.akademie-side {
+  position: sticky;
+  top: 120px;
+}
+.akademie-photo {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-bottom: 32px;
+  background: var(--bg-stone);
+}
+.akademie-photo img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05) brightness(0.95); }
+.akademie-info {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--paper-on-deep-soft);
+}
+.akademie-info strong {
+  display: block;
+  color: var(--paper-on-deep);
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+.akademie-info a {
+  color: var(--accent-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ─── PERSON ───────────────────────────────────────────────────────── */
+.person {
+  background: var(--bg-paper);
+  color: var(--ink);
+  padding: 200px 0;
+}
+.person-intro {
+  max-width: var(--max);
+  margin: 0 auto 100px;
+  padding: 0 var(--gutter);
+}
+.person-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 24px;
+}
+.person-headline {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(56px, 9vw, 160px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  max-width: 1200px;
+}
+.person-headline em { font-style: italic; }
+
+.person-spread {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 80px;
+  align-items: start;
+}
+.person-portrait {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--bg-paper-warm);
+}
+.person-portrait img { width: 100%; height: 100%; object-fit: cover; }
+
+.person-bio { padding-top: 40px; }
+.person-bio p {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(20px, 1.6vw, 26px);
+  line-height: 1.5;
+  margin-bottom: 28px;
+  color: var(--ink-soft);
+}
+.person-bio p:first-child {
+  font-style: italic;
+  font-size: clamp(24px, 2.2vw, 36px);
+  color: var(--ink);
+  margin-bottom: 40px;
+}
+.person-bio p strong { font-weight: 500; color: var(--ink); font-style: normal; }
+
+.person-timeline {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 30px;
+  border-top: 1px solid var(--line-on-paper);
+  padding-top: 40px;
+}
+.person-timeline-item {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.person-timeline-item strong {
+  display: block;
+  font-family: var(--serif); font-size: 28px;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.person-timeline-item span {
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  letter-spacing: 0.15em;
+}
+
+.person-second {
+  max-width: var(--max);
+  margin: 140px auto 0;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 80px;
+  align-items: center;
+}
+.person-second-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(28px, 3.2vw, 52px);
+  line-height: 1.25;
+}
+.person-second-text strong {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--accent);
+}
+.person-second-img {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--bg-paper-warm);
+}
+.person-second-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ─── DIALOG ───────────────────────────────────────────────────────── */
+.dialog {
+  background: var(--bg-deep);
+  padding: 200px var(--gutter) 160px;
+  position: relative;
+  border-top: 1px solid var(--line-on-deep);
+}
+.dialog-grid {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 100px;
+  align-items: end;
+}
+.dialog-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 32px;
+}
+.dialog-headline {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(64px, 11vw, 200px);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin-bottom: 56px;
+}
+.dialog-headline em { font-style: italic; color: var(--accent-soft); }
+.dialog-cta {
+  display: inline-flex; align-items: center; gap: 18px;
+  padding: 22px 36px;
+  border: 1px solid var(--paper-on-deep);
+  border-radius: 999px;
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  transition: background 0.4s, color 0.4s, padding 0.4s;
+}
+.dialog-cta:hover { background: var(--paper-on-deep); color: var(--bg-deep); padding-right: 44px; }
+.dialog-cta::after {
+  content: '→'; font-family: var(--sans); font-size: 18px;
+  transition: transform 0.4s;
+}
+.dialog-cta:hover::after { transform: translateX(6px); }
+
+.dialog-info {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--paper-on-deep-soft);
+}
+.dialog-info strong {
+  display: block;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 12px;
+  margin-top: 24px;
+  color: var(--paper-on-deep-soft);
+  font-weight: 400;
+}
+.dialog-info strong:first-child { margin-top: 0; }
+.dialog-info-line {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 32px);
+  line-height: 1.4;
+  color: var(--paper-on-deep);
+}
+.dialog-info a { color: var(--paper-on-deep); text-decoration: none; border-bottom: 1px solid var(--line-on-deep); transition: border-color 0.3s; }
+.dialog-info a:hover { border-color: var(--accent); }
+
+/* ─── FOOTER ──────────────────────────────────────────────────────── */
+.site-footer {
+  background: var(--bg-stone);
+  padding: 60px var(--gutter);
+  border-top: 1px solid var(--line-on-deep);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 30px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+.site-footer-brand { display: flex; align-items: center; gap: 14px; }
+.site-footer-brand svg { width: 28px; height: 28px; }
+.site-footer-brand svg circle, .site-footer-brand svg path { stroke: var(--paper-on-deep-soft); }
+.site-footer-links { display: flex; gap: 32px; }
+.site-footer-links a:hover { color: var(--paper-on-deep); }
+
+/* ─── REVEAL ANIMATIONS ───────────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * { opacity: 0; transform: translateY(24px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal-stagger.is-visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 0.1s; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 0.2s; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 0.3s; }
+.reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 0.4s; }
+
+/* ─── MOBILE ───────────────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  body { font-size: 16px; }
+  .site-nav { display: none; }
+  .next-akademie { display: none; }
+  .archi-banner { font-size: 10px; gap: 12px; padding: 9px var(--gutter); flex-wrap: wrap; }
+  .archi-banner-marker { display: none; }
+  .hero { padding: 120px var(--gutter) 60px; min-height: 90vh; }
+  .hero-canvas { width: 100%; opacity: 0.45; }
+  .hero::before {
+    background: linear-gradient(180deg, var(--bg-deep) 20%, rgba(13,13,12,0.4) 70%, var(--bg-deep) 100%);
+  }
+  .diagnose, .akademie, .dialog, .person, .werk { padding-top: 100px; padding-bottom: 100px; }
+  .manifest { padding: 100px var(--gutter); }
+  .diagnose-grid, .werk-intro, .akademie-intro, .akademie-body, .person-spread, .person-second, .dialog-grid, .project-hero {
+    grid-template-columns: 1fr; gap: 50px;
+  }
+  .project-grid { grid-template-columns: 1fr; gap: 60px; }
+  .project-card.span-7, .project-card.span-5, .project-card.span-6, .project-card.span-8, .project-card.span-4, .project-card.offset-1 {
+    grid-column: 1 / -1;
+  }
+  .program-row { grid-template-columns: 90px 1fr; gap: 16px; padding: 22px 0; }
+  .program-tag { grid-column: 2; justify-self: start; margin-top: 6px; }
+  .akademie-side { position: static; }
+  .person-timeline { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .site-footer { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="archi-banner" id="archiBanner" aria-live="polite">
+  <span class="archi-banner-marker">27.06.2026 · 11 Uhr</span>
+  <span>Architektouren · Besichtigung P48 — Krachers neue Doppelzwiebel</span>
+  <a class="archi-banner-link" href="https://www.byak.de/planen-und-bauen/projektsuche-systematik-alt-vor-16042026/detail/krachers-neue-doppelzwiebel/architektouren.html" target="_blank" rel="noopener">Programm →</a>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#top" aria-label="Jakob Bader Architektur — Startseite">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(120 120)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="0" cy="0" r="115" stroke-width="3.5"/>
+          <path stroke-width="4.5" d="M -28 -62 C -10 -72, 12 -68, 6 -48 C 2 -32, -4 -10, -12 18 C -18 42, -28 62, -48 60 C -62 58, -64 46, -52 42"/>
+          <path stroke-width="4.5" d="M 6 -48 C 22 -58, 52 -56, 58 -32 C 60 -14, 42 -6, 22 -8 C 50 -8, 70 8, 64 36 C 58 62, 22 72, 0 58"/>
+        </g>
+      </svg>
+    </span>
+    <span>
+      <span class="brand-text">Jakob Bader</span>
+      <span class="brand-sub" style="display:block;margin-top:2px;">Architektur · München</span>
+    </span>
+  </a>
+  <nav class="site-nav" aria-label="Hauptnavigation">
+    <a href="#werk">Werk</a>
+    <a href="#akademie">Akademie</a>
+    <a href="#person">Person</a>
+    <a href="#dialog">Dialog</a>
+  </nav>
+  <a class="next-akademie" href="#akademie">
+    <span class="pulse" aria-hidden="true"></span>
+    <span>Nächster Salon · 23. Apr</span>
+  </a>
+</header>
+
+<main id="top">
+
+<!-- ═════ HERO ═════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-canvas" id="heroCanvasWrap">
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">Jakob Bader Architektur · Maxvorstadt München · seit 2002</div>
+    <h1 class="hero-headline reveal">Mut zum<br><em>Raum.</em></h1>
+    <p class="hero-sub reveal">Architektur ist die stärkste Form der Zivilisation.<br>Wir bauen sie.</p>
+    <blockquote class="hero-quote reveal">
+      „Ich kann nur raten, dass man mutig sein sollte. Dass man Architektur voll und ganz lebt und versucht, alles rauszuholen, was in dem Objekt steckt."
+      <cite>— Jakob Bader</cite>
+    </blockquote>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- ═════ DIAGNOSE ═════════════════════════════════════════════════════ -->
+<section class="diagnose" id="diagnose">
+  <div class="diagnose-grid">
+    <div class="reveal">
+      <div class="diagnose-eyebrow">Die Diagnose · 01</div>
+      <div class="diagnose-number" id="diagnoseNumber">82</div>
+      <span class="diagnose-number-unit">Millionen Menschen in Deutschland</span>
+    </div>
+    <div class="reveal">
+      <p class="diagnose-text">Die wenigsten wissen, was ein Architekt <em>wirklich</em> tut.</p>
+      <p class="diagnose-coda">Das ist kein Versehen. Es ist eine Aufgabe. Wir nehmen sie an — im Bauwerk, im Vortrag, im Stadtraum. Architektur sichtbar zu machen ist Teil des Berufs, nicht sein Beiwerk.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════ MANIFEST 1 ═══════════════════════════════════════════════════ -->
+<div class="manifest reveal">
+  <p class="manifest-text">Der Architekt ist <strong>Bühnenbildner.</strong><br>Mensch. Raum. Atmosphäre.</p>
+</div>
+
+<!-- ═════ WERK ═════════════════════════════════════════════════════════ -->
+<section class="werk" id="werk">
+  <div class="werk-intro">
+    <div class="reveal">
+      <div class="werk-eyebrow">Werk · 02</div>
+      <h2 class="werk-title">Sechs Bauten,<br>sechs Haltungen.</h2>
+    </div>
+    <p class="werk-blurb reveal">Jedes Bauwerk ist ein Prototyp — einzigartig in seiner Aufgabe, seinem Ort, seinem Maß. Eine Auswahl aus über zwei Jahrzehnten.</p>
+  </div>
+
+  <article class="project-hero reveal">
+    <div class="project-hero-img">
+      <img src="/public/projekte/p48/p48-01-hero.jpg" alt="P48 Doppelzwiebel — Wohnhaus am Wiesnviertel, ausgezeichnet mit dem Fassadenpreis München 2025" loading="eager">
+    </div>
+    <div>
+      <div class="project-hero-meta">
+        <span>P48 · 2020–2025</span>
+        <span>München · Wiesnviertel</span>
+        <span>Denkmalpflege · Dachneubau</span>
+      </div>
+      <h3 class="project-hero-name">Wohnhaus,<br><em>Doppelzwiebel.</em></h3>
+      <p class="project-hero-desc">Ein denkmalgeschütztes Eckhaus von 1890 — Architekt Ludwig Kracher, Stil Neorenaissance. Über Jahrzehnte hatte das Gebäude Details verloren; die ursprüngliche Doppelzwiebel des Eckturms war von Westwinden umgestoßen und nach und nach zu einem plumpen Kegel reduziert worden. Wir haben sie zurückgebracht — den originalen Helm rekonstruiert, das Tragwerk so ertüchtigt, dass er den Winden an dieser Stelle dauerhaft standhält. Im Dach zwei großzügige Wohnungen mit Wohnhalle, Galerie, Turmstube und Sicht bis zur Frauenkirche.</p>
+      <a class="project-hero-prize" href="https://stadt.muenchen.de/dam/jcr:3f23a516-b1de-4074-b014-f5a259a98db2/fassadenpreis2025__broschuere_.pdf" target="_blank" rel="noopener">Fassadenpreis München 2025</a>
+    </div>
+  </article>
+
+  <div class="project-grid">
+    <article class="project-card span-7 reveal">
+      <div class="project-img wide">
+        <img src="/public/projekte/akpl22/akpl22-01.jpg" alt="AKPL2.2 — Schwabinger Altbauwohnung von Ernst Barth" loading="lazy">
+      </div>
+      <div class="project-card-meta">AKPL2.2 · 2024 · München-Schwabing</div>
+      <h3 class="project-card-name">Wohnung im <em>Ernst-Barth-Bau.</em></h3>
+      <p class="project-card-desc">Eine mondäne Stadtwohnung in Alt-Schwabing, 2025 unter Denkmalschutz gestellt. Wir wählten eine denkmalpflegerische Herangehensweise — kleine Veränderungen, die die Wohnung in „die beste Version ihrer selbst" verwandeln. Mailand-Feeling, Fischgrät, dezent farbig.</p>
+    </article>
+
+    <article class="project-card span-5 reveal">
+      <div class="project-img tall">
+        <img src="/public/projekte/lupo/lupo-01.jpg" alt="LuPo — Visionsbild Pavillon im Luitpoldpark" loading="lazy">
+      </div>
+      <div class="project-card-meta">LuPo · 2024 · Luitpoldpark München</div>
+      <h3 class="project-card-name">Stadtraum, <em>weitergedacht.</em></h3>
+      <p class="project-card-desc">Ein Vorschlag, der die ursprünglich angedachte Pracht-Achse des Luitpoldparks wieder aufnimmt: ein zentrales Wasserbecken, ein leichter Stahlpavillon auf dem Schuttberg, ein klarer Endpunkt der Blickachse. Architektur als gesellschaftlicher Beitrag.</p>
+    </article>
+
+    <article class="project-card span-6 offset-1 reveal">
+      <div class="project-img wide">
+        <img src="/public/projekte/hausw/hausw-01.jpg" alt="Haus W — Villa in Berlin, klassisch-moderner Neubau" loading="lazy">
+      </div>
+      <div class="project-card-meta">Haus W · Berlin · Neubau</div>
+      <h3 class="project-card-name">Villa für einen<br><em>Geschichtsprofessor.</em></h3>
+      <p class="project-card-desc">In einem grünen Berliner Vorort. Standpunkt frontal auf die Kirche im Kreisverkehr — gegen den Widerstand der Behörde, denen es zu feudal erschien. Pate standen Schinkel und das Farnsworth House. Tessenow oder Loos hätten ihn ebenso entwerfen können.</p>
+    </article>
+
+    <article class="project-card span-4 reveal">
+      <div class="project-img tall">
+        <img src="/public/projekte/t61/t61-01.jpg" alt="T61 — Denkmalvilla in München-Gern, restauriert nach historischen Plänen" loading="lazy">
+      </div>
+      <div class="project-card-meta">T61 · München-Gern · 1913 / saniert</div>
+      <h3 class="project-card-name">Restauration<br>als <em>Kunst.</em></h3>
+      <p class="project-card-desc">Eine Villa von Paul Böhmer, Schüler Friedrich von Thierschs. Nach Krieg und Purifizierung war kaum Originalsubstanz übrig. Wir haben Stuck, Türen, Holztreppe, Heizkörper minutiös rekonstruiert — bis hin zu im Ruhrgebiet eigens gegossenen Gliederheizkörpern.</p>
+    </article>
+
+    <article class="project-card span-5 reveal">
+      <div class="project-img square">
+        <img src="/public/projekte/vs15/vs15-01.jpg" alt="VS15 — Familienwohnung in Schwabing mit rosmaringrünem Linoleum" loading="lazy">
+      </div>
+      <div class="project-card-meta">VS15 · Schwabing · 5-Zimmer-Familie</div>
+      <h3 class="project-card-name">3 + 1 = <em>5.</em></h3>
+      <p class="project-card-desc">Aus einer 3-Zimmer-Wohnung und einem 1-Zimmer-Apartment wird eine funktionale 5-Zimmer-Wohnung. Die Pariser Bauherrin brachte Möbel mit, das Grün der Luxembourg-Parkstühle wurde zum rosmaringrünen Linoleum.</p>
+    </article>
+
+    <article class="project-card span-7 reveal">
+      <div class="project-img wide">
+        <img src="/public/projekte/p48/p48-04.jpg" alt="P48 — Innenraum mit zweigeschossiger Wohnhalle und Galerie" loading="lazy">
+      </div>
+      <div class="project-card-meta">P48 · Detail</div>
+      <h3 class="project-card-name">Im Inneren der<br><em>Doppelzwiebel.</em></h3>
+      <p class="project-card-desc">Zweigeschossige Wohnhalle, Kamin, Galerie, Dachterrasse, Turmstube. Im Auge des Treppenhauses ein freistehender hydraulischer Aufzug, an die genietete Stahlkonstruktion der Hackerbrücke erinnernd. Der Bau bereichert seinen städtebaulich wichtigen Ort durch sein stimmiges Gesamtbild nach altem Vorbild.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ═════ MANIFEST 2 ═══════════════════════════════════════════════════ -->
+<div class="manifest reveal">
+  <p class="manifest-text">Wir folgen nicht.<br><strong>Wir führen.</strong></p>
+</div>
+
+<!-- ═════ AKADEMIE ═════════════════════════════════════════════════════ -->
+<section class="akademie" id="akademie">
+  <div class="akademie-intro">
+    <div class="reveal">
+      <div class="akademie-eyebrow">Akademie · 03 · seit 2022</div>
+      <h2 class="akademie-title">Ein <em>Salon</em><br>für die Stadt.</h2>
+    </div>
+    <p class="akademie-blurb reveal">Ein Ort, um in inspirierter Atmosphäre über die <strong>Korrelation von Architektur und Gesellschaft</strong> nachzudenken. Im Mittelpunkt jedes Akademieabends ein Impulsvortrag, ein Werk- oder Reisebericht — von Jakob Bader oder einem seiner Gäste. Stammgast: <strong>Stephan Braunfels</strong>, Architekt der Pinakothek der Moderne.</p>
+  </div>
+
+  <div class="akademie-body">
+    <div class="akademie-program reveal">
+      <div class="program-row">
+        <div class="program-date">23.04.2026</div>
+        <div>
+          <div class="program-title"><em>AERO,</em> der Reinraum</div>
+          <span class="program-speaker">Vortrag von Jakob Bader · JBA, Amalienstr. 14a, 19 Uhr</span>
+        </div>
+        <span class="program-tag is-live">Nächster Termin</span>
+      </div>
+      <div class="program-row">
+        <div class="program-date">26.03.2026</div>
+        <div>
+          <div class="program-title">Ernst Barth, <em>Meisterarchitekt der Moderne III</em></div>
+          <span class="program-speaker">Vortrag von Karl-Heinz Röpke · JBA</span>
+        </div>
+        <span class="program-tag">Geplant</span>
+      </div>
+      <div class="program-row">
+        <div class="program-date">19.03.2026</div>
+        <div>
+          <div class="program-title">Ernst Barth, <em>Meisterarchitekt der Moderne II</em></div>
+          <span class="program-speaker">Vortrag von Martin Rössler · JBA</span>
+        </div>
+        <span class="program-tag">Geplant</span>
+      </div>
+      <div class="program-row">
+        <div class="program-date">05.03.2026</div>
+        <div>
+          <div class="program-title">Die <em>Stadt</em> und das <em>Auto</em></div>
+          <span class="program-speaker">Vortrag von Jakob Bader · JBA</span>
+        </div>
+        <span class="program-tag">Geplant</span>
+      </div>
+      <div class="program-row">
+        <div class="program-date">26.02.2026</div>
+        <div>
+          <div class="program-title">Pinakothek der Moderne — <em>Werkbericht</em></div>
+          <span class="program-speaker">Vortrag von Stephan Braunfels · JBA</span>
+        </div>
+        <span class="program-tag">Geplant</span>
+      </div>
+      <div class="program-row is-past">
+        <div class="program-date">11.12.2025</div>
+        <div>
+          <div class="program-title">Die <em>Doppelzwiebel</em> — eine Baugeschichte</div>
+          <span class="program-speaker">Vortrag von Jakob Bader · JBA</span>
+        </div>
+        <span class="program-tag">Vergangen</span>
+      </div>
+      <div class="program-row is-past">
+        <div class="program-date">08.10.2025</div>
+        <div>
+          <div class="program-title">Haus Leinz — eine <em>Familien- und Baugeschichte</em></div>
+          <span class="program-speaker">Vortrag von Jakob Bader · ZEL Heidelberg</span>
+        </div>
+        <span class="program-tag">Vergangen</span>
+      </div>
+      <div class="program-row is-past">
+        <div class="program-date">18.09.2025</div>
+        <div>
+          <div class="program-title">Ernst Barth, <em>Meisterarchitekt der Moderne I</em></div>
+          <span class="program-speaker">Vortrag von Jakob Bader · JBA</span>
+        </div>
+        <span class="program-tag">Vergangen</span>
+      </div>
+      <div class="program-row is-past">
+        <div class="program-date">24.07.2025</div>
+        <div>
+          <div class="program-title"><em>Genua,</em> Hafenstadt der Paläste</div>
+          <span class="program-speaker">Vortrag von Jakob Bader · JBA</span>
+        </div>
+        <span class="program-tag">Vergangen</span>
+      </div>
+    </div>
+
+    <aside class="akademie-side reveal">
+      <div class="akademie-photo">
+        <img src="/public/akademie/vortrag-01.jpg" alt="Akademie-Salon im JBA Büro, Vortrag mit Publikum" loading="lazy">
+      </div>
+      <div class="akademie-info">
+        <strong>Format</strong>
+        Forum, Salon, Vernissage, Club. Eingeladen ist das erweiterte Umfeld des Architekturbüros — und alle, die mitdenken wollen.
+        <strong>Ort</strong>
+        JBA · Amalienstraße 14a · 80799 München · Maxvorstadt
+        <strong>Akkreditierung</strong>
+        Begrenzte Besucherzahl. Anmeldung vorab per Mail an <a href="mailto:architektur@jakobbader.de">architektur@jakobbader.de</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ═════ MANIFEST 3 ═══════════════════════════════════════════════════ -->
+<div class="manifest reveal">
+  <p class="manifest-text">Moden sind uns egal.<br><strong>Tatsachen leiten uns.</strong></p>
+</div>
+
+<!-- ═════ PERSON ═══════════════════════════════════════════════════════ -->
+<section class="person" id="person">
+  <div class="person-intro reveal">
+    <div class="person-eyebrow">Person · 04</div>
+    <h2 class="person-headline">Jakob Bader.<br><em>Architekt als Bühnenbildner.</em></h2>
+  </div>
+
+  <div class="person-spread">
+    <div class="person-portrait reveal">
+      <img src="/public/portraits/bader-salon.jpg" alt="Porträt Jakob Bader im eigenen Salon, Petersburger Hängung im Hintergrund" loading="lazy">
+    </div>
+
+    <div class="person-bio reveal">
+      <p>Geboren 1973 in Heidelberg in einer Architektenfamilie, aus alter Münchner Linie. Lebt mit seiner Familie in Alt-Schwabing.</p>
+      <p>Seit über zwanzig Jahren selbständiger und freier Architekt in München, mit eigenem Büro im Kunstareal Maxvorstadt. Studium an der TU München und der TU Delft, bei <strong>Ueli Zbinden</strong> und <strong>Felix Claus</strong>; Diplom 2000 bei <strong>Victor López Cotelo</strong>. Frühe Tätigkeit bei Muck Petzet und Peter Haimerl.</p>
+      <p>Kurz nach dem Diplom baute er gegenüber der TU München einen Behelfsbau aus der Nachkriegszeit zu seinem ersten Büro um — dem <em>Kulturkiosk Kanzler.</em> Ein Jahr lang trafen sich dort an jedem Freitagabend Nachbarn, Freunde und Interessierte zu Vernissagen, Lesungen, Diskussionen, Film-, Musik- und Theateraufführungen. Es entstand ein politischer Salon, aufsehenerregend bis über die Stadtgrenze hinaus.</p>
+      <p>Schon damals war ihm klar: Die Aufgabe des Architekten ist nicht nur die Hülle — vor allem ist es der Raum. Am Ende des Tages kommt es nicht auf das Materielle an. Wichtig sind <strong>Mensch, Raum und Atmosphäre.</strong></p>
+
+      <div class="person-timeline">
+        <div class="person-timeline-item"><strong>1973</strong><span>geboren · Heidelberg</span></div>
+        <div class="person-timeline-item"><strong>2000</strong><span>Diplom · TU München</span></div>
+        <div class="person-timeline-item"><strong>2002</strong><span>Bürogründung JBA</span></div>
+        <div class="person-timeline-item"><strong>2004</strong><span>freier Architekt</span></div>
+        <div class="person-timeline-item"><strong>2025</strong><span>Fassadenpreis München</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="person-second">
+    <p class="person-second-text reveal">„Architektur ist nicht nur eine Hülle, sondern vor allem <strong>Raum.</strong> Und ein Raum ist ohne den Menschen leer und sinnlos. Erst Menschen erfüllen ihn mit Leben."</p>
+    <div class="person-second-img reveal">
+      <img src="/public/portraits/bader-kueche.jpg" alt="Jakob Bader in seiner Küche mit verspiegelten Oberschränken" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- ═════ MANIFEST 4 ═══════════════════════════════════════════════════ -->
+<div class="manifest reveal">
+  <p class="manifest-text">Architektur ist die<br><strong>Mutter aller Künste.</strong></p>
+</div>
+
+<!-- ═════ DIALOG ═══════════════════════════════════════════════════════ -->
+<section class="dialog" id="dialog">
+  <div class="dialog-grid">
+    <div>
+      <div class="dialog-eyebrow reveal">Dialog · 05</div>
+      <h2 class="dialog-headline reveal">Mit JBA<br><em>bauen.</em></h2>
+      <a class="dialog-cta reveal" href="mailto:architektur@jakobbader.de?subject=Anfrage%20Erstgespr%C3%A4ch">Erstgespräch vereinbaren</a>
+    </div>
+    <div class="dialog-info reveal">
+      <strong>Adresse</strong>
+      <span class="dialog-info-line">Amalienstraße 14a<br>80799 München · Maxvorstadt</span>
+      <strong>Kontakt</strong>
+      <span class="dialog-info-line"><a href="mailto:architektur@jakobbader.de">architektur@jakobbader.de</a></span>
+      <strong>Akademie-Termin</strong>
+      <span class="dialog-info-line"><a href="#akademie">Salon besuchen →</a></span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-brand">
+    <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g transform="translate(120 120)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="0" cy="0" r="115" stroke-width="3.5"/>
+        <path stroke-width="4.5" d="M -28 -62 C -10 -72, 12 -68, 6 -48 C 2 -32, -4 -10, -12 18 C -18 42, -28 62, -48 60 C -62 58, -64 46, -52 42"/>
+        <path stroke-width="4.5" d="M 6 -48 C 22 -58, 52 -56, 58 -32 C 60 -14, 42 -6, 22 -8 C 50 -8, 70 8, 64 36 C 58 62, 22 72, 0 58"/>
+      </g>
+    </svg>
+    <span>© Jakob Bader Architektur · MMXXVI</span>
+  </div>
+  <nav class="site-footer-links">
+    <a href="/impressum.html">Impressum</a>
+    <a href="/datenschutz.html">Datenschutz</a>
+    <a href="https://www.byak.de" target="_blank" rel="noopener">BAK Bayern</a>
+  </nav>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // ─── ARCHITEKTOUREN BANNER (auto-expire) ─────────────────────────
+  const ARCHI_END = new Date('2026-06-27T18:00:00').getTime();
+  const banner = document.getElementById('archiBanner');
+  if (Date.now() < ARCHI_END) {
+    requestAnimationFrame(() => banner.classList.add('is-visible'));
+  } else {
+    banner.remove();
+  }
+
+  // ─── HEADER SCROLL STATE ─────────────────────────────────────────
+  const header = document.getElementById('siteHeader');
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.classList.toggle('is-scrolled', y > 80);
+    lastScroll = y;
+  }, { passive: true });
+
+  // ─── REVEAL ON SCROLL ─────────────────────────────────────────────
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+
+  // ─── DIAGNOSE NUMBER COUNT-UP ─────────────────────────────────────
+  const num = document.getElementById('diagnoseNumber');
+  const numIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        let v = 0; const target = 82;
+        const tick = () => {
+          v += 1;
+          num.textContent = v;
+          if (v < target) requestAnimationFrame(tick);
+        };
+        tick();
+        numIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  numIO.observe(num);
+
+  // ─── THREE.JS DOPPELZWIEBEL ───────────────────────────────────────
+  const canvas = document.getElementById('heroCanvas');
+  const wrap = document.getElementById('heroCanvasWrap');
+  if (!window.THREE || !canvas) return;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+  camera.position.set(0, 3.2, 12);
+  camera.lookAt(0, 3.2, 0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  // Doppelzwiebel profile — based on P48 reference photos
+  // Total height ~6.6 units in scene (representing ~10m IRL)
+  const profile = [
+    new THREE.Vector2(1.10, 0.00),
+    new THREE.Vector2(1.10, 0.10),
+    new THREE.Vector2(1.18, 0.18),
+    new THREE.Vector2(1.30, 0.28),
+    new THREE.Vector2(1.55, 0.55),
+    new THREE.Vector2(1.78, 0.92),
+    new THREE.Vector2(1.92, 1.30),
+    new THREE.Vector2(1.92, 1.58),
+    new THREE.Vector2(1.78, 1.92),
+    new THREE.Vector2(1.50, 2.20),
+    new THREE.Vector2(1.18, 2.42),
+    new THREE.Vector2(0.98, 2.55),
+    new THREE.Vector2(0.92, 2.62),
+    new THREE.Vector2(0.94, 2.68),
+    new THREE.Vector2(0.94, 3.40),
+    new THREE.Vector2(1.02, 3.46),
+    new THREE.Vector2(1.05, 3.52),
+    new THREE.Vector2(0.96, 3.58),
+    new THREE.Vector2(1.02, 3.72),
+    new THREE.Vector2(1.18, 3.92),
+    new THREE.Vector2(1.20, 4.10),
+    new THREE.Vector2(1.05, 4.30),
+    new THREE.Vector2(0.78, 4.50),
+    new THREE.Vector2(0.48, 4.68),
+    new THREE.Vector2(0.22, 4.82),
+    new THREE.Vector2(0.14, 4.92),
+    new THREE.Vector2(0.20, 4.98),
+    new THREE.Vector2(0.20, 5.12),
+    new THREE.Vector2(0.10, 5.40),
+    new THREE.Vector2(0.05, 5.85),
+    new THREE.Vector2(0.02, 6.30),
+    new THREE.Vector2(0.00, 6.60),
+  ];
+
+  const lathe = new THREE.LatheGeometry(profile, 72);
+  lathe.computeVertexNormals();
+
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x2a2826,
+    roughness: 0.42,
+    metalness: 0.62,
+    side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh(lathe, mat);
+  mesh.position.y = -3.3;
+
+  const group = new THREE.Group();
+  group.add(mesh);
+
+  // Edge overlay for crisp definition
+  const edges = new THREE.EdgesGeometry(lathe, 18);
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0xc9b896, transparent: true, opacity: 0.18 });
+  const wire = new THREE.LineSegments(edges, edgeMat);
+  wire.position.y = -3.3;
+  group.add(wire);
+
+  scene.add(group);
+
+  // Lighting — warm key + cool fill + rim
+  scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+
+  const key = new THREE.DirectionalLight(0xffd9a8, 1.4);
+  key.position.set(8, 14, 6);
+  scene.add(key);
+
+  const fill = new THREE.DirectionalLight(0x6c8aa8, 0.45);
+  fill.position.set(-7, 2, -4);
+  scene.add(fill);
+
+  const rim = new THREE.DirectionalLight(0xffffff, 0.55);
+  rim.position.set(-3, 5, -10);
+  scene.add(rim);
+
+  // Resize
+  function resize() {
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Mouse parallax
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+  window.addEventListener('mousemove', (e) => {
+    mx = (e.clientX / window.innerWidth - 0.5) * 2;
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  // Scroll-driven rotation acceleration
+  let scrollFactor = 0;
+  window.addEventListener('scroll', () => {
+    scrollFactor = Math.min(1, window.scrollY / window.innerHeight);
+  }, { passive: true });
+
+  // Animate
+  let t0 = performance.now();
+  function tick(now) {
+    const dt = (now - t0) / 1000; t0 = now;
+    group.rotation.y += dt * (0.18 + scrollFactor * 0.6);
+    group.rotation.x = Math.sin(now * 0.0003) * 0.02;
+
+    tmx += (mx * 0.6 - tmx) * 0.04;
+    tmy += (my * 0.4 - tmy) * 0.04;
+    camera.position.x = tmx;
+    camera.position.y = 3.2 - tmy * 0.6;
+    camera.lookAt(0, 3.0, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>
