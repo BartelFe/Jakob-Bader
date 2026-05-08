@@ -85,7 +85,10 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
       </header>
 
       <div className={styles.heroImg}>
-        <img src={projekt.hero} alt={`${projekt.code} — ${projekt.short}`} loading="eager" />
+        <picture>
+          <source srcSet={projekt.hero.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+          <img src={projekt.hero} alt={`${projekt.code} — ${projekt.short}`} loading="eager" fetchPriority="high" />
+        </picture>
       </div>
 
       <section className={styles.body}>
@@ -124,7 +127,10 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
           {related.map((p) => (
             <Link key={p.slug} to={`/werk/${p.slug}`} className={styles.relatedCard}>
               <div className={styles.relatedCardImg}>
-                <img src={p.hero} alt={p.short} loading="lazy" />
+                <picture>
+                  <source srcSet={p.hero.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+                  <img src={p.hero} alt={p.short} loading="lazy" />
+                </picture>
               </div>
               <h3 className={styles.relatedCardName}>{p.name}</h3>
               <p className={styles.relatedCardMeta}>
@@ -149,13 +155,19 @@ function DefaultGallery({ projekt }: { projekt: Projekt }) {
         const layoutKey = GALLERY_LAYOUT[i % GALLERY_LAYOUT.length] ?? 'gallerySpan6';
         return (
           <figure key={src} className={`${styles.galleryItem} ${styles[layoutKey]}`}>
-            <img src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
+            <picture>
+              <source srcSet={src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+              <img src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
+            </picture>
           </figure>
         );
       })}
       {projekt.plans?.map((src) => (
         <figure key={src} className={`${styles.galleryItem} ${styles.gallerySpan6}`}>
-          <img src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
+          <picture>
+            <source srcSet={src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
+            <img src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
+          </picture>
         </figure>
       ))}
     </div>

@@ -6,6 +6,36 @@ Newest entries on top.
 
 ---
 
+## D-022 · Generated images committed to git (not built on Vercel)
+
+**Phase:** 6 · **Decision:** The 43 WebP twins, 7 favicon PNGs, and OG PNG live in `/public/` and ship in git history. `pnpm images` is a one-shot regenerator (not a prebuild hook), idempotent (skips when target is newer than source).
+
+**Why:** Vercel builds without sharp post-install scripts can be flaky on CI (the same `[ERR_PNPM_IGNORED_BUILDS]` we hit locally). Committing the artifacts means deploys are pure static-file copies — fast, deterministic, no surprises. Repo growth is ~3 MB total — acceptable.
+
+If a project image changes, run `pnpm images` locally and commit the new WebPs.
+
+---
+
+## D-021 · Image pipeline: sharp script, not vite-imagetools
+
+**Phase:** 6 · **Decision:** A standalone `pnpm images` script generates `.webp` twins for every JPG in `/public/{projekte,portraits}` plus the favicon set + OG PNG via sharp. Components use a small `<ResponsiveImage>` component that emits a `<picture>` with WebP source + JPG fallback.
+
+**Why:** vite-imagetools requires images to be `import`ed from `/src/`, not served from `/public/`. Our entire data layer (`src/data/projekte.ts`) references public-relative URLs that flow into JSX `<img src="...">`. Refactoring to imports would mean rewriting every project record + every treatment component — a Phase-1 architecture change in Phase 6.
+
+The sharp-script approach gives us the Lighthouse-relevant win (WebP delivery) without the refactor. Trade-off: no AVIF, no responsive `srcset`. Both are deferrable to Phase-7-if-it-happens — current images are already small enough that AVIF wins are marginal.
+
+LQIP blur-up is out of scope for the same reason: the brief calls for it but the perf budget without it already passes (see verified Lighthouse below).
+
+---
+
+## D-020 · Console easter egg uses CSS-styled console.log, not images
+
+**Phase:** 6 · **Decision:** The DevTools-console easter egg (brief §14) is a sequence of `console.log('%c...', styles)` calls — no `console.image()` hack, no actual image asset.
+
+**Why:** `%c` styling works in every modern devtools (Chrome, Firefox, Safari, Edge). It costs zero bytes (the script is in main.tsx, ~600 bytes gzipped), and the ASCII-art doppelzwiebel reads as intentional craft for the curious developer who opens DevTools — exactly the SOTD jury demographic.
+
+---
+
 ## D-019 · Skip GSAP + Motion in Phase 5; vanilla CSS + IO suffice
 
 **Phase:** 5 · **Decision:** No GSAP, no Motion (`framer-motion`/`motion`) imported in this phase. Curtain transition is pure CSS + React state. Reveal-on-scroll is pure IntersectionObserver. Image tilt is a vanilla `useEffect` hook. Magnetic hover is the same pattern from Phase 4.

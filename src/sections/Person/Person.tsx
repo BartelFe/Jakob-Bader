@@ -7,6 +7,7 @@ import {
   PERSON_PULL_QUOTE,
   TIMELINE,
 } from '@/data/person';
+import { ResponsiveImage } from '@/components/ResponsiveImage/ResponsiveImage';
 import styles from './Person.module.css';
 
 export function Person() {
@@ -23,7 +24,7 @@ export function Person() {
 
       <div className={styles.spread}>
         <div className={`${styles.portrait} reveal`}>
-          <img
+          <ResponsiveImage
             src="/portraits/bader-salon.jpg"
             alt="Porträt Jakob Bader im eigenen Salon, Petersburger Hängung im Hintergrund"
             loading="lazy"
@@ -76,7 +77,7 @@ export function Person() {
           <span className={styles.secondCite}>— Jakob Bader</span>
         </p>
         <div className={`${styles.secondImg} reveal`}>
-          <img
+          <ResponsiveImage
             src="/portraits/bader-kueche.jpg"
             alt="Jakob Bader in seiner Küche mit verspiegelten Oberschränken"
             loading="lazy"
@@ -125,9 +126,17 @@ export function Person() {
         <p className={styles.lineageTitle}>Geistige Familie</p>
         <div className={styles.lineageWall}>
           {LINEAGE.map((entry) => (
-            <div key={entry.name} className={styles.lineageItem} tabIndex={0}>
+            <div
+              key={entry.name}
+              className={styles.lineageItem}
+              tabIndex={0}
+              role="article"
+              aria-label={`${entry.name}: ${entry.reason}`}
+            >
               <h3 className={styles.lineageName}>{entry.name}</h3>
-              <p className={styles.lineageReason}>{entry.reason}</p>
+              <p className={styles.lineageReason} aria-hidden="true">
+                {entry.reason}
+              </p>
             </div>
           ))}
         </div>

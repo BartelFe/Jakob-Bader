@@ -20,12 +20,12 @@ export function NotFound() {
     <article className={styles.page}>
       <div className={styles.inner}>
         <DoppelzwiebelSilhouette className={styles.silhouette} />
-        <p className={styles.code}>404 · nicht gefunden</p>
-        <h1 className={styles.headline}>
+        <p className={`${styles.code} reveal`}>404 · nicht gefunden</p>
+        <h1 className={`${styles.headline} reveal`}>
           „{NOT_FOUND.headline}"<span className={styles.attrib}>— {NOT_FOUND.attrib}</span>
         </h1>
-        <p className={styles.body}>{NOT_FOUND.body}</p>
-        <Link to="/" className={styles.cta}>
+        <p className={`${styles.body} reveal`}>{NOT_FOUND.body}</p>
+        <Link to="/" className={`${styles.cta} reveal`}>
           {NOT_FOUND.cta} →
         </Link>
       </div>

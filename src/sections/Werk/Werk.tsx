@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { HERO_PROJEKT, PROJEKTE } from '@/data/projekte';
 import { useImageTilt } from '@/lib/useImageTilt';
+import { ResponsiveImage } from '@/components/ResponsiveImage/ResponsiveImage';
 import styles from './Werk.module.css';
 
 const CARD_LAYOUT = [
@@ -39,11 +40,12 @@ export function Werk() {
           to={`/werk/${heroPart.slug}`}
           className={styles.heroProjectImg}
         >
-          <img
+          <ResponsiveImage
             src={heroPart.hero}
             alt="P48 Doppelzwiebel — Wohnhaus am Wiesnviertel, ausgezeichnet mit dem Fassadenpreis München 2025"
             loading="eager"
             decoding="async"
+            fetchPriority="high"
           />
         </Link>
         <div>
@@ -84,7 +86,7 @@ export function Werk() {
               className={`${styles.card} ${styles[layout.spanClass]} reveal`}
             >
               <div className={`${styles.cardImg} ${styles[layout.imgClass]}`}>
-                <img src={p.hero} alt={`${p.code} — ${p.short}`} loading="lazy" decoding="async" />
+                <ResponsiveImage src={p.hero} alt={`${p.code} — ${p.short}`} loading="lazy" decoding="async" />
               </div>
               <div className={styles.cardMeta}>
                 {p.code} · {p.years} · {p.location}

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 
 import { App } from './App';
+import { printConsoleEgg } from './lib/console-egg';
 import './styles/global.css';
 
 const rootElement = document.getElementById('root');
@@ -17,3 +18,5 @@ createRoot(rootElement).render(
     </BrowserRouter>
   </StrictMode>,
 );
+
+printConsoleEgg();

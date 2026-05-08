@@ -10,7 +10,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "type-check": "tsc -b --noEmit",
-    "lint": "tsc -b --noEmit"
+    "lint": "tsc -b --noEmit",
+    "images": "node scripts/generate-images.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.114.0",

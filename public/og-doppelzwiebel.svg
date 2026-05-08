@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Jakob Bader Architektur · Mut zum Raum">
+  <defs>
+    <radialGradient id="bg" cx="78%" cy="58%" r="62%">
+      <stop offset="0%" stop-color="#3a2a1f" stop-opacity="0.32"/>
+      <stop offset="40%" stop-color="#1a1612" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#0d0d0c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e89978"/>
+      <stop offset="100%" stop-color="#c44e2c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Backdrop -->
+  <rect width="1200" height="630" fill="#0d0d0c"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle noise grain via SVG filter (rendered server-side per OG cache) -->
+  <filter id="noise" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 0.95   0 0 0 0 0.93   0 0 0 0 0.87   0 0 0 0.05 0"/>
+  </filter>
+  <rect width="1200" height="630" filter="url(#noise)" opacity="0.5" style="mix-blend-mode: overlay"/>
+
+  <!-- Doppelzwiebel silhouette · right third -->
+  <g transform="translate(870 100) scale(1.6)">
+    <g fill="none" stroke="url(#accent)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+      <!-- Tambour -->
+      <rect x="-50" y="225" width="100" height="22" fill="rgba(196, 78, 44, 0.16)" stroke-width="2"/>
+      <!-- Lower onion -->
+      <path d="M -50 225 C -110 200, -110 130, -60 110 C -30 100, 0 96, 0 96 C 0 96, 30 100, 60 110 C 110 130, 110 200, 50 225 Z" fill="rgba(196, 78, 44, 0.10)"/>
+      <!-- Neck -->
+      <rect x="-22" y="80" width="44" height="20" fill="rgba(196, 78, 44, 0.16)"/>
+      <!-- Upper onion -->
+      <path d="M -22 80 C -56 64, -56 24, -22 8 C -8 2, 0 0, 0 0 C 0 0, 8 2, 22 8 C 56 24, 56 64, 22 80 Z" fill="rgba(196, 78, 44, 0.10)"/>
+      <!-- Spire -->
+      <line x1="0" y1="0" x2="0" y2="-50"/>
+      <!-- Cross -->
+      <line x1="-12" y1="-50" x2="12" y2="-50"/>
+      <line x1="0" y1="-62" x2="0" y2="-38"/>
+    </g>
+
+    <!-- Centerline / lathe axis -->
+    <line x1="0" y1="-62" x2="0" y2="252" stroke="rgba(196, 78, 44, 0.32)" stroke-width="0.8" stroke-dasharray="3 4"/>
+  </g>
+
+  <!-- Brand block · left two-thirds -->
+  <g transform="translate(80 220)">
+    <!-- JBA monogram circle -->
+    <g transform="translate(0 -40)" fill="none" stroke="#f4ede0" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="38" cy="38" r="36" stroke-width="1.6"/>
+      <path stroke-width="2.2" transform="translate(38 38) scale(0.46)" d="M -28 -62 C -10 -72, 12 -68, 6 -48 C 2 -32, -4 -10, -12 18 C -18 42, -28 62, -48 60 C -62 58, -64 46, -52 42"/>
+      <path stroke-width="2.2" transform="translate(38 38) scale(0.46)" d="M 6 -48 C 22 -58, 52 -56, 58 -32 C 60 -14, 42 -6, 22 -8 C 50 -8, 70 8, 64 36 C 58 62, 22 72, 0 58"/>
+    </g>
+
+    <!-- Eyebrow -->
+    <text x="100" y="0" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="3.5" fill="rgba(244, 237, 224, 0.62)">
+      JAKOB BADER ARCHITEKTUR · MAXVORSTADT MÜNCHEN
+    </text>
+
+    <!-- Headline -->
+    <text x="0" y="100" font-family="Cormorant Garamond, serif" font-size="148" font-weight="400" fill="#f4ede0" letter-spacing="-3">
+      Mut zum
+    </text>
+    <text x="0" y="240" font-family="Cormorant Garamond, serif" font-style="italic" font-size="148" font-weight="400" fill="#e89978" letter-spacing="-3">
+      Raum.
+    </text>
+
+    <!-- Sub -->
+    <text x="0" y="300" font-family="Cormorant Garamond, serif" font-style="italic" font-size="28" font-weight="300" fill="rgba(244, 237, 224, 0.85)">
+      Architektur ist die stärkste Form der Zivilisation. Wir bauen sie.
+    </text>
+  </g>
+
+  <!-- Footer caption -->
+  <g transform="translate(80 580)">
+    <text font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="3.5" fill="rgba(244, 237, 224, 0.42)">
+      JAKOBBADER.DE — KRACHERS DOPPELZWIEBEL · 1890 → 1924 → 2025
+    </text>
+  </g>
+</svg>

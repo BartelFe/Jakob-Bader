@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AKADEMIE_EVENTS, type AkademieTopic } from '@/data/akademie';
+import { JsonLd } from '@/components/JsonLd/JsonLd';
 import { AkademieVenueMap } from './AkademieVenueMap';
 import styles from './Akademie.module.css';
 
@@ -23,6 +24,39 @@ export function Akademie() {
   const [view, setView] = useState<View>('list');
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
+  // JSON-LD: schema.org Event entries for upcoming + recent past
+  const eventSchemas = useMemo(
+    () =>
+      AKADEMIE_EVENTS.map((e) => ({
+        '@context': 'https://schema.org',
+        '@type': 'Event',
+        name: e.title,
+        startDate: e.dateISO,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: {
+          '@type': 'Place',
+          name: e.venue,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: e.city ?? 'München',
+            addressCountry: 'DE',
+          },
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: 'Jakob Bader Architektur',
+          url: 'https://jakobbader.de/',
+        },
+        performer: {
+          '@type': 'Person',
+          name: e.speaker,
+        },
+        description: `Akademie-Salon · ${e.title} · Vortrag von ${e.speaker}.`,
+      })),
+    [],
+  );
+
   useEffect(() => {
     document.title = 'Akademie · Jakob Bader Architektur';
     return () => {
@@ -40,6 +74,7 @@ export function Akademie() {
 
   return (
     <article className={styles.page}>
+      <JsonLd id="akademie-events" data={eventSchemas} />
       <header className={styles.intro}>
         <p className={styles.eyebrow}>Akademie · Vollarchiv</p>
         <h1 className={styles.headline}>
