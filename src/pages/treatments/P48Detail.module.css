@@ -1,0 +1,465 @@
+.page {
+  background: var(--bg-paper);
+  color: var(--ink);
+}
+
+/* ─── Sticky 3D stage ───────────────────────────────────────────── */
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    #ebe2d1 0%,
+    #f4ede0 60%,
+    #ebe2d1 100%
+  );
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.stageInner {
+  position: absolute;
+  inset: 0;
+}
+
+.stageVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 60%,
+    rgba(244, 237, 224, 0) 0%,
+    rgba(196, 78, 44, 0.05) 60%,
+    rgba(13, 13, 12, 0.18) 100%
+  );
+  z-index: 2;
+}
+
+.stageMeta {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 4;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.stageTimeline {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  z-index: 4;
+  pointer-events: none;
+  text-align: center;
+}
+
+.timelinePoint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.4;
+  transition: opacity var(--t-base);
+}
+
+.timelinePointActive {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.timelineDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ─── Scroll-driven story track ───────────────────────────────── */
+.track {
+  position: relative;
+  z-index: 2;
+  /* Track is taller than viewport — drives the sticky stage's progress.
+     Each milestone is one viewport tall. */
+}
+
+.intro {
+  position: relative;
+  z-index: 3;
+  background: var(--bg-paper);
+  padding: clamp(120px, 16vh, 200px) var(--gutter) clamp(60px, 8vh, 100px);
+}
+
+.introInner {
+  max-width: var(--max);
+  margin-inline: auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 48px;
+}
+
+.back:hover,
+.back:focus-visible {
+  color: var(--accent);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.headline {
+  font-family: var(--serif);
+  font-size: clamp(72px, 11vw, 220px);
+  line-height: 0.92;
+  letter-spacing: var(--ls-display);
+  font-weight: 400;
+  margin-bottom: 48px;
+  max-width: 1280px;
+}
+
+.headlineEm {
+  font-style: italic;
+}
+
+.short {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.4;
+  font-weight: 300;
+  color: var(--ink-soft);
+  max-width: 760px;
+}
+
+/* ─── Story milestones ───────────────────────────────────────── */
+.milestone {
+  position: relative;
+  min-height: 100vh;
+  padding: clamp(80px, 10vh, 140px) var(--gutter);
+  display: grid;
+  align-items: center;
+  z-index: 3;
+}
+
+.milestoneInner {
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(48px, 6vw, 120px);
+  align-items: center;
+  pointer-events: none;
+}
+
+.milestoneInnerRight .milestoneText {
+  grid-column: 2;
+}
+
+.milestoneInnerLeft .milestoneText {
+  grid-column: 1;
+}
+
+.milestoneText {
+  pointer-events: auto;
+  background: rgba(244, 237, 224, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: clamp(28px, 3vw, 48px);
+  border: 1px solid var(--line-on-paper);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.milestoneYear {
+  font-family: var(--serif);
+  font-size: clamp(56px, 8vw, 128px);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 0.9;
+  letter-spacing: var(--ls-display);
+  color: var(--accent);
+}
+
+.milestoneTag {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.milestoneTitle {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: var(--ls-display);
+}
+
+.milestoneTitleEm {
+  font-style: italic;
+}
+
+.milestoneText p {
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ─── Prize banner ───────────────────────────────────────────── */
+.prize {
+  position: relative;
+  z-index: 4;
+  background: var(--bg-deep);
+  color: var(--paper-on-deep);
+  padding: clamp(80px, 10vh, 140px) var(--gutter);
+  text-align: center;
+  border-top: 1px solid var(--line-on-deep);
+}
+
+.prizeInner {
+  max-width: 920px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.prizeLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+
+.prizeName {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 80px);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: var(--ls-display);
+}
+
+.prizeNameEm {
+  font-style: italic;
+}
+
+.prizeLink {
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  border: 1px solid var(--accent);
+  color: var(--accent-soft);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  transition:
+    background-color var(--t-base),
+    color var(--t-base);
+}
+
+.prizeLink:hover,
+.prizeLink:focus-visible {
+  background: var(--accent);
+  color: var(--paper-on-deep);
+}
+
+/* ─── Body + tags ────────────────────────────────────────────── */
+.body {
+  position: relative;
+  z-index: 4;
+  background: var(--bg-paper);
+  padding: clamp(100px, 12vh, 160px) var(--gutter);
+}
+
+.bodyInner {
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: clamp(48px, 6vw, 120px);
+  align-items: start;
+}
+
+.bodyLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  position: sticky;
+  top: 120px;
+}
+
+.bodyText {
+  font-size: var(--fs-body-lg);
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 720px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.tag {
+  padding: 8px 16px;
+  border: 1px solid var(--line-on-paper-strong);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+
+/* ─── Akademie cross-link ────────────────────────────────────── */
+.akademie {
+  position: relative;
+  z-index: 4;
+  background: var(--bg-stone);
+  color: var(--paper-on-deep);
+  padding: clamp(80px, 10vh, 140px) var(--gutter);
+  border-top: 1px solid var(--line-on-deep);
+}
+
+.akademieCard {
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(48px, 6vw, 120px);
+  align-items: center;
+  padding: clamp(40px, 6vh, 80px) clamp(40px, 6vw, 96px);
+  border: 1px solid var(--line-on-deep-strong);
+  background: linear-gradient(180deg, rgba(244, 237, 224, 0.04) 0%, transparent 100%);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--t-base);
+}
+
+.akademieCard:hover,
+.akademieCard:focus-visible {
+  border-color: var(--accent);
+}
+
+.akademieEyebrow {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  margin-bottom: 24px;
+}
+
+.akademieTitle {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.15;
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+
+.akademieTitleEm {
+  font-style: italic;
+}
+
+.akademieMeta {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+
+.akademieCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent-soft);
+}
+
+/* ─── Gallery ────────────────────────────────────────────────── */
+.gallery {
+  position: relative;
+  z-index: 4;
+  background: var(--bg-paper);
+  padding: clamp(80px, 10vh, 140px) var(--gutter);
+}
+
+.galleryInner {
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(20px, 2vw, 40px);
+}
+
+.galleryItem {
+  background: var(--bg-paper-warm);
+  overflow: hidden;
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.span12 { grid-column: span 12; aspect-ratio: 16/9; }
+.span8 { grid-column: span 8; aspect-ratio: 4/3; }
+.span4 { grid-column: span 4; aspect-ratio: 3/4; }
+.span6 { grid-column: span 6; aspect-ratio: 4/3; }
+
+@media (max-width: 1080px) {
+  .stage { display: none; }
+  .milestoneInner { grid-template-columns: 1fr; }
+  .bodyInner { grid-template-columns: 1fr; }
+  .bodyLabel { position: static; }
+  .akademieCard { grid-template-columns: 1fr; }
+  .span8, .span4, .span6 { grid-column: span 12; }
+}

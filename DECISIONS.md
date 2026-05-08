@@ -6,6 +6,43 @@ Newest entries on top.
 
 ---
 
+## D-014 · P48 sticky-stage layout, not in-flow 3D
+
+**Phase:** 3 · **Decision:** P48 detail page uses a `position: sticky; height: 100vh` 3D stage, with three milestone slabs scrolling **over** it (z-index layering). Each milestone is one viewport tall, drives the same single `progress` 0..1 value, and the scene re-orchestrates inside the sticky frame.
+
+**Why:** Brief §7.3 wants "Plan-zu-Volumen-Animation" tied to scroll. Two options:
+- (A) Pin the 3D with GSAP ScrollTrigger pin (matches brief §9 "pinning für Hero")
+- (B) CSS `position: sticky` + scroll-listener-driven progress
+
+I chose (B) for Phase 3 because GSAP isn't yet wired in this phase (lands in Phase 5 cursor/transitions/microinteractions). CSS sticky has no JS overhead, works on every browser, and the milestone overlay pattern is industry-standard for editorial sites (NYT-style scrollytelling). Phase 5 may swap to ScrollTrigger if the snap-feel needs polishing.
+
+Below 1080px the sticky stage hides — milestones become standalone slabs. Mobile gets a static doppelzwiebel SVG instead of the 3D stage, which is honest about constraints.
+
+---
+
+## D-013 · Treatment dispatch on slug, not on `treatment` field
+
+**Phase:** 3 · **Decision:** `ProjektDetail.tsx` dispatches by `projekt.slug` (e.g. `if (slug === 'p48') return <P48Detail/>`) and by a `SHOWCASES` map keyed on slug for the rest. The `Projekt.treatment` field is now informational, not load-bearing for routing.
+
+**Why:** Two of the six projects (P48 + AKPL22) couldn't share a layout shell — P48 needs a fully custom scrolly-3D layout, AKPL22 wants Petersburger background/lightbox. Mapping slug-by-slug is more honest than pretending six treatments are interchangeable variants. The `treatment` field stays in the data layer for documentation + future filtering.
+
+P48 is `lazy()`-loaded to keep three+drei out of standard ProjektDetail's chunk. Other treatments are bundled with ProjektDetail (combined ~7.5kB gzipped — eager-shipping one is the right tradeoff for snappy between-project navigation).
+
+---
+
+## D-012 · drei `<Html>` for P48 hotspots
+
+**Phase:** 3 · **Decision:** Room labels (Wohnhalle / Galerie / Turmstube) use `<Html>` from `@react-three/drei` — DOM elements positioned in 3D space, auto-projected to screen. Inline-styled in JSX rather than a CSS module because they live mid-Canvas and pulling a stylesheet through `Html` loses the parent-component context.
+
+**Why:** Brief §7.3: "Räume bekommen Labels als Hover-Hotspots." Three alternatives:
+- (A) Custom screen-projection via `useFrame` + getWorldPosition + camera projection — most code, full control
+- (B) drei `<Html>` — auto-projection, occlusion-aware, ~3kB extra (drei already in deps)
+- (C) Sprite-textured 3D labels — readability suffers at angle
+
+(B) is the right tradeoff: free DOM-style hover + focus + ARIA, while keeping the 3D context. Drei was already a brief-mandated dep, so this is no new package.
+
+---
+
 ## D-011 · Loader is SVG-driven, not a second R3F canvas
 
 **Phase:** 2 · **Decision:** The pre-hero loader uses a stroked SVG profile + CSS-perspective Y-rotation to *suggest* the lathe construction, then fades out to reveal the hero's actual R3F canvas (already mounted, hidden behind overlay).

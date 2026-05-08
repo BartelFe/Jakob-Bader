@@ -1,12 +1,29 @@
+import { Suspense, lazy, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 
-import { PROJEKTE, PROJEKTE_BY_SLUG, type ProjektSlug } from '@/data/projekte';
+import { PROJEKTE, PROJEKTE_BY_SLUG, type Projekt, type ProjektSlug } from '@/data/projekte';
+
 import { NotFound } from './NotFound';
+import { AKPL22Showcase } from './treatments/AKPL22Showcase';
+import { HausWShowcase } from './treatments/HausWShowcase';
+import { LuPoShowcase } from './treatments/LuPoShowcase';
+import { T61Showcase } from './treatments/T61Showcase';
+import { VS15Showcase } from './treatments/VS15Showcase';
 
 import styles from './ProjektDetail.module.css';
 
-const GALLERY_LAYOUT = ['gallerySpan8', 'gallerySpan4', 'gallerySpan6', 'gallerySpan6', 'gallerySpan12', 'gallerySpan8', 'gallerySpan4', 'gallerySpan12'] as const;
+// Heavy + 3D — only load when route is /werk/p48
+const P48Detail = lazy(() =>
+  import('./treatments/P48Detail').then((m) => ({ default: m.P48Detail })),
+);
+
+const SHOWCASES: Partial<Record<ProjektSlug, (props: { projekt: Projekt }) => JSX.Element>> = {
+  akpl22: AKPL22Showcase,
+  lupo: LuPoShowcase,
+  hausw: HausWShowcase,
+  t61: T61Showcase,
+  vs15: VS15Showcase,
+};
 
 export function ProjektDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,11 +38,27 @@ export function ProjektDetail() {
     };
   }, [projekt]);
 
-  if (!projekt) {
-    return <NotFound />;
+  if (!projekt) return <NotFound />;
+
+  // P48 gets a fully custom page (sticky 3D stage, milestone scrolling)
+  if (projekt.slug === 'p48') {
+    return (
+      <Suspense fallback={null}>
+        <P48Detail projekt={projekt} />
+      </Suspense>
+    );
   }
 
+  return <StandardProjektDetail projekt={projekt} />;
+}
+
+/**
+ * Shared layout for all projects except P48: header → hero image → body
+ * + prize → treatment-specific showcase → related.
+ */
+function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
   const related = PROJEKTE.filter((p) => p.slug !== projekt.slug).slice(0, 3);
+  const Showcase = SHOWCASES[projekt.slug];
 
   return (
     <article className={styles.page}>
@@ -83,23 +116,7 @@ export function ProjektDetail() {
         </div>
       ) : null}
 
-      {projekt.images.length > 0 ? (
-        <div className={styles.gallery}>
-          {projekt.images.map((src, i) => {
-            const layoutKey = GALLERY_LAYOUT[i % GALLERY_LAYOUT.length] ?? 'gallerySpan6';
-            return (
-              <figure key={src} className={`${styles.galleryItem} ${styles[layoutKey]}`}>
-                <img src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
-              </figure>
-            );
-          })}
-          {projekt.plans?.map((src) => (
-            <figure key={src} className={`${styles.galleryItem} ${styles.gallerySpan6}`}>
-              <img src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
-            </figure>
-          ))}
-        </div>
-      ) : null}
+      {Showcase ? <Showcase projekt={projekt} /> : <DefaultGallery projekt={projekt} />}
 
       <div className={styles.related}>
         <p className={styles.relatedTitle}>Weitere Bauten</p>
@@ -118,5 +135,29 @@ export function ProjektDetail() {
         </div>
       </div>
     </article>
+  );
+}
+
+const GALLERY_LAYOUT = ['gallerySpan8', 'gallerySpan4', 'gallerySpan6', 'gallerySpan6', 'gallerySpan12', 'gallerySpan8', 'gallerySpan4', 'gallerySpan12'] as const;
+
+/** Fallback gallery for projects without a treatment-specific showcase. */
+function DefaultGallery({ projekt }: { projekt: Projekt }) {
+  if (projekt.images.length === 0 && !projekt.plans?.length) return null;
+  return (
+    <div className={styles.gallery}>
+      {projekt.images.map((src, i) => {
+        const layoutKey = GALLERY_LAYOUT[i % GALLERY_LAYOUT.length] ?? 'gallerySpan6';
+        return (
+          <figure key={src} className={`${styles.galleryItem} ${styles[layoutKey]}`}>
+            <img src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
+          </figure>
+        );
+      })}
+      {projekt.plans?.map((src) => (
+        <figure key={src} className={`${styles.galleryItem} ${styles.gallerySpan6}`}>
+          <img src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
+        </figure>
+      ))}
+    </div>
   );
 }
