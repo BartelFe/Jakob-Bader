@@ -138,20 +138,20 @@ function onionRadius(t: number): number {
 function coneRadius(t: number): number {
   if (t < 0.001 || t > 0.999) return 0.001;
 
+  // Tambour same as the other states for clean morph continuity
   if (t < 0.10) return 0.85;
-
   if (t < 0.13) {
     const local = (t - 0.10) / 0.03;
     return 0.85 + (0.72 - 0.85) * local;
   }
 
-  // Plain conical roof — short, stubby pyramid
-  if (t < 0.42) {
-    const local = (t - 0.13) / 0.29;
-    return 0.72 * (1 - Math.pow(local, 0.85));
-  }
-
-  return 0.001;
+  // Tall steeple — historically when the onions were lost, towers
+  // typically got a simple tapered spire reaching the same height
+  // (not a stubby pyramid with empty space above). This also fills
+  // the lathe's full Y-range so we don't get the ghost-line artefact
+  // from near-zero-radius vertices being rendered by EdgesGeometry.
+  const local = (t - 0.13) / 0.87;
+  return 0.72 * Math.pow(1 - local, 1.1);
 }
 
 const RADIUS_FN: Record<ProfileState, (t: number) => number> = {

@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import { useMemo, useRef, useState } from 'react';
+import { Environment, Html } from '@react-three/drei';
+import { Suspense, useMemo, useRef, useState } from 'react';
 import { Group, MathUtils, Vector3 } from 'three';
 
 import { Doppelzwiebel } from './Doppelzwiebel';
@@ -32,12 +32,32 @@ export function P48Scene({ progress = 0 }: P48SceneProps) {
       camera={{ position: [0, 14, 14], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      shadows
       style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
-      <ambientLight intensity={0.32} color="#fff8ee" />
-      <directionalLight position={[8, 12, 6]} color="#ffe7c4" intensity={1.4} />
-      <directionalLight position={[-6, 6, -4]} color="#7a92ad" intensity={0.45} />
-      <pointLight position={[2, 8, 8]} color="#ffd9a8" intensity={0.9} />
+      <ambientLight intensity={0.42} color="#fff5e8" />
+      <directionalLight
+        position={[10, 16, 8]}
+        color="#ffe6c0"
+        intensity={1.6}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-left={-12}
+        shadow-camera-right={12}
+        shadow-camera-top={12}
+        shadow-camera-bottom={-12}
+        shadow-camera-near={1}
+        shadow-camera-far={50}
+      />
+      <directionalLight position={[-6, 4, -6]} color="#a0b8d0" intensity={0.55} />
+      <pointLight position={[3, 10, 8]} color="#ffd9a8" intensity={0.5} />
+
+      {/* HDRI environment for material reflections — 'apartment' gives a
+          warm interior feel that flatters the stone facade. */}
+      <Suspense fallback={null}>
+        <Environment preset="apartment" background={false} environmentIntensity={0.4} />
+      </Suspense>
 
       <CameraRig progress={progress} />
 
@@ -81,7 +101,9 @@ function Building({ progress, isMobile }: BuildingProps) {
 
   const wingHeight = buildPhase * 4.4;
   const towerHeight = buildPhase * 6.4;
-  const helmScale = helmPhase * 0.32;
+  // v2: bumped from 0.32 → 0.50 so the helm reads as the building's
+  // crowning gesture rather than a tiny finial.
+  const helmScale = helmPhase * 0.50;
 
   // Slow Y rotation of the whole scene only after assembly is "done"
   useFrame((_, delta) => {
@@ -99,69 +121,77 @@ function Building({ progress, isMobile }: BuildingProps) {
 
       {/* Wing A — runs along +X */}
       {wingHeight > 0.001 ? (
-        <mesh position={[4, wingHeight / 2, 0.5]} castShadow>
+        <mesh position={[4, wingHeight / 2, 0.5]} castShadow receiveShadow>
           <boxGeometry args={[7.2, wingHeight, 3.2]} />
-          <meshStandardMaterial color="#bdaf99" roughness={0.86} metalness={0.06} />
+          <meshStandardMaterial color="#d8cab1" roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
       {/* Wing B — runs along -Z */}
       {wingHeight > 0.001 ? (
-        <mesh position={[-0.4, wingHeight / 2, -3]} castShadow>
+        <mesh position={[-0.4, wingHeight / 2, -3]} castShadow receiveShadow>
           <boxGeometry args={[3, wingHeight, 5.2]} />
-          <meshStandardMaterial color="#b3a691" roughness={0.86} metalness={0.06} />
+          <meshStandardMaterial color="#cfc0a6" roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
       {/* Tower at the inner corner — taller than wings */}
       {towerHeight > 0.001 ? (
-        <mesh position={[0.6, towerHeight / 2, 0.6]} castShadow>
+        <mesh position={[0.6, towerHeight / 2, 0.6]} castShadow receiveShadow>
           <boxGeometry args={[2.6, towerHeight, 2.6]} />
-          <meshStandardMaterial color="#a89c87" roughness={0.86} metalness={0.06} />
+          <meshStandardMaterial color="#c8b89d" roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
-      {/* Cornice ring at top of wings — terracotta hint */}
+      {/* Cornice ring at top of wings — slim terracotta cornette */}
       {wingHeight > 1 ? (
         <>
-          <mesh position={[4, wingHeight + 0.05, 0.5]}>
-            <boxGeometry args={[7.4, 0.12, 3.4]} />
-            <meshStandardMaterial color="#c44e2c" roughness={0.6} metalness={0.1} />
+          <mesh position={[4, wingHeight + 0.04, 0.5]}>
+            <boxGeometry args={[7.4, 0.10, 3.4]} />
+            <meshStandardMaterial color="#c44e2c" roughness={0.55} metalness={0.05} />
           </mesh>
-          <mesh position={[-0.4, wingHeight + 0.05, -3]}>
-            <boxGeometry args={[3.2, 0.12, 5.4]} />
-            <meshStandardMaterial color="#c44e2c" roughness={0.6} metalness={0.1} />
+          <mesh position={[-0.4, wingHeight + 0.04, -3]}>
+            <boxGeometry args={[3.2, 0.10, 5.4]} />
+            <meshStandardMaterial color="#c44e2c" roughness={0.55} metalness={0.05} />
           </mesh>
         </>
       ) : null}
 
-      {/* Pyramidal roof on long wing */}
+      {/* Hipped roof on long wing — flatter pyramid for less drama */}
       {wingHeight > 1 ? (
-        <mesh position={[4, wingHeight + 0.7, 0.5]} rotation={[0, Math.PI / 4, 0]}>
-          <coneGeometry args={[3.6, 1.2, 4]} />
-          <meshStandardMaterial color="#3a312a" roughness={0.65} metalness={0.18} />
+        <mesh position={[4, wingHeight + 0.55, 0.5]} rotation={[0, Math.PI / 4, 0]} castShadow>
+          <coneGeometry args={[3.4, 0.95, 4]} />
+          <meshStandardMaterial color="#2a2522" roughness={0.55} metalness={0.18} />
         </mesh>
       ) : null}
 
-      {/* Hipped block on short wing */}
+      {/* Hipped roof on short wing — small pyramidal cap, also rotated 45° */}
       {wingHeight > 1 ? (
-        <mesh position={[-0.4, wingHeight + 0.55, -3]}>
-          <boxGeometry args={[3.1, 1.1, 5.3]} />
-          <meshStandardMaterial color="#3a312a" roughness={0.65} metalness={0.18} />
+        <mesh position={[-0.4, wingHeight + 0.6, -3]} rotation={[0, Math.PI / 4, 0]} castShadow>
+          <coneGeometry args={[2.6, 1.0, 4]} />
+          <meshStandardMaterial color="#2a2522" roughness={0.55} metalness={0.18} />
         </mesh>
       ) : null}
 
-      {/* Tambour (drum) on top of tower */}
+      {/* Tambour (drum) on top of tower — taller now, octagonal-ish */}
       {helmScale > 0.001 ? (
-        <mesh position={[0.6, towerHeight + 0.4, 0.6]}>
-          <cylinderGeometry args={[1.35, 1.5, 0.8, 32]} />
-          <meshStandardMaterial color="#7a6f5e" metalness={0.3} roughness={0.6} />
+        <mesh position={[0.6, towerHeight + 0.55, 0.6]} castShadow>
+          <cylinderGeometry args={[1.45, 1.55, 1.1, 8]} />
+          <meshStandardMaterial color="#8a7e6c" metalness={0.15} roughness={0.62} />
         </mesh>
       ) : null}
 
-      {/* Doppelzwiebel — reused from the hero! */}
+      {/* Tambour cornice — thin terracotta ring at top of drum */}
       {helmScale > 0.001 ? (
-        <group position={[0.6, towerHeight + 0.85, 0.6]} scale={helmScale}>
+        <mesh position={[0.6, towerHeight + 1.12, 0.6]} castShadow>
+          <cylinderGeometry args={[1.5, 1.5, 0.08, 8]} />
+          <meshStandardMaterial color="#c44e2c" roughness={0.5} metalness={0.05} />
+        </mesh>
+      ) : null}
+
+      {/* Doppelzwiebel — reused from the hero! Sits on top of tambour-cornice. */}
+      {helmScale > 0.001 ? (
+        <group position={[0.6, towerHeight + 1.18, 0.6]} scale={helmScale}>
           <Doppelzwiebel morph={1} edgesOpacity={0.22} segments={isMobile ? 32 : 56} />
         </group>
       ) : null}
