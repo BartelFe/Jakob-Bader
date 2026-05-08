@@ -55,12 +55,14 @@ export function MaxvorstadtMap() {
 
       {/* ─── LABELS ─────────────────────────────────────────────── */}
       <text className="label" x="184" y="12">Amalienstraße ↑</text>
-      <text className="label" x="6" y="78">Schellingstr.</text>
-      <text className="label labelAccent" x="6" y="123">Theresienstr.</text>
-      <text className="label" x="6" y="188">Gabelsbergerstr.</text>
+      <text className="label" x="6" y="76">Schellingstr.</text>
+      <text className="label labelAccent" x="6" y="121">Theresienstr.</text>
+      <text className="label" x="6" y="186">Gabelsbergerstr.</text>
 
-      <text className="label labelMain" x="48" y="190">Kunstareal</text>
-      <text className="label" x="48" y="200">Pinakotheken</text>
+      {/* Kunstareal label sits INSIDE the lower-left accented block,
+          well below the Gabelsbergerstr. street label. */}
+      <text className="label labelMain" x="48" y="246">Kunstareal</text>
+      <text className="label" x="48" y="258">Pinakotheken</text>
 
       {/* ─── PIN at JBA · Amalienstr 14a ─────────────────────────── */}
       <g className={styles.mapPin} transform="translate(175 120)">
@@ -68,7 +70,9 @@ export function MaxvorstadtMap() {
         <circle className="outer" cx="0" cy="0" r="14" />
         <circle className="inner" cx="0" cy="0" r="6" />
       </g>
-      <text className="label labelAccent" x="184" y="118">JBA · 14a</text>
+      {/* Pin label moved further right so the pulse animation (extends
+          to ~r=22 at peak) doesn't cover the leading "J". */}
+      <text className="label labelAccent" x="200" y="118">JBA · 14a</text>
 
       {/* ─── Compass rose ───────────────────────────────────────── */}
       <g transform="translate(370 32)" opacity="0.42">

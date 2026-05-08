@@ -23,7 +23,7 @@ interface HeroSceneProps {
 export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: HeroSceneProps) {
   return (
     <Canvas
-      camera={{ position: [0, 0, 12], fov: 35 }}
+      camera={{ position: [0, 0, 19], fov: 35 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       style={{ width: '100%', height: '100%', background: 'transparent' }}
