@@ -63,14 +63,41 @@
   align-items: center;
   border-bottom: 1px solid var(--line-on-deep);
   transition: padding-left var(--t-base) var(--ease-out-quart);
+  position: relative;
 }
 
 .row:hover {
   padding-left: 12px;
 }
 
+.rowNext::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 70%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  animation: nextPulse 2.4s var(--ease-out-quart) infinite;
+}
+
+@keyframes nextPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowNext::before { animation: none; opacity: 0.8; }
+}
+
 .rowPast {
-  opacity: 0.5;
+  opacity: 0.55;
+}
+
+.rowPast .speaker {
+  font-style: italic;
 }
 
 .date {
@@ -98,6 +125,73 @@
   font-family: var(--sans);
   font-size: var(--fs-body-sm);
   color: var(--paper-on-deep-soft);
+}
+
+.speakerName {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.speakerName::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t-base) var(--ease-out-quart);
+}
+
+.speakerName:hover::after {
+  transform: scaleX(1);
+}
+
+.speakerBio {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 12px);
+  width: max-content;
+  max-width: 360px;
+  padding: 16px 20px;
+  background: var(--bg-stone);
+  border: 1px solid var(--accent);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  font-weight: 300;
+  color: var(--paper-on-deep);
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity var(--t-base) var(--ease-out-quart),
+    transform var(--t-base) var(--ease-out-quart);
+  z-index: 4;
+}
+
+.speakerBio strong {
+  display: block;
+  margin-bottom: 6px;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--accent-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+}
+
+.speakerName:hover .speakerBio,
+.speakerName:focus-visible .speakerBio {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .tag {
@@ -191,6 +285,61 @@
 
 .info a {
   color: var(--accent-soft);
+}
+
+.limitGauge {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border: 1px solid var(--line-on-deep-strong);
+  background: linear-gradient(180deg, rgba(196, 78, 44, 0.04) 0%, transparent 100%);
+}
+
+.limitGaugeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+
+.limitGaugeBig {
+  font-family: var(--serif);
+  font-size: clamp(28px, 2.6vw, 36px);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent-soft);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.limitGaugeBar {
+  height: 2px;
+  background: var(--line-on-deep);
+  position: relative;
+  overflow: hidden;
+}
+
+.limitGaugeBarFill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left center;
+  animation: limitFill 3.6s var(--ease-out-quart) forwards;
+}
+
+@keyframes limitFill {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(0.78); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .limitGaugeBarFill { animation: none; transform: scaleX(0.78); }
 }
 
 @media (max-width: 1080px) {

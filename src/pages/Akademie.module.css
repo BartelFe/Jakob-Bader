@@ -33,6 +33,40 @@
   font-style: italic;
 }
 
+.viewToggle {
+  max-width: var(--max);
+  margin: 0 auto 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.viewToggleBtn {
+  padding: 10px 18px;
+  border: 1px solid var(--line-on-deep-strong);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+  border-radius: 999px;
+  transition:
+    border-color var(--t-base),
+    color var(--t-base),
+    background-color var(--t-base);
+}
+
+.viewToggleBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent-soft);
+}
+
+.viewToggleBtnActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper-on-deep);
+}
+
 .filters {
   max-width: var(--max);
   margin: 0 auto 48px;
@@ -133,6 +167,186 @@
 .listTagLive {
   border-color: var(--accent);
   color: var(--accent-soft);
+}
+
+/* ─── Venue map view ──────────────────────────────────────────── */
+.venueGrid {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 5vw, 96px);
+  align-items: start;
+  border-top: 1px solid var(--line-on-deep);
+  padding-top: clamp(32px, 4vh, 56px);
+}
+
+.venueMap {
+  position: relative;
+  background: linear-gradient(180deg, rgba(196, 78, 44, 0.04) 0%, transparent 60%);
+  border: 1px solid var(--line-on-deep);
+  padding: 24px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.venueMapSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.venueMapSvg :global(.bavaria) {
+  fill: rgba(244, 237, 224, 0.04);
+  stroke: rgba(244, 237, 224, 0.18);
+  stroke-width: 1;
+}
+
+.venueMapSvg :global(.bavariaLine) {
+  stroke: rgba(244, 237, 224, 0.18);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+
+.venueMapSvg :global(.cityLabel) {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  fill: var(--paper-on-deep-soft);
+}
+
+.venueMapSvg :global(.cityLabelMain) {
+  fill: var(--paper-on-deep);
+  font-size: 10px;
+}
+
+.venueMapSvg :global(.cityLabelAccent) {
+  fill: var(--accent);
+}
+
+.venuePinPrimary circle.outer {
+  fill: rgba(196, 78, 44, 0.18);
+}
+.venuePinPrimary circle.inner {
+  fill: var(--accent);
+}
+.venuePinPrimary circle.pulse {
+  fill: var(--accent);
+  animation: venuePulse 2.6s var(--ease-out-quart) infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.venuePinSecondary circle.outer {
+  fill: rgba(244, 237, 224, 0.12);
+}
+.venuePinSecondary circle.inner {
+  fill: var(--paper-on-deep-soft);
+}
+
+@keyframes venuePulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  80%, 100% { transform: scale(4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venuePinPrimary circle.pulse { animation: none; opacity: 0; }
+}
+
+.venueList {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.venueGroup {
+  border-bottom: 1px solid var(--line-on-deep);
+  padding-bottom: 28px;
+}
+
+.venueGroup:last-child {
+  border-bottom: 0;
+}
+
+.venueGroupHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.venueName {
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 400;
+}
+
+.venueNameAccent {
+  color: var(--accent-soft);
+}
+
+.venueCount {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+
+.venueAddress {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+  margin-bottom: 14px;
+}
+
+.venueEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.venueEvent {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  font-size: var(--fs-body-sm);
+  line-height: 1.4;
+}
+
+.venueEventDate {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+  min-width: 90px;
+}
+
+.venueEventTitle {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--paper-on-deep);
+  text-decoration: none;
+}
+
+.venueEventTitle:hover {
+  color: var(--accent-soft);
+}
+
+@media (max-width: 1080px) {
+  .venueGrid {
+    grid-template-columns: 1fr;
+  }
+  .venueMap {
+    aspect-ratio: 4/3;
+  }
 }
 
 @media (max-width: 880px) {

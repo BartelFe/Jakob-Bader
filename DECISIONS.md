@@ -6,6 +6,28 @@ Newest entries on top.
 
 ---
 
+## D-016 · Maxvorstadt + Bayern maps as inline SVG, not Mapbox/Leaflet
+
+**Phase:** 4 · **Decision:** Both the Dialog-section Maxvorstadt block and the Akademie-page Bayern silhouette are hand-drawn inline SVGs (~150 lines each), not real maps backed by Mapbox/Leaflet/OpenStreetMap.
+
+**Why:** A real map of central Munich + Heidelberg would require:
+- ~150kB of map-tile JS or 50kB of vector tiles
+- An API key with usage cap considerations
+- Privacy implications (third-party tile-server requests)
+- Visual style that fights the editorial design
+
+The schematic SVGs are ~3kB each, fully on-brand (terracotta accents, mono labels, Cormorant city names), and the brief calls them "Stadtkarten-**Auszug**" — abstract, not navigational. If Felix wants real-map fidelity later, it's a Phase 6 swap.
+
+---
+
+## D-015 · No Calendly embed in Dialog
+
+**Phase:** 4 · **Decision:** Two CTAs only — mailto:Erstgespräch + /akademie. No Calendly/Cal.com booking embed.
+
+**Why:** Felix confirmed "default mailto, kein Calendly" for Phase 4. Brief §7.6 calls Calendly "optional, falls Bader das will" — defaulting off is honest until Bader says otherwise. Adding it later is a 10-line drop-in.
+
+---
+
 ## D-014 · P48 sticky-stage layout, not in-flow 3D
 
 **Phase:** 3 · **Decision:** P48 detail page uses a `position: sticky; height: 100vh` 3D stage, with three milestone slabs scrolling **over** it (z-index layering). Each milestone is one viewport tall, drives the same single `progress` 0..1 value, and the scene re-orchestrates inside the sticky frame.

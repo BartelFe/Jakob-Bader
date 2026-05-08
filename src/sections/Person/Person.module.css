@@ -108,6 +108,100 @@
   color: var(--ink-soft);
 }
 
+/* ─── Kanzler micro-timeline (typographic, no images) ─────────── */
+.kanzler {
+  margin-top: clamp(80px, 10vh, 140px);
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 2.4fr;
+  gap: clamp(40px, 5vw, 96px);
+  align-items: start;
+  border-top: 1px solid var(--line-on-paper-strong);
+  padding-top: clamp(48px, 6vh, 96px);
+}
+
+.kanzlerLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.kanzlerLabel strong {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.kanzlerSub {
+  display: block;
+  margin-top: 18px;
+  font-family: var(--sans);
+  font-size: var(--fs-body-sm);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-soft);
+  max-width: 320px;
+  line-height: 1.55;
+}
+
+.kanzlerTimeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.kanzlerRow {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 32px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line-on-paper);
+  align-items: baseline;
+}
+
+.kanzlerRow:last-child {
+  border-bottom: 0;
+}
+
+.kanzlerYear {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.kanzlerLine {
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.3;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.kanzlerLineEm {
+  font-style: italic;
+}
+
+.kanzlerTag {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
 /* Pull-quote spread */
 .second {
   margin-top: clamp(80px, 10vh, 140px);
@@ -117,6 +211,7 @@
   max-width: var(--max);
   margin-inline: auto;
   align-items: center;
+  position: relative;
 }
 
 .secondText {
@@ -125,11 +220,38 @@
   line-height: 1.2;
   font-weight: 300;
   font-style: italic;
+  position: relative;
+  padding-left: clamp(24px, 3vw, 56px);
+}
+
+.secondText::before {
+  content: '"';
+  position: absolute;
+  left: -8px;
+  top: -32px;
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: clamp(120px, 16vw, 240px);
+  line-height: 0.9;
+  color: var(--accent);
+  opacity: 0.36;
+  font-weight: 300;
 }
 
 .secondText strong {
   font-weight: 500;
   font-style: normal;
+}
+
+.secondCite {
+  display: block;
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  font-style: normal;
+  color: var(--ink-soft);
 }
 
 .secondImg {
@@ -143,6 +265,120 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* ─── Memberships type-lockup ──────────────────────────────────── */
+.memberships {
+  margin-top: clamp(80px, 10vh, 140px);
+  max-width: var(--max);
+  margin-inline: auto;
+  border-top: 1px solid var(--line-on-paper-strong);
+  padding-top: clamp(48px, 6vh, 96px);
+}
+
+.membershipsLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 32px;
+}
+
+.membershipsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--line-on-paper);
+}
+
+.membership {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  padding: 28px 24px;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line-on-paper);
+  border-right: 1px solid var(--line-on-paper);
+  transition: background-color var(--t-base);
+}
+
+.membership:hover {
+  background: var(--bg-paper-warm);
+}
+
+.membershipCode {
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 400;
+}
+
+.membershipDetail {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ─── Cross-links (Brillux + Fassadenpreis) ─────────────────────── */
+.crossLinks {
+  margin-top: clamp(48px, 6vh, 96px);
+  max-width: var(--max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(20px, 2.4vw, 40px);
+}
+
+.crossLink {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 28px 28px;
+  border: 1px solid var(--line-on-paper);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    background-color var(--t-base),
+    border-color var(--t-base);
+}
+
+.crossLink:hover,
+.crossLink:focus-visible {
+  background: var(--bg-paper-warm);
+  border-color: var(--accent);
+}
+
+.crossLinkLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.crossLinkTitle {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.crossLinkNote {
+  font-family: var(--sans);
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.crossLinkArrow {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent-soft);
 }
 
 /* Lineage wall */

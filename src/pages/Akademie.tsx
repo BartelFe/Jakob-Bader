@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AKADEMIE_EVENTS, type AkademieTopic } from '@/data/akademie';
+import { AkademieVenueMap } from './AkademieVenueMap';
 import styles from './Akademie.module.css';
 
 type Filter = 'all' | 'upcoming' | 'past' | 'guest' | AkademieTopic;
+type View = 'list' | 'map';
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: 'all', label: 'Alle' },
@@ -18,6 +20,7 @@ const FILTERS: { id: Filter; label: string }[] = [
 
 export function Akademie() {
   const [filter, setFilter] = useState<Filter>('all');
+  const [view, setView] = useState<View>('list');
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
@@ -46,21 +49,44 @@ export function Akademie() {
         </h1>
       </header>
 
-      <div className={styles.filters} role="tablist" aria-label="Akademie-Filter">
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            className={`${styles.filterBtn} ${filter === f.id ? styles.filterBtnActive : ''}`}
-            onClick={() => setFilter(f.id)}
-            role="tab"
-            aria-selected={filter === f.id}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className={styles.viewToggle} role="tablist" aria-label="Ansicht wählen">
+        <button
+          type="button"
+          className={`${styles.viewToggleBtn} ${view === 'list' ? styles.viewToggleBtnActive : ''}`}
+          onClick={() => setView('list')}
+          role="tab"
+          aria-selected={view === 'list'}
+        >
+          Liste
+        </button>
+        <button
+          type="button"
+          className={`${styles.viewToggleBtn} ${view === 'map' ? styles.viewToggleBtnActive : ''}`}
+          onClick={() => setView('map')}
+          role="tab"
+          aria-selected={view === 'map'}
+        >
+          Orte
+        </button>
       </div>
 
-      <div className={styles.list}>
+      {view === 'list' ? (
+        <>
+          <div className={styles.filters} role="tablist" aria-label="Akademie-Filter">
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                className={`${styles.filterBtn} ${filter === f.id ? styles.filterBtnActive : ''}`}
+                onClick={() => setFilter(f.id)}
+                role="tab"
+                aria-selected={filter === f.id}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.list}>
         {filtered.map((event) => {
           const isPast = event.dateISO < today;
           const isNext = !isPast && event === filtered.find((e) => e.dateISO >= today);
@@ -84,7 +110,11 @@ export function Akademie() {
             </Link>
           );
         })}
-      </div>
+          </div>
+        </>
+      ) : (
+        <AkademieVenueMap />
+      )}
     </article>
   );
 }

@@ -43,3 +43,48 @@ export const MEMBERSHIPS = [
   { code: 'Verband für Bauen im Bestand', detail: null },
   { code: 'Fassadenpreis München 2025', detail: 'P48 Doppelzwiebel' },
 ];
+
+/**
+ * Kanzler-Story — typographic micro-timeline of the Kulturkiosk Kanzler
+ * (2000–2002), Bader's first office and political salon. Per Felix's
+ * confirmation, no photographs available — typographic treatment only.
+ */
+export const KANZLER_TIMELINE: { year: string; tag: string; lead: string; em: string }[] = [
+  {
+    year: '2000',
+    tag: 'Diplom',
+    lead: 'TU München, bei',
+    em: 'Victor López Cotelo',
+  },
+  {
+    year: '2001',
+    tag: 'Behelfsbau',
+    lead: 'Nachkriegs-Kiosk gegenüber der TU wird zum',
+    em: 'Kulturkiosk Kanzler',
+  },
+  {
+    year: '2001 / 02',
+    tag: 'Salon',
+    lead: 'Jeden Freitagabend Vernissage, Lesung, Theater —',
+    em: 'aufsehenerregend',
+  },
+  {
+    year: '2002',
+    tag: 'Bürogründung',
+    lead: 'JBA in der',
+    em: 'Maxvorstadt',
+  },
+];
+
+export const PERSON_CROSS_LINKS = {
+  brillux: {
+    label: 'Brillux Homestory',
+    note: 'Eine Wohnung als persönliche Ausstellung',
+    href: 'https://www.brillux.de/farbe-raum/homestories/jakob-bader/',
+  },
+  fassadenpreis: {
+    label: 'Fassadenpreis München 2025',
+    note: 'Broschüre der Stadt München',
+    href: 'https://stadt.muenchen.de/dam/jcr:3f23a516-b1de-4074-b014-f5a259a98db2/fassadenpreis2025__broschuere_.pdf',
+  },
+} as const;
