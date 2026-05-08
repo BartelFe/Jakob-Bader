@@ -62,17 +62,18 @@ export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: 
 /**
  * Three-phase camera trajectory tied to morph progress 0..1:
  *
- *   morph 0.00–0.40  — wide observation. Camera at (0, 0, 22), looks at center.
- *                      User reads the headline; the doppelzwiebel sits passive.
- *   morph 0.40–0.75  — recognition. Camera lerps to (0, 1.5, 14) looking
- *                      slightly up. The form starts to fill the frame.
- *   morph 0.75–1.00  — dive into the spire. Camera lerps to (0, 4.2, 4.5)
- *                      looking at world-y=5.4 — i.e. at the cross at the
- *                      tip of the helm. The spire fills the frame; the
- *                      cross looms.
+ *   morph 0.00–0.40  — wide observation @ (0, 0, 20), looks at center.
+ *   morph 0.40–0.75  — recognition lerp to (0, 1.5, 13) looking slightly
+ *                      up — the helm fills more of the frame.
+ *   morph 0.75–1.00  — dive lerp to (0, 2.8, 8) looking at (0, 4.5, 0).
+ *                      Frame composition: upper bulb + lantern + spire +
+ *                      cross all visible. Felt cinematic without the
+ *                      camera being so close that we lose the silhouette.
  *
- * Lerp rate per frame is a soft 0.06 so movement feels weighty rather
- * than snappy — important since this maps to the user's scroll velocity.
+ * v2 review (post-video): Phase 3 anchor was z=4.5 which zoomed the
+ * camera too close to the spire — at the climax the lathe filled almost
+ * none of the frame and we saw a tiny line. v3 pulls back to z=8 so the
+ * climax shows the helm's full upper portion in glory.
  */
 function DiveCamera({ morph }: { morph: number }) {
   const { camera } = useThree();
@@ -81,35 +82,22 @@ function DiveCamera({ morph }: { morph: number }) {
   const targetLook = useMemo(() => new Vector3(), []);
 
   useFrame(() => {
-    // Phase weights via two clamped lerps
     const wRecognize = MathUtils.clamp((morph - 0.40) / 0.35, 0, 1);
     const wDive = MathUtils.clamp((morph - 0.75) / 0.25, 0, 1);
 
-    // Camera position interpolation
-    // Phase 1 anchor: (0, 0, 22)
-    // Phase 2 anchor: (0, 1.5, 14)
-    // Phase 3 anchor: (0, 4.2, 4.5)
+    // Phase 1 anchor: (0, 0, 20)
+    // Phase 2 anchor: (0, 1.5, 13)
+    // Phase 3 anchor: (0, 2.8, 8)
     const px = 0;
-    const py =
-      0 +
-      (1.5 - 0) * wRecognize +
-      (4.2 - 1.5) * wDive;
-    const pz =
-      22 +
-      (14 - 22) * wRecognize +
-      (4.5 - 14) * wDive;
-
+    const py = 0 + (1.5 - 0) * wRecognize + (2.8 - 1.5) * wDive;
+    const pz = 20 + (13 - 20) * wRecognize + (8 - 13) * wDive;
     targetPos.set(px, py, pz);
 
-    // LookAt interpolation
     // Phase 1 look: (0, 0, 0)
     // Phase 2 look: (0, 1.0, 0)
-    // Phase 3 look: (0, 5.4, 0) — at the cross
+    // Phase 3 look: (0, 4.5, 0) — at upper bulb / spire base
     const lx = 0;
-    const ly =
-      0 +
-      (1.0 - 0) * wRecognize +
-      (5.4 - 1.0) * wDive;
+    const ly = 0 + (1.0 - 0) * wRecognize + (4.5 - 1.0) * wDive;
     targetLook.set(lx, ly, 0);
 
     camera.position.lerp(targetPos, 0.08);

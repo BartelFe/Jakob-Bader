@@ -1,18 +1,16 @@
 /**
- * Doppelzwiebel — profile math.
+ * Doppelzwiebel — profile math (v3, post-video-review).
  *
- * Three keyframe states represent the historical reduction story:
- *   1. cone          — 1924+ post-storm reduction (plump cone)
- *   2. onion         — mid-historical single-bulb form
- *   3. doppelzwiebel — 1890 original / 2025 reconstruction (Bader)
+ * Felix's reference photo shows a Munich baroque double-onion helm with:
+ *   • Lower bulb roughly 1:1 height-to-width (round, not tall)
+ *   • Lantern (small drum with arched openings) between bulbs
+ *   • Upper bulb similar 1:1 aspect, smaller diameter than lower
+ *   • Spire needle ~25-30% of total height
  *
- * All profiles share the same Y-sample grid (NUM_POINTS evenly spaced
- * from base y=0 to top y=HEIGHT) so vertex-by-vertex lerp is clean.
- *
- * The bulb shape uses a control-point onion curve: rapid expansion at
- * the bottom, plateau in the middle, cubic-eased pinch at the top.
- * That gives the proper "balloon-and-stem" silhouette of a real Munich
- * baroque helm, not a smooth sine wave.
+ * v2 used 33%/28% bulb-height fractions which produced 2.7:1 aspect
+ * (missile-shaped). v3 compacts the bulbs to ~22%/19% height and bumps
+ * the max radii so the bulbs read as round/balloon-shaped from any
+ * camera angle.
  *
  * NOTE: This module is intentionally three.js-free so it can ship in
  * the main bundle (used by SVG fallback + loader). Consumers that need
@@ -30,34 +28,31 @@ export type ProfilePoint = readonly [number, number];
 /**
  * Onion-bulb radius at parametric t ∈ [0, 1] (0 = base of bulb, 1 = top).
  *
- * Three regions:
- *   0.00–0.22  — rapid expansion from baseR to maxR (sin ease-out)
- *   0.22–0.50  — plateau near maxR with a slight 5% rise → fall
- *   0.50–1.00  — cubic-eased pinch from maxR down to topR
+ * Three regions tuned for proper bulb shape:
+ *   0.00–0.18  — very rapid expansion to maxR (sin ease-out, sharp shoulders)
+ *   0.18–0.45  — wide plateau near maxR (slight 3% bulge in middle)
+ *   0.45–1.00  — cubic-eased pinch from maxR to topR
  *
- * Visual: classic balloon shape. Tight at the bottom, fat at the
- * shoulders, gracefully pinched at the top before whatever is next
- * (lantern or spire).
+ * Sharp shoulders + wide plateau = visibly round bulb, not tapered.
  */
 function bulb(t: number, baseR: number, maxR: number, topR: number): number {
   if (t <= 0) return baseR;
   if (t >= 1) return topR;
 
-  if (t < 0.22) {
-    const local = t / 0.22;
+  if (t < 0.18) {
+    const local = t / 0.18;
     return baseR + (maxR - baseR) * Math.sin((local * Math.PI) / 2);
   }
 
-  if (t < 0.50) {
-    // Plateau with subtle bulge — peaks at 1.04 * maxR around t=0.36
-    const local = (t - 0.22) / 0.28;
-    const bump = Math.sin(local * Math.PI) * 0.04;
+  if (t < 0.45) {
+    const local = (t - 0.18) / 0.27;
+    const bump = Math.sin(local * Math.PI) * 0.03;
     return maxR * (1 + bump);
   }
 
-  // Cubic ease-in-out for the pinch — accelerates the taper near the top
-  const local = (t - 0.5) / 0.5;
-  const eased = local * local * (3 - 2 * local); // smoothstep
+  // Cubic-eased pinch — accelerates toward the top
+  const local = (t - 0.45) / 0.55;
+  const eased = local * local * (3 - 2 * local);
   return maxR + (topR - maxR) * eased;
 }
 
@@ -65,79 +60,97 @@ function bulb(t: number, baseR: number, maxR: number, topR: number): number {
 function doppelzwiebelRadius(t: number): number {
   if (t < 0.001 || t > 0.999) return 0.001;
 
-  // Tambour — octagonal base with windows (rendered as cylinder)
-  if (t < 0.10) return 0.78;
+  // Tambour — octagonal base with windows
+  if (t < 0.10) return 0.85;
 
-  // Cornice — small flare/pinch where the bulb springs
+  // Cornice — pinch where the bulb springs from
   if (t < 0.13) {
     const local = (t - 0.10) / 0.03;
-    return 0.78 + (0.50 - 0.78) * local;
+    return 0.85 + (0.55 - 0.85) * local;
   }
 
-  // LOWER BULB — the big one, 33% of total height
-  if (t < 0.46) {
-    const local = (t - 0.13) / 0.33;
-    return bulb(local, 0.50, 1.05, 0.30);
+  // LOWER BULB — large, fat, ~22% of height. Aspect ~1.1:1.
+  // Width = 2 * 1.20 = 2.40, height = 0.22 * 10 = 2.2
+  if (t < 0.35) {
+    const local = (t - 0.13) / 0.22;
+    return bulb(local, 0.55, 1.20, 0.32);
   }
 
-  // LANTERN — small drum with arched openings (cylindrical approximation)
-  if (t < 0.56) return 0.42;
+  // LANTERN — drum with arched openings, ~10% of height
+  if (t < 0.45) return 0.42;
 
-  // UPPER BULB — smaller, ~30% of height, sits on the lantern
-  if (t < 0.84) {
-    const local = (t - 0.56) / 0.28;
-    return bulb(local, 0.42, 0.60, 0.10);
+  // Cornice into upper bulb
+  if (t < 0.48) {
+    const local = (t - 0.45) / 0.03;
+    return 0.42 + (0.45 - 0.42) * local;
   }
 
-  // SPIRE — thin needle to the cross (cross itself rendered as separate mesh)
-  const local = (t - 0.84) / 0.16;
-  return 0.06 * Math.pow(1 - local, 2.4);
+  // UPPER BULB — smaller but similarly round, ~19% of height
+  // Width = 2 * 0.78 = 1.56, height = 0.19 * 10 = 1.9. Aspect ~1.2:1.
+  if (t < 0.67) {
+    const local = (t - 0.48) / 0.19;
+    return bulb(local, 0.45, 0.78, 0.18);
+  }
+
+  // Spire base — short collar before the needle
+  if (t < 0.72) {
+    const local = (t - 0.67) / 0.05;
+    return 0.18 + (0.10 - 0.18) * local;
+  }
+
+  // SPIRE — thin needle to the cross (~28% of height)
+  const local = (t - 0.72) / 0.28;
+  return 0.10 * Math.pow(1 - local, 2.2);
 }
 
 /* ─── State 2: Onion (mid-historical, single bulb) ─────────────────── */
 function onionRadius(t: number): number {
   if (t < 0.001 || t > 0.999) return 0.001;
 
-  // Tambour same as doppelzwiebel
-  if (t < 0.10) return 0.78;
+  if (t < 0.10) return 0.85;
 
-  // Cornice
   if (t < 0.13) {
     const local = (t - 0.10) / 0.03;
-    return 0.78 + (0.50 - 0.78) * local;
+    return 0.85 + (0.55 - 0.85) * local;
   }
 
-  // SINGLE BULB — fills the bulb-and-lantern range with one larger onion
-  if (t < 0.78) {
-    const local = (t - 0.13) / 0.65;
-    return bulb(local, 0.50, 0.92, 0.10);
+  // SINGLE BULB — slightly larger than doppelzwiebel's lower, ~38% of height
+  // Width = 2 * 1.10 = 2.20, height = 0.38 * 10 = 3.8. Aspect ~1.7:1
+  // (taller than ideal but historical onions ARE more elongated when they're
+  //  the only bulb — they have to span the visual mass alone).
+  if (t < 0.51) {
+    const local = (t - 0.13) / 0.38;
+    return bulb(local, 0.55, 1.10, 0.14);
   }
 
-  // Short spire
-  const local = (t - 0.78) / 0.22;
-  return 0.06 * Math.pow(1 - local, 2.4);
+  // Spire base
+  if (t < 0.56) {
+    const local = (t - 0.51) / 0.05;
+    return 0.14 + (0.10 - 0.14) * local;
+  }
+
+  // Spire (~44% of height — when there's only one bulb the spire fills more space)
+  const local = (t - 0.56) / 0.44;
+  return 0.10 * Math.pow(1 - local, 2.2);
 }
 
 /* ─── State 1: Cone (1924+ pragmatic reduction) ────────────────────── */
 function coneRadius(t: number): number {
   if (t < 0.001 || t > 0.999) return 0.001;
 
-  // Tambour same
-  if (t < 0.10) return 0.78;
+  if (t < 0.10) return 0.85;
 
-  // Cornice — less aggressive flare for cone
   if (t < 0.13) {
     const local = (t - 0.10) / 0.03;
-    return 0.78 + (0.65 - 0.78) * local;
+    return 0.85 + (0.72 - 0.85) * local;
   }
 
-  // Plain conical roof — short, stubby. Period of reduction was practical.
-  if (t < 0.55) {
-    const local = (t - 0.13) / 0.42;
-    return 0.65 * (1 - Math.pow(local, 0.85));
+  // Plain conical roof — short, stubby pyramid
+  if (t < 0.42) {
+    const local = (t - 0.13) / 0.29;
+    return 0.72 * (1 - Math.pow(local, 0.85));
   }
 
-  // Nothing above — just a tiny apex
   return 0.001;
 }
 
@@ -191,9 +204,8 @@ export function profileToSvgPath(state: ProfileState, width = 200, height = 260)
   const points = getProfile(state, NUM_POINTS);
   const cx = width / 2;
   const yScale = height / HEIGHT;
-  const xScale = width / 2.4;
+  const xScale = width / 2.6;
 
-  // Right side: top → bottom (SVG y inverted)
   let d = '';
   const ordered = [...points].sort((a, b) => b[1] - a[1]);
   ordered.forEach((p, i) => {
@@ -201,7 +213,6 @@ export function profileToSvgPath(state: ProfileState, width = 200, height = 260)
     const sy = (HEIGHT - p[1]) * yScale;
     d += i === 0 ? `M ${sx.toFixed(2)} ${sy.toFixed(2)}` : ` L ${sx.toFixed(2)} ${sy.toFixed(2)}`;
   });
-  // Mirror left side: bottom → top
   [...points].forEach((p) => {
     const sx = cx - p[0] * xScale;
     const sy = (HEIGHT - p[1]) * yScale;

@@ -31,13 +31,16 @@
   letter-spacing: -0.04em;
   color: var(--accent-soft);
   display: block;
-  /* Entrance: starts oversized + dim + blurred, settles to 1× as the
+  /* Entrance: starts oversized + slightly dim, settles to 1× as the
      section enters the viewport. Driven by --enter-p (0..1) on the
-     parent .diagnose section, set imperatively in Diagnose.tsx. */
-  transform: scale(calc(1.4 - 0.4 * var(--enter-p, 1)));
+     parent .diagnose section, set imperatively in Diagnose.tsx.
+     v2: less dim, less blur — the HeroExitVeil already darkens this
+     moment, so combining heavy entrance + heavy veil made the 82
+     unreadable in the recorded walkthrough. */
+  transform: scale(calc(1.25 - 0.25 * var(--enter-p, 1)));
   transform-origin: left center;
-  opacity: calc(0.3 + 0.7 * var(--enter-p, 1));
-  filter: blur(calc((1 - var(--enter-p, 1)) * 12px));
+  opacity: calc(0.55 + 0.45 * var(--enter-p, 1));
+  filter: blur(calc((1 - var(--enter-p, 1)) * 5px));
   transition:
     transform 0.18s var(--ease-out-quart),
     opacity 0.18s var(--ease-out-quart),

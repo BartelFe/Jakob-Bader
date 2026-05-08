@@ -3,8 +3,9 @@ import { useLocation } from 'react-router-dom';
 
 import styles from './HeroExitVeil.module.css';
 
-const FADE_RANGE_VH = 0.45; // veil window: ±45% of viewport height around hero.bottom = 0
-const CORE_THRESHOLD = 0.7; // terracotta core appears once main opacity > 0.7
+const FADE_RANGE_VH = 0.35; // veil window: ±35% of viewport height around hero.bottom = 0
+const PEAK_OPACITY = 0.62; // max veil opacity — Diagnose still readable underneath
+const CORE_THRESHOLD = 0.5; // terracotta core appears once main opacity > 0.5
 
 /**
  * Triangle-wave veil that flashes at the moment the hero finishes
@@ -52,10 +53,10 @@ export function HeroExitVeil() {
 
       let opacity = 0;
       if (absDist < range) {
-        // Triangle wave: peak at dist=0, linear falloff
+        // Triangle wave clamped to PEAK_OPACITY so the section beneath
+        // (Diagnose) stays readable through the veil.
         const t = 1 - absDist / range;
-        // Soften the curve a touch with a power so peak feels punchier
-        opacity = Math.pow(t, 0.85);
+        opacity = Math.pow(t, 0.85) * PEAK_OPACITY;
       }
 
       veil.style.opacity = opacity.toFixed(3);
