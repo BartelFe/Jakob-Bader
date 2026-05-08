@@ -14,47 +14,53 @@ interface P48SceneProps {
 /**
  * P48 — own scene per brief §7.3.
  *
- * Plan-zu-Volumen choreography:
- *   progress 0.00–0.35 — building extrudes upward (wings + tower)
- *   progress 0.35–0.70 — tambour + doppelzwiebel scale in atop the tower
- *   progress 0.70–1.00 — camera tilts oblique, hotspots fade in
+ * v3 rebuild — based on real-building photos in /public/projekte/p48/:
+ *   - L-shape footprint with the OCTAGONAL TOWER projecting upward
+ *     from the bend (matches the floor plan where the Turmstube sits
+ *     at the corner)
+ *   - Hipped slate roofs on both wings (4-sided pyramid approximation)
+ *   - Tower has its OWN small hipped roof (octagonal pyramid) before
+ *     the lantern, just like the real one
+ *   - Octagonal LANTERN in cream plaster with four arched window
+ *     openings inset
+ *   - Slim terracotta cornice between lantern and helm
+ *   - Doppelzwiebel uses the existing profile (lower bulb, neck,
+ *     upper bulb, spire — see profile.ts)
  *
- * Coordinate system: corner of the L-shape sits near origin.
- *   Wing A runs along +X (8 long, 3 deep)
- *   Wing B runs along -Z (5 long, 3 wide)
- *   Tower sits at the inner corner (2.4 × 2.4)
+ * Coordinate system (WORLD):
+ *   Wing A — long facade running east-west, center (5, h/2, 1)
+ *   Wing B — short facade running north-south, center (1.75, h/2, -2.5)
+ *   Tower  — octagonal at the L's outer corner (3.5, t/2, -0.75)
  */
 export function P48Scene({ progress = 0 }: P48SceneProps) {
   const isMobile = useIsMobile();
 
   return (
     <Canvas
-      camera={{ position: [0, 14, 14], fov: 38 }}
+      camera={{ position: [2, 18, 0.5], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       shadows
       style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
-      <ambientLight intensity={0.42} color="#fff5e8" />
+      <ambientLight intensity={0.45} color="#fff5e8" />
       <directionalLight
-        position={[10, 16, 8]}
+        position={[12, 18, 8]}
         color="#ffe6c0"
-        intensity={1.6}
+        intensity={1.5}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
-        shadow-camera-left={-12}
-        shadow-camera-right={12}
-        shadow-camera-top={12}
-        shadow-camera-bottom={-12}
+        shadow-camera-left={-14}
+        shadow-camera-right={14}
+        shadow-camera-top={14}
+        shadow-camera-bottom={-14}
         shadow-camera-near={1}
-        shadow-camera-far={50}
+        shadow-camera-far={60}
       />
-      <directionalLight position={[-6, 4, -6]} color="#a0b8d0" intensity={0.55} />
-      <pointLight position={[3, 10, 8]} color="#ffd9a8" intensity={0.5} />
+      <directionalLight position={[-8, 6, -8]} color="#a0b8d0" intensity={0.45} />
+      <pointLight position={[3, 12, 8]} color="#ffd9a8" intensity={0.45} />
 
-      {/* HDRI environment for material reflections — 'apartment' gives a
-          warm interior feel that flatters the stone facade. */}
       <Suspense fallback={null}>
         <Environment preset="apartment" background={false} environmentIntensity={0.4} />
       </Suspense>
@@ -67,21 +73,22 @@ export function P48Scene({ progress = 0 }: P48SceneProps) {
 }
 
 /**
- * Camera lerps from top-down (progress=0) to oblique (progress=1).
- * Stops orbiting at progress=1 — replaced by a slow lateral drift.
+ * Camera lerps from top-down (progress=0) to oblique street-view
+ * (progress=1). Lookat tracks the building's mass-center, then drifts
+ * upward to frame the helm at the climax.
  */
 function CameraRig({ progress }: { progress: number }) {
   useFrame((state) => {
     const cam = state.camera;
-    // Top-down position: y high, z near 0
-    // Oblique: y moderate, z back
-    const targetY = MathUtils.lerp(18, 6.5, progress);
-    const targetZ = MathUtils.lerp(0.5, 14, progress);
-    const targetX = MathUtils.lerp(2, 6, progress) + Math.sin(state.clock.elapsedTime * 0.18) * progress * 0.6;
+    const targetY = MathUtils.lerp(22, 8.5, progress);
+    const targetZ = MathUtils.lerp(0.5, 16, progress);
+    const targetX =
+      MathUtils.lerp(2, 7, progress) +
+      Math.sin(state.clock.elapsedTime * 0.18) * progress * 0.6;
     cam.position.x = MathUtils.lerp(cam.position.x, targetX, 0.05);
     cam.position.y = MathUtils.lerp(cam.position.y, targetY, 0.05);
     cam.position.z = MathUtils.lerp(cam.position.z, targetZ, 0.05);
-    cam.lookAt(2, MathUtils.lerp(0, 4, progress), 0);
+    cam.lookAt(2.5, MathUtils.lerp(0, 6, progress), 0);
   });
   return null;
 }
@@ -91,108 +98,200 @@ interface BuildingProps {
   isMobile: boolean;
 }
 
+/* ─── Color palette (matching real-building photos) ────────────────── */
+const FACADE_LIGHT = '#ede0c8'; // cream plaster — matches the photo
+const FACADE_LANTERN = '#f0e6d2'; // lantern is whiter than wing facade
+const ROOF_SLATE = '#2c2c30'; // very dark slate, slight blue
+const CORNICE_TERRACOTTA = '#c44e2c';
+const CORNICE_STONE = '#d6c9b0'; // lighter stone band
+const ARCH_DARK = '#1a1612'; // dark to suggest the arched window openings
+
 function Building({ progress, isMobile }: BuildingProps) {
   const groupRef = useRef<Group>(null);
 
-  // Choreography: split progress into named phases
-  const buildPhase = MathUtils.clamp(progress / 0.35, 0, 1); // 0..0.35
-  const helmPhase = MathUtils.clamp((progress - 0.35) / 0.35, 0, 1); // 0.35..0.70
-  const hotspotPhase = MathUtils.clamp((progress - 0.7) / 0.3, 0, 1); // 0.7..1.0
+  const buildPhase = MathUtils.clamp(progress / 0.35, 0, 1);
+  const helmPhase = MathUtils.clamp((progress - 0.35) / 0.35, 0, 1);
+  const hotspotPhase = MathUtils.clamp((progress - 0.7) / 0.3, 0, 1);
 
-  const wingHeight = buildPhase * 4.4;
-  const towerHeight = buildPhase * 6.4;
-  // v2: bumped from 0.32 → 0.50 so the helm reads as the building's
-  // crowning gesture rather than a tiny finial.
+  // Heights tuned to match Munich Gründerzeit proportions: ~5 floors
+  // visible above ground + tower extending ~2 floors above main roof.
+  const wingHeight = buildPhase * 5.0;
+  const towerHeight = buildPhase * 7.0;
   const helmScale = helmPhase * 0.50;
 
-  // Slow Y rotation of the whole scene only after assembly is "done"
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-    groupRef.current.rotation.y += 0.05 * progress * delta;
+    groupRef.current.rotation.y += 0.04 * progress * delta;
   });
+
+  // Y-positions for stacked elements (depend on towerHeight)
+  const towerRoofY = towerHeight + 0.35;
+  const lanternBaseY = towerHeight + 0.75;
+  const lanternTopY = lanternBaseY + 0.95;
+  const helmBaseY = lanternTopY + 0.05;
 
   return (
     <group ref={groupRef}>
-      {/* Ground reference — subtle disc that the building sits on */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2, -0.01, -1.5]} receiveShadow>
-        <ringGeometry args={[0, 14, 64]} />
+      {/* Ground reference — subtle disc beneath the building */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[3, -0.01, -1]} receiveShadow>
+        <ringGeometry args={[0, 16, 64]} />
         <meshBasicMaterial color="#0d0d0c" transparent opacity={0.42} />
       </mesh>
 
-      {/* Wing A — runs along +X */}
+      {/* ─── Wing A — long horizontal block ─────────────────────────── */}
       {wingHeight > 0.001 ? (
-        <mesh position={[4, wingHeight / 2, 0.5]} castShadow receiveShadow>
-          <boxGeometry args={[7.2, wingHeight, 3.2]} />
-          <meshStandardMaterial color="#d8cab1" roughness={0.78} metalness={0.0} />
+        <mesh position={[5, wingHeight / 2, 1]} castShadow receiveShadow>
+          <boxGeometry args={[9, wingHeight, 3.5]} />
+          <meshStandardMaterial color={FACADE_LIGHT} roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
-      {/* Wing B — runs along -Z */}
+      {/* ─── Wing B — perpendicular block ───────────────────────────── */}
       {wingHeight > 0.001 ? (
-        <mesh position={[-0.4, wingHeight / 2, -3]} castShadow receiveShadow>
-          <boxGeometry args={[3, wingHeight, 5.2]} />
-          <meshStandardMaterial color="#cfc0a6" roughness={0.78} metalness={0.0} />
+        <mesh position={[1.75, wingHeight / 2, -2.5]} castShadow receiveShadow>
+          <boxGeometry args={[3.5, wingHeight, 6.5]} />
+          <meshStandardMaterial color={FACADE_LIGHT} roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
-      {/* Tower at the inner corner — taller than wings */}
-      {towerHeight > 0.001 ? (
-        <mesh position={[0.6, towerHeight / 2, 0.6]} castShadow receiveShadow>
-          <boxGeometry args={[2.6, towerHeight, 2.6]} />
-          <meshStandardMaterial color="#c8b89d" roughness={0.78} metalness={0.0} />
-        </mesh>
-      ) : null}
-
-      {/* Cornice ring at top of wings — slim terracotta cornette */}
-      {wingHeight > 1 ? (
+      {/* ─── Floor cornice bands — slim stone strips at floor levels ── */}
+      {wingHeight > 1.5 ? (
         <>
-          <mesh position={[4, wingHeight + 0.04, 0.5]}>
-            <boxGeometry args={[7.4, 0.10, 3.4]} />
-            <meshStandardMaterial color="#c44e2c" roughness={0.55} metalness={0.05} />
+          {/* Wing A bands at heights ~h*0.4 and ~h*0.75 */}
+          <mesh position={[5, wingHeight * 0.4, 1]}>
+            <boxGeometry args={[9.04, 0.06, 3.54]} />
+            <meshStandardMaterial color={CORNICE_STONE} roughness={0.7} metalness={0.0} />
           </mesh>
-          <mesh position={[-0.4, wingHeight + 0.04, -3]}>
-            <boxGeometry args={[3.2, 0.10, 5.4]} />
-            <meshStandardMaterial color="#c44e2c" roughness={0.55} metalness={0.05} />
+          <mesh position={[5, wingHeight * 0.75, 1]}>
+            <boxGeometry args={[9.04, 0.06, 3.54]} />
+            <meshStandardMaterial color={CORNICE_STONE} roughness={0.7} metalness={0.0} />
+          </mesh>
+          <mesh position={[1.75, wingHeight * 0.4, -2.5]}>
+            <boxGeometry args={[3.54, 0.06, 6.54]} />
+            <meshStandardMaterial color={CORNICE_STONE} roughness={0.7} metalness={0.0} />
+          </mesh>
+          <mesh position={[1.75, wingHeight * 0.75, -2.5]}>
+            <boxGeometry args={[3.54, 0.06, 6.54]} />
+            <meshStandardMaterial color={CORNICE_STONE} roughness={0.7} metalness={0.0} />
           </mesh>
         </>
       ) : null}
 
-      {/* Hipped roof on long wing — flatter pyramid for less drama */}
+      {/* ─── Top cornice ring — terracotta accent at attic level ────── */}
       {wingHeight > 1 ? (
-        <mesh position={[4, wingHeight + 0.55, 0.5]} rotation={[0, Math.PI / 4, 0]} castShadow>
-          <coneGeometry args={[3.4, 0.95, 4]} />
-          <meshStandardMaterial color="#2a2522" roughness={0.55} metalness={0.18} />
-        </mesh>
+        <>
+          <mesh position={[5, wingHeight + 0.05, 1]}>
+            <boxGeometry args={[9.2, 0.10, 3.7]} />
+            <meshStandardMaterial color={CORNICE_TERRACOTTA} roughness={0.55} metalness={0.05} />
+          </mesh>
+          <mesh position={[1.75, wingHeight + 0.05, -2.5]}>
+            <boxGeometry args={[3.7, 0.10, 6.7]} />
+            <meshStandardMaterial color={CORNICE_TERRACOTTA} roughness={0.55} metalness={0.05} />
+          </mesh>
+        </>
       ) : null}
 
-      {/* Hipped roof on short wing — small pyramidal cap, also rotated 45° */}
+      {/* ─── Hipped roofs — stretched 4-sided pyramids ──────────────── */}
       {wingHeight > 1 ? (
-        <mesh position={[-0.4, wingHeight + 0.6, -3]} rotation={[0, Math.PI / 4, 0]} castShadow>
-          <coneGeometry args={[2.6, 1.0, 4]} />
-          <meshStandardMaterial color="#2a2522" roughness={0.55} metalness={0.18} />
+        <>
+          {/* Wing A roof — ridge along X axis */}
+          <mesh
+            position={[5, wingHeight + 0.6, 1]}
+            rotation={[0, Math.PI / 4, 0]}
+            scale={[1.7, 1, 0.7]}
+            castShadow
+          >
+            <coneGeometry args={[2.6, 1.0, 4]} />
+            <meshStandardMaterial color={ROOF_SLATE} roughness={0.55} metalness={0.18} />
+          </mesh>
+          {/* Wing B roof — ridge along Z axis */}
+          <mesh
+            position={[1.75, wingHeight + 0.55, -2.5]}
+            rotation={[0, Math.PI / 4, 0]}
+            scale={[0.7, 1, 1.4]}
+            castShadow
+          >
+            <coneGeometry args={[2.5, 1.0, 4]} />
+            <meshStandardMaterial color={ROOF_SLATE} roughness={0.55} metalness={0.18} />
+          </mesh>
+        </>
+      ) : null}
+
+      {/* ─── OCTAGONAL TOWER — projects up from the L's bend corner ─── */}
+      {towerHeight > 0.001 ? (
+        <mesh position={[3.5, towerHeight / 2, -0.75]} castShadow receiveShadow>
+          {/* 8-segment cylinder = octagonal prism. Slight taper top. */}
+          <cylinderGeometry args={[1.45, 1.55, towerHeight, 8]} />
+          <meshStandardMaterial color={FACADE_LIGHT} roughness={0.78} metalness={0.0} />
         </mesh>
       ) : null}
 
-      {/* Tambour (drum) on top of tower — taller now, octagonal-ish */}
-      {helmScale > 0.001 ? (
-        <mesh position={[0.6, towerHeight + 0.55, 0.6]} castShadow>
-          <cylinderGeometry args={[1.45, 1.55, 1.1, 8]} />
-          <meshStandardMaterial color="#8a7e6c" metalness={0.15} roughness={0.62} />
+      {/* Tower's mid cornice (above wing roof level) */}
+      {towerHeight > 5.5 ? (
+        <mesh position={[3.5, wingHeight + 0.05, -0.75]}>
+          <cylinderGeometry args={[1.55, 1.55, 0.10, 8]} />
+          <meshStandardMaterial color={CORNICE_STONE} roughness={0.7} metalness={0.0} />
         </mesh>
       ) : null}
 
-      {/* Tambour cornice — thin terracotta ring at top of drum */}
+      {/* Tower top cornice (just below the helm assembly) */}
       {helmScale > 0.001 ? (
-        <mesh position={[0.6, towerHeight + 1.12, 0.6]} castShadow>
-          <cylinderGeometry args={[1.5, 1.5, 0.08, 8]} />
-          <meshStandardMaterial color="#c44e2c" roughness={0.5} metalness={0.05} />
+        <mesh position={[3.5, towerHeight + 0.06, -0.75]}>
+          <cylinderGeometry args={[1.6, 1.6, 0.12, 8]} />
+          <meshStandardMaterial color={CORNICE_TERRACOTTA} roughness={0.55} metalness={0.05} />
         </mesh>
       ) : null}
 
-      {/* Doppelzwiebel — reused from the hero! Sits on top of tambour-cornice. */}
+      {/* ─── Tower hipped roof — small octagonal pyramid ────────────── */}
       {helmScale > 0.001 ? (
-        <group position={[0.6, towerHeight + 1.18, 0.6]} scale={helmScale}>
-          <Doppelzwiebel morph={1} edgesOpacity={0.22} segments={isMobile ? 32 : 56} />
+        <mesh position={[3.5, towerRoofY, -0.75]} castShadow>
+          <coneGeometry args={[1.5, 0.6, 8]} />
+          <meshStandardMaterial color={ROOF_SLATE} roughness={0.55} metalness={0.18} />
+        </mesh>
+      ) : null}
+
+      {/* ─── LANTERN — octagonal cream drum with arched openings ──── */}
+      {helmScale > 0.001 ? (
+        <group position={[3.5, lanternBaseY + 0.475, -0.75]}>
+          <mesh castShadow>
+            <cylinderGeometry args={[1.05, 1.05, 0.95, 8]} />
+            <meshStandardMaterial color={FACADE_LANTERN} roughness={0.72} metalness={0.0} />
+          </mesh>
+          {/* Four arched window openings — small dark inset boxes around
+              the lantern at cardinal directions, suggesting the arches.
+              Each is a thin tall plane positioned just inside the
+              cylinder's surface at radius 1.0. */}
+          {[0, 1, 2, 3].map((i) => {
+            const angle = (i * Math.PI) / 2 + Math.PI / 8; // offset to face the corners
+            const x = Math.sin(angle) * 1.02;
+            const z = Math.cos(angle) * 1.02;
+            const ry = angle;
+            return (
+              <mesh key={i} position={[x, 0, z]} rotation={[0, ry, 0]}>
+                <boxGeometry args={[0.42, 0.6, 0.04]} />
+                <meshStandardMaterial color={ARCH_DARK} roughness={0.4} metalness={0.0} />
+              </mesh>
+            );
+          })}
+        </group>
+      ) : null}
+
+      {/* ─── Lantern top cornice — slim terracotta ring ─────────────── */}
+      {helmScale > 0.001 ? (
+        <mesh position={[3.5, lanternTopY, -0.75]} castShadow>
+          <cylinderGeometry args={[1.12, 1.12, 0.08, 8]} />
+          <meshStandardMaterial color={CORNICE_TERRACOTTA} roughness={0.5} metalness={0.05} />
+        </mesh>
+      ) : null}
+
+      {/* ─── Doppelzwiebel — sits on the lantern cornice ───────────── */}
+      {helmScale > 0.001 ? (
+        <group position={[3.5, helmBaseY, -0.75]} scale={helmScale}>
+          <Doppelzwiebel
+            morph={1}
+            edgesOpacity={0.22}
+            segments={isMobile ? 32 : 56}
+          />
         </group>
       ) : null}
 
@@ -214,17 +313,17 @@ function Hotspots({ opacity, towerHeight }: { opacity: number; towerHeight: numb
   const hotspots: HotspotData[] = useMemo(
     () => [
       {
-        position: [4.0, 1.2, 1.7],
+        position: [5.0, 1.5, 2.4],
         label: 'Wohnhalle',
         detail: 'Zweigeschossig · mit Galerie',
       },
       {
-        position: [4.0, 3.0, 1.7],
+        position: [5.0, 3.5, 2.4],
         label: 'Galerie',
         detail: 'Mezzanine, frontal zur Frauenkirche',
       },
       {
-        position: [0.6, towerHeight - 0.6, 1.9],
+        position: [3.5, towerHeight - 0.6, 0.6],
         label: 'Turmstube',
         detail: 'Unter der Doppelzwiebel',
       },
