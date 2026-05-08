@@ -6,6 +6,51 @@ Newest entries on top.
 
 ---
 
+## D-026 · HDRI environment via drei `<Environment preset>`, lazy CDN-loaded
+
+**Phase:** 7 · **Decision:** Hero scene uses `<Environment preset="studio" background={false} environmentIntensity={0.6} />` from drei. The HDRI texture itself is fetched at runtime from drei's CDN (or wherever it's served from for the chosen preset), not bundled.
+
+**Why:** Brief §8 calls for material reflections on the aged-zinc surface but doesn't lock in HDRI vs PBR-tuning. Adding `<Environment preset>` gives:
+- Subtle scene-wide reflection on the doppelzwiebel (the metal feels metal)
+- ~0kB bundle impact for the HDRI itself (CDN-loaded, cached)
+- ~20kB for drei's RGBELoader + helpers in the lazy HeroScene chunk
+
+Trade-off: extra request when the hero loads. Cached after first hit. Acceptable since the chunk is lazy anyway. `background={false}` keeps our deep-color hero backdrop intact.
+
+Lower ambient + key intensities offset the new environmental light so the overall mood doesn't drift brighter.
+
+---
+
+## D-025 · Mapbox/MapLibre deferred (D-016 confirmed)
+
+**Phase:** 7 · **Decision:** Phase-7 explicitly *does not* swap the schematic SVGs for a real map library, despite "deferred items" suggestion. D-016's reasoning still holds: 150kB+ JS, third-party tile request implications, and the editorial-SVG style is a brand asset not a stopgap.
+
+If Felix later requests it, MapLibre GL JS (no API-key) is the right swap target — but will need a fresh decision balancing the polish gain vs. the bundle/privacy cost.
+
+---
+
+## D-024 · LQIP blur-up via base64 manifest, not URL params
+
+**Phase:** 7 · **Decision:** `pnpm images` writes 18×18 blurred JPG thumbnails as base64 data-URIs into `src/data/lqip.ts`. ResponsiveImage looks up by the original /public-relative path and applies as wrapper background. Image fades from opacity 0 → 1 once the network image fires `onLoad`.
+
+**Why:** Alternatives considered:
+- `?blur=20` URL param via vite-imagetools: would require import-time imports of every image (D-021 already ruled this out for our /public/ data layout).
+- Server-rendered `<img loading="lazy" style="background: ...">` directly: needs SSR or a build-time HTML transform — Vite-static doesn't.
+
+Manifest approach: ~24kB raw (5kB gzipped) for 43 entries. ResponsiveImage gets typed access via `Record<string, string>`. Manifest file is generated, gitignored-not (committed for stable Vercel deploys per D-022).
+
+---
+
+## D-023 · AVIF + WebP + JPG triple-source `<picture>`
+
+**Phase:** 7 · **Decision:** ResponsiveImage emits three `<source>` entries: AVIF (q=60), WebP (q=82), then the original JPG/PNG as fallback. Browser picks the first format it can decode.
+
+**Why:** AVIF is ~30% smaller than WebP at equivalent quality and now ~95% supported (2026). Stacking AVIF on top of the WebP already in the pipeline is a clear perf win for the same image-byte count served. The `pnpm images` script generates both, idempotently.
+
+For the LCP preload in `index.html`, we still preload the WebP variant: AVIF preload would skip on the small slice of browsers without AVIF support, and WebP preload is the safe-but-still-fast choice.
+
+---
+
 ## D-022 · Generated images committed to git (not built on Vercel)
 
 **Phase:** 6 · **Decision:** The 43 WebP twins, 7 favicon PNGs, and OG PNG live in `/public/` and ship in git history. `pnpm images` is a one-shot regenerator (not a prebuild hook), idempotent (skips when target is newer than source).

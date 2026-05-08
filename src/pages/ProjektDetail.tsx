@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PROJEKTE, PROJEKTE_BY_SLUG, type Projekt, type ProjektSlug } from '@/data/projekte';
+import { ResponsiveImage } from '@/components/ResponsiveImage/ResponsiveImage';
 
 import { NotFound } from './NotFound';
 import { AKPL22Showcase } from './treatments/AKPL22Showcase';
@@ -85,10 +86,12 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
       </header>
 
       <div className={styles.heroImg}>
-        <picture>
-          <source srcSet={projekt.hero.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
-          <img src={projekt.hero} alt={`${projekt.code} — ${projekt.short}`} loading="eager" fetchPriority="high" />
-        </picture>
+        <ResponsiveImage
+          src={projekt.hero}
+          alt={`${projekt.code} — ${projekt.short}`}
+          loading="eager"
+          fetchPriority="high"
+        />
       </div>
 
       <section className={styles.body}>
@@ -127,10 +130,7 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
           {related.map((p) => (
             <Link key={p.slug} to={`/werk/${p.slug}`} className={styles.relatedCard}>
               <div className={styles.relatedCardImg}>
-                <picture>
-                  <source srcSet={p.hero.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
-                  <img src={p.hero} alt={p.short} loading="lazy" />
-                </picture>
+                <ResponsiveImage src={p.hero} alt={p.short} loading="lazy" />
               </div>
               <h3 className={styles.relatedCardName}>{p.name}</h3>
               <p className={styles.relatedCardMeta}>
@@ -155,19 +155,13 @@ function DefaultGallery({ projekt }: { projekt: Projekt }) {
         const layoutKey = GALLERY_LAYOUT[i % GALLERY_LAYOUT.length] ?? 'gallerySpan6';
         return (
           <figure key={src} className={`${styles.galleryItem} ${styles[layoutKey]}`}>
-            <picture>
-              <source srcSet={src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
-              <img src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
-            </picture>
+            <ResponsiveImage src={src} alt={`${projekt.code} — Bild ${i + 2}`} loading="lazy" />
           </figure>
         );
       })}
       {projekt.plans?.map((src) => (
         <figure key={src} className={`${styles.galleryItem} ${styles.gallerySpan6}`}>
-          <picture>
-            <source srcSet={src.replace(/\.jpe?g$/i, '.webp')} type="image/webp" />
-            <img src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
-          </picture>
+          <ResponsiveImage src={src} alt={`${projekt.code} — Planzeichnung`} loading="lazy" />
         </figure>
       ))}
     </div>

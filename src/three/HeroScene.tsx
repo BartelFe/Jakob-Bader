@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Environment } from '@react-three/drei';
+import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Group, MathUtils, PointLight, Vector3 } from 'three';
 
 import { Doppelzwiebel } from './Doppelzwiebel';
@@ -27,15 +28,23 @@ export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: 
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
-      <ambientLight intensity={0.18} color="#ffffff" />
+      <ambientLight intensity={0.12} color="#ffffff" />
       <directionalLight
         position={[5, 8, 6]}
         color="#ffd9a8"
-        intensity={1.4}
+        intensity={1.2}
         castShadow={false}
       />
-      <pointLight position={[-5, -2, 4]} color="#6c8aa8" intensity={0.65} />
-      <CursorReactiveLight basePosition={[0, 4, -8]} color="#ffffff" intensity={0.55} />
+      <pointLight position={[-5, -2, 4]} color="#6c8aa8" intensity={0.55} />
+      <CursorReactiveLight basePosition={[0, 4, -8]} color="#ffffff" intensity={0.5} />
+
+      {/* HDRI environment for subtle aged-zinc reflections.
+          'studio' is clean + neutral — keeps the doppelzwiebel readable
+          against our dark editorial backdrop. background={false} means
+          it contributes only to lighting/reflections, not visible sky. */}
+      <Suspense fallback={null}>
+        <Environment preset="studio" background={false} environmentIntensity={0.6} />
+      </Suspense>
 
       <CursorReactiveGroup>
         <Doppelzwiebel

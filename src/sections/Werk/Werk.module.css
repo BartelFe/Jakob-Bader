@@ -145,6 +145,11 @@
   display: block;
   color: inherit;
   position: relative;
+  /* Tilt is applied to the <a> via TiltLink; image inherits via 3D transform */
+  transform-style: preserve-3d;
+  transform: perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.45s var(--ease-out-quart);
+  will-change: transform;
 }
 
 .cardImg {
@@ -152,6 +157,9 @@
   overflow: hidden;
   background: var(--bg-paper-warm);
   margin-bottom: 24px;
+  /* Lift the image slightly forward for parallax depth on hover */
+  transform: translateZ(12px);
+  transform-style: preserve-3d;
 }
 
 .cardImg img {

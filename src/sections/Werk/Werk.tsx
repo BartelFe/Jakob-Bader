@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { HERO_PROJEKT, PROJEKTE } from '@/data/projekte';
 import { useImageTilt } from '@/lib/useImageTilt';
 import { ResponsiveImage } from '@/components/ResponsiveImage/ResponsiveImage';
+import { TiltLink } from '@/components/TiltLink/TiltLink';
 import styles from './Werk.module.css';
 
 const CARD_LAYOUT = [
@@ -80,10 +81,11 @@ export function Werk() {
           const layout = CARD_LAYOUT[i % CARD_LAYOUT.length];
           if (!layout) return null;
           return (
-            <Link
+            <TiltLink
               key={p.slug}
               to={`/werk/${p.slug}`}
               className={`${styles.card} ${styles[layout.spanClass]} reveal`}
+              strength={4}
             >
               <div className={`${styles.cardImg} ${styles[layout.imgClass]}`}>
                 <ResponsiveImage src={p.hero} alt={`${p.code} — ${p.short}`} loading="lazy" decoding="async" />
@@ -95,7 +97,7 @@ export function Werk() {
                 {p.nameSplit.lead} <em className={styles.cardNameEm}>{p.nameSplit.emphasis}</em>
               </h3>
               <p className={styles.cardDesc}>{p.description}</p>
-            </Link>
+            </TiltLink>
           );
         })}
       </div>
