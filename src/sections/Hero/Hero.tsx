@@ -46,23 +46,36 @@ export function Hero() {
   }, []);
 
   // Scroll choreography: map hero's scroll progress to morph 0..1.
-  // 0 when hero top hits viewport top; 1 when hero bottom leaves bottom of viewport.
+  //
+  // The hero is min-height: 180vh (sticky canvas inside), so we have
+  // 100vh worth of scroll to drive the cone → onion → doppelzwiebel
+  // morph. Rect.top goes from 0 (hero at top of viewport) to -hero_height
+  // (hero fully scrolled past). We map -80vh of scroll progress to
+  // morph 0..1, leaving a 20vh tail at the end where morph=1 holds and
+  // the camera completes its dive into the spire.
+  //
+  // Morph values are quantized to 1/64 steps to limit LatheGeometry
+  // rebuilds during scroll — anything finer is invisible to the eye
+  // but doubles the per-frame vertex work.
   useEffect(() => {
     if (canRender3D === false) return;
     const el = sectionRef.current;
     if (!el) return;
 
+    let lastQuantized = -1;
+
     const onScroll = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      const total = rect.height + vh;
-      const scrolled = vh - rect.top;
-      const p = Math.max(0, Math.min(1, scrolled / total));
-      // Initial state: doppelzwiebel (1). Reverse so scroll DOWN takes us back to 0.
-      // Per brief: 0% scroll = cone, 100% = doppelzwiebel away.
-      // We map: scrolled-into-view start → cone (0), 50% past → doppelzwiebel (1).
-      const morphP = Math.max(0, Math.min(1, p * 2));
-      setMorph(morphP);
+      // p goes 0 (hero top at viewport top) → 1 (hero scrolled by 80vh)
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / (vh * 0.8)));
+      // Quantize to 1/64 steps
+      const quantized = Math.round(p * 64) / 64;
+      if (quantized !== lastQuantized) {
+        lastQuantized = quantized;
+        setMorph(quantized);
+      }
     };
 
     onScroll();

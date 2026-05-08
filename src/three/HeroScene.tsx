@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Group, MathUtils, PointLight, Vector3 } from 'three';
@@ -17,44 +17,108 @@ interface HeroSceneProps {
 /**
  * Hero scene — Canvas + 3-point lighting + cursor-reactive group.
  *
- * Position right-of-center so headline can sit on the left.
- * Camera fov 35deg, slight downward tilt.
+ * The morph value drives BOTH the lathe shape AND a scroll-tied camera
+ * dive: at morph=0 we see the doppelzwiebel from afar; at morph=1 the
+ * camera is close to the spire, looking up at the cross. Felt like
+ * "diving into the tower" per Felix's brief.
  */
 export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: HeroSceneProps) {
   return (
     <Canvas
-      camera={{ position: [0, 0, 19], fov: 35 }}
+      // Initial camera — DiveCamera takes over on first frame
+      camera={{ position: [0, 0, 22], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
-      <ambientLight intensity={0.12} color="#ffffff" />
+      <DiveCamera morph={morph} />
+
+      <ambientLight intensity={0.14} color="#ffffff" />
       <directionalLight
         position={[5, 8, 6]}
         color="#ffd9a8"
-        intensity={1.2}
+        intensity={1.3}
         castShadow={false}
       />
       <pointLight position={[-5, -2, 4]} color="#6c8aa8" intensity={0.55} />
       <CursorReactiveLight basePosition={[0, 4, -8]} color="#ffffff" intensity={0.5} />
 
-      {/* HDRI environment for subtle aged-zinc reflections.
-          'studio' is clean + neutral — keeps the doppelzwiebel readable
-          against our dark editorial backdrop. background={false} means
-          it contributes only to lighting/reflections, not visible sky. */}
+      {/* HDRI environment for subtle aged-zinc reflections. */}
       <Suspense fallback={null}>
-        <Environment preset="studio" background={false} environmentIntensity={0.6} />
+        <Environment preset="studio" background={false} environmentIntensity={0.55} />
       </Suspense>
 
       <CursorReactiveGroup>
         <Doppelzwiebel
           morph={morph}
           edgesOpacity={edgesOpacity}
-          segments={isMobile ? 32 : 72}
+          segments={isMobile ? 48 : 80}
         />
       </CursorReactiveGroup>
     </Canvas>
   );
+}
+
+/**
+ * Three-phase camera trajectory tied to morph progress 0..1:
+ *
+ *   morph 0.00–0.40  — wide observation. Camera at (0, 0, 22), looks at center.
+ *                      User reads the headline; the doppelzwiebel sits passive.
+ *   morph 0.40–0.75  — recognition. Camera lerps to (0, 1.5, 14) looking
+ *                      slightly up. The form starts to fill the frame.
+ *   morph 0.75–1.00  — dive into the spire. Camera lerps to (0, 4.2, 4.5)
+ *                      looking at world-y=5.4 — i.e. at the cross at the
+ *                      tip of the helm. The spire fills the frame; the
+ *                      cross looms.
+ *
+ * Lerp rate per frame is a soft 0.06 so movement feels weighty rather
+ * than snappy — important since this maps to the user's scroll velocity.
+ */
+function DiveCamera({ morph }: { morph: number }) {
+  const { camera } = useThree();
+  const lookAt = useMemo(() => new Vector3(), []);
+  const targetPos = useMemo(() => new Vector3(), []);
+  const targetLook = useMemo(() => new Vector3(), []);
+
+  useFrame(() => {
+    // Phase weights via two clamped lerps
+    const wRecognize = MathUtils.clamp((morph - 0.40) / 0.35, 0, 1);
+    const wDive = MathUtils.clamp((morph - 0.75) / 0.25, 0, 1);
+
+    // Camera position interpolation
+    // Phase 1 anchor: (0, 0, 22)
+    // Phase 2 anchor: (0, 1.5, 14)
+    // Phase 3 anchor: (0, 4.2, 4.5)
+    const px = 0;
+    const py =
+      0 +
+      (1.5 - 0) * wRecognize +
+      (4.2 - 1.5) * wDive;
+    const pz =
+      22 +
+      (14 - 22) * wRecognize +
+      (4.5 - 14) * wDive;
+
+    targetPos.set(px, py, pz);
+
+    // LookAt interpolation
+    // Phase 1 look: (0, 0, 0)
+    // Phase 2 look: (0, 1.0, 0)
+    // Phase 3 look: (0, 5.4, 0) — at the cross
+    const lx = 0;
+    const ly =
+      0 +
+      (1.0 - 0) * wRecognize +
+      (5.4 - 1.0) * wDive;
+    targetLook.set(lx, ly, 0);
+
+    camera.position.lerp(targetPos, 0.08);
+    lookAt.lerp(targetLook, 0.08);
+    camera.lookAt(lookAt);
+    camera.updateProjectionMatrix();
+  });
+
+  return null;
 }
 
 /**
