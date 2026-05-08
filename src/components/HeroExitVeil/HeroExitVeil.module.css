@@ -1,0 +1,46 @@
+/* Hero → Diagnose veil.
+ *
+ * A fixed-position deep-color overlay that flashes briefly when the
+ * user crosses the hero-section boundary. Acts as a wipe between the
+ * camera dive ending and the "82" reveal in Diagnose.
+ *
+ * Triangle wave: opacity peaks when hero.bottom is exactly at the top
+ * of the viewport, fades out symmetrically over a 0.5vh window on
+ * each side.
+ */
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--bg-deep);
+  pointer-events: none;
+  /* Opacity is set inline via React. Default 0 so the veil never
+     occludes when it shouldn't. */
+  opacity: 0;
+  /* Smoother visual frame-to-frame than a hard set on each scroll tick */
+  transition: opacity 60ms linear;
+  isolation: isolate;
+}
+
+.veil::before {
+  /* A subtle terracotta core that flashes at the exact boundary —
+     reads as "passing through the cross". Hidden until opacity is
+     near peak. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 70% 50%,
+    rgba(196, 78, 44, 0.18) 0%,
+    transparent 40%
+  );
+  opacity: var(--core-opacity, 0);
+  transition: opacity 80ms linear;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veil { transition: none; }
+  .veil::before { transition: none; }
+}

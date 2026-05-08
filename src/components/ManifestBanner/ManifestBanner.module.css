@@ -1,33 +1,121 @@
-.banner {
-  padding: clamp(80px, 14vh, 180px) var(--gutter);
-  text-align: center;
+/* Manifest banner — full-bleed pinned moment.
+ *
+ * Brief §9: "Pinning für Hero (während Doppelzwiebel-Sequence)".
+ * Felix's Phase-7 ask: "krasse Transitions" between sections.
+ *
+ * Each banner section is 160vh tall. Inside, a sticky 100vh stage holds
+ * the manifest text dead-center. The user enters the section, the
+ * banner sticks to the viewport for ~60vh of scroll, then releases.
+ * During that time, lead → bold → coda reveal char-by-char in sequence
+ * (--base-delay per chunk, --char-i per character).
+ */
+
+.section {
   position: relative;
+  min-height: 160vh;
+  background: var(--bg-deep);
+  color: var(--paper-on-deep);
   isolation: isolate;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
+  z-index: 0;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 0 var(--gutter);
+  z-index: 1;
 }
 
 .text {
   font-family: var(--serif);
-  font-size: clamp(34px, 5.6vw, 96px);
-  line-height: 1.08;
+  line-height: 1.0;
+  letter-spacing: -0.022em;
+  max-width: 1320px;
   font-weight: 300;
-  letter-spacing: -0.015em;
-  max-width: 1240px;
-  margin-inline: auto;
+}
+
+.lead,
+.bold,
+.coda {
+  display: block;
+}
+
+.lead {
+  font-size: clamp(48px, 8vw, 138px);
+  color: var(--paper-on-deep-soft);
+  font-weight: 300;
 }
 
 .bold {
-  font-weight: 500;
+  font-size: clamp(64px, 11vw, 196px);
+  color: var(--paper-on-deep);
   font-style: italic;
-  display: inline-block;
+  font-weight: 500;
+  margin-top: clamp(8px, 1.4vh, 18px);
 }
 
 .coda {
-  display: block;
+  margin-top: clamp(40px, 6vh, 80px);
   font-family: var(--mono);
   font-size: var(--fs-mono-sm);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  opacity: 0.62;
-  margin-top: clamp(20px, 2.4vh, 32px);
   font-style: normal;
+  font-weight: 400;
+  opacity: 0.62;
+  color: var(--paper-on-deep);
+}
+
+/* Vertical line on the side that grows during the pin — subtle scroll
+   progress indicator. Width = 1px, height grows with section progress. */
+.progressLine {
+  position: absolute;
+  left: clamp(20px, 4vw, 56px);
+  top: 50%;
+  width: 1px;
+  height: 0;
+  background: var(--accent);
+  transform-origin: top center;
+  transform: translateY(0);
+  pointer-events: none;
+  z-index: 2;
+  transition: height 0.4s var(--ease-out-quart);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressLine { transition: none; }
+}
+
+/* Reduced-motion: don't pin — render naturally in flow. The text still
+   reveals via .reveal but without the dramatic sticky moment. */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    min-height: auto;
+  }
+  .sticky {
+    position: static;
+    height: auto;
+    padding: clamp(80px, 12vh, 160px) var(--gutter);
+  }
+}
+
+@media (max-width: 720px) {
+  .section {
+    /* shorter on mobile so the page doesn't feel padded with banner sections */
+    min-height: 130vh;
+  }
 }

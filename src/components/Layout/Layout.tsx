@@ -5,6 +5,7 @@ import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { Loader } from '../Loader/Loader';
 import { Cursor } from '../Cursor/Cursor';
+import { HeroExitVeil } from '../HeroExitVeil/HeroExitVeil';
 import { PageTransition, PAGE_WIPE_CLASS } from '../PageTransition/PageTransition';
 
 import { initLenis, destroyLenis } from '@/lib/lenis';
@@ -56,6 +57,7 @@ export function Layout() {
       <Loader />
       <Cursor />
       <PageTransition />
+      <HeroExitVeil />
       <a className="skip-link" href="#main">
         Zum Inhalt springen
       </a>

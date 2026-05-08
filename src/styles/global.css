@@ -80,7 +80,9 @@
 
 /* Split-text reveal — each character animates with stagger.
    Pair with splitTextIntoChars() from src/lib/reveal.ts and the
-   .reveal class. The parent's `--char-i` per span drives delay. */
+   .reveal class. The parent's `--char-i` per span drives delay,
+   and `--base-delay` on the parent (or any ancestor) shifts the whole
+   sequence for chained reveals (e.g. lead → bold → coda). */
 .reveal .split-char {
   display: inline-block;
   opacity: 0;
@@ -88,7 +90,7 @@
   transition:
     opacity var(--t-slow) var(--ease-out-quart),
     transform var(--t-slow) var(--ease-out-quart);
-  transition-delay: calc(var(--char-i, 0) * 18ms);
+  transition-delay: calc(var(--char-i, 0) * 18ms + var(--base-delay, 0ms));
   white-space: pre;
 }
 .reveal.is-revealed .split-char {

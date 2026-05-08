@@ -85,6 +85,7 @@ export function Hero() {
 
   return (
     <section
+      id="hero-section"
       ref={sectionRef}
       className={`${styles.hero} surface-deep`}
       aria-labelledby="hero-heading"
