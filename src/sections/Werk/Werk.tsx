@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HERO_PROJEKT, PROJEKTE } from '@/data/projekte';
+import { useImageTilt } from '@/lib/useImageTilt';
 import styles from './Werk.module.css';
 
 const CARD_LAYOUT = [
@@ -13,6 +14,7 @@ const CARD_LAYOUT = [
 export function Werk() {
   const heroPart = HERO_PROJEKT;
   const otherProjects = PROJEKTE.filter((p) => p.slug !== 'p48');
+  const heroTiltRef = useImageTilt<HTMLAnchorElement>(5);
 
   return (
     <section className={styles.werk} id="werk" aria-labelledby="werk-heading">
@@ -32,7 +34,11 @@ export function Werk() {
       </div>
 
       <article className={`${styles.heroProject} reveal`}>
-        <Link to={`/werk/${heroPart.slug}`} className={styles.heroProjectImg}>
+        <Link
+          ref={heroTiltRef}
+          to={`/werk/${heroPart.slug}`}
+          className={styles.heroProjectImg}
+        >
           <img
             src={heroPart.hero}
             alt="P48 Doppelzwiebel — Wohnhaus am Wiesnviertel, ausgezeichnet mit dem Fassadenpreis München 2025"

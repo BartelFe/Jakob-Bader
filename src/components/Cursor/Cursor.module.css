@@ -1,0 +1,123 @@
+.dot,
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  border-radius: 50%;
+  /* `transform` is set imperatively per frame — don't transition it. */
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: var(--paper-on-deep);
+  transition:
+    opacity var(--t-base) var(--ease-out-quart),
+    width var(--t-base) var(--ease-out-quart),
+    height var(--t-base) var(--ease-out-quart);
+}
+
+.ring {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--paper-on-deep);
+  background: transparent;
+  transition:
+    width var(--t-base) var(--ease-out-quart),
+    height var(--t-base) var(--ease-out-quart),
+    border-color var(--t-base) var(--ease-out-quart),
+    background-color var(--t-base) var(--ease-out-quart),
+    opacity var(--t-base) var(--ease-out-quart);
+}
+
+/* Variant: link — ring expands, dot disappears */
+.dotLink {
+  opacity: 0;
+}
+.ringLink {
+  width: 56px;
+  height: 56px;
+  border-color: var(--accent);
+  background: rgba(196, 78, 44, 0.08);
+}
+
+/* Variant: image — ring shows hint */
+.dotImage {
+  opacity: 0;
+}
+.ringImage {
+  width: 64px;
+  height: 64px;
+  border-color: var(--paper-on-deep);
+  background: rgba(13, 13, 12, 0.32);
+}
+
+/* Variant: three — ring suggests rotation */
+.dotThree {
+  opacity: 0.5;
+}
+.ringThree {
+  width: 80px;
+  height: 80px;
+  border-style: dashed;
+  border-color: var(--accent);
+  animation: ringThreeRotate 4s linear infinite;
+  background: transparent;
+}
+
+@keyframes ringThreeRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* The transform from rotate animation conflicts with the position transform —
+   we apply the rotate via ::before to avoid that. */
+.ringThree::before {
+  content: '◐';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-size: 14px;
+  animation: ringThreeRotate 4s linear infinite;
+}
+.ringThree { animation: none; }
+
+/* Variant: hidden */
+.dotHidden,
+.ringHidden {
+  opacity: 0;
+}
+
+/* Hint label inside ring — for image / three variants */
+.hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-on-deep);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out-quart);
+  pointer-events: none;
+}
+
+.ringImage .hint,
+.ringThree .hint {
+  opacity: 1;
+}
+
+/* Hide entirely on coarse pointers / when prefers-reduced-motion */
+@media (pointer: coarse), (hover: none) {
+  .dot,
+  .ring {
+    display: none;
+  }
+}

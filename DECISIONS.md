@@ -6,6 +6,42 @@ Newest entries on top.
 
 ---
 
+## D-019 · Skip GSAP + Motion in Phase 5; vanilla CSS + IO suffice
+
+**Phase:** 5 · **Decision:** No GSAP, no Motion (`framer-motion`/`motion`) imported in this phase. Curtain transition is pure CSS + React state. Reveal-on-scroll is pure IntersectionObserver. Image tilt is a vanilla `useEffect` hook. Magnetic hover is the same pattern from Phase 4.
+
+**Why:** Both libraries are listed in package.json (per brief §5) but their primary use cases — page transitions (Motion) and ScrollTrigger pinning (GSAP) — are honoured by simpler primitives here:
+- Curtain wipe: 50 lines of CSS keyframes + a 30-line React state machine.
+- Reveal: native IntersectionObserver (already widely supported, no polyfill cost).
+- Pinning for the P48 stage: CSS `position: sticky` (already done in Phase 3).
+- Cursor smoothing: requestAnimationFrame + lerp.
+
+Net Phase-5 cost: **+6.8 kB gzipped on main**. If we'd shipped Motion's AnimatePresence + GSAP/ScrollTrigger eagerly, that'd be ~50 kB minimum. We hit the polish target with one-tenth the bundle.
+
+The two deps stay in package.json — Phase 6 may need GSAP for SplitText-with-mask (currently the split system uses CSS `transition-delay` per character which is good but not pixel-perfect on slower devices). Trade-off is documented; deferred decision.
+
+---
+
+## D-018 · Custom cursor: variant-by-selector, not data-cursor attributes
+
+**Phase:** 5 · **Decision:** The Cursor component infers its variant from the hovered element's CSS selector (`a, button` → 'link', `img` → 'image', `canvas` → 'three'), not from a `data-cursor="..."` attribute on each element.
+
+**Why:** Selector-based detection requires zero changes to existing markup — the hundreds of links, buttons, and images in the codebase work immediately. `data-cursor` would require touching every interactive element. Trade-off: slightly less specific control (you can't say "this image opens in lightbox, show 'open' hint vs. 'view' hint") — acceptable for the brief's "subtle, with restraint" aim.
+
+Detection runs on `mouseover` event delegation (single listener at document), so per-element overhead is zero.
+
+---
+
+## D-017 · Lenis singleton, opt-out for reduced-motion + coarse pointer
+
+**Phase:** 5 · **Decision:** Lenis instance lives at the Layout level, initialized in `useEffect` and torn down on unmount. Skipped entirely (returns null) for users with `prefers-reduced-motion` or `pointer: coarse`.
+
+**Why:** Brief §5 calls for Lenis "additive — kein Hijack". Skipping on coarse pointer keeps mobile inertia native (Lenis on touch tends to fight platform gestures). Reduced-motion takes precedence over everything per WCAG.
+
+The Layout's existing `scrollIntoView` for in-page anchors still works because Lenis hooks the wheel/touch handlers, not `Element.scrollIntoView`.
+
+---
+
 ## D-016 · Maxvorstadt + Bayern maps as inline SVG, not Mapbox/Leaflet
 
 **Phase:** 4 · **Decision:** Both the Dialog-section Maxvorstadt block and the Akademie-page Bayern silhouette are hand-drawn inline SVGs (~150 lines each), not real maps backed by Mapbox/Leaflet/OpenStreetMap.

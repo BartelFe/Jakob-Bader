@@ -78,10 +78,45 @@
   transform: translateY(0);
 }
 
+/* Split-text reveal — each character animates with stagger.
+   Pair with splitTextIntoChars() from src/lib/reveal.ts and the
+   .reveal class. The parent's `--char-i` per span drives delay. */
+.reveal .split-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  transition:
+    opacity var(--t-slow) var(--ease-out-quart),
+    transform var(--t-slow) var(--ease-out-quart);
+  transition-delay: calc(var(--char-i, 0) * 18ms);
+  white-space: pre;
+}
+.reveal.is-revealed .split-char {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .reveal,
+  .reveal .split-char {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* Hide native cursor on hover-capable pointers — the custom cursor takes
+   over. Mobile / coarse pointer keeps native cursor. */
+@media (hover: hover) and (pointer: fine) {
+  html {
+    cursor: none;
+  }
+  a,
+  button,
+  [role='button'],
+  input,
+  textarea,
+  select {
+    cursor: none;
   }
 }
