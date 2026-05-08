@@ -64,6 +64,9 @@
   --gutter: clamp(20px, 5vw, 88px);
   --gap-section: clamp(80px, 14vh, 200px);
   --gap-block: clamp(40px, 6vh, 96px);
+  /* Header height (logo+nav padding 22px × 2 + content ≈ 38px). Used by
+     sticky panels that need to sit below the fixed header. */
+  --header-height: 84px;
 
   /* Easing — brief §9 */
   --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);

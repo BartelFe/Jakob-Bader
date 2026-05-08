@@ -6,8 +6,10 @@
 /* ─── Sticky 3D stage ───────────────────────────────────────────── */
 .stage {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  /* Pin BELOW the fixed header so the canvas isn't masked by the
+     blurred header bar. Height shrinks accordingly. */
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
   width: 100%;
   z-index: 1;
   background: linear-gradient(

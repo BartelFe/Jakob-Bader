@@ -6,8 +6,10 @@ import { Group, MathUtils, PointLight, Vector3 } from 'three';
 import { Doppelzwiebel } from './Doppelzwiebel';
 
 interface HeroSceneProps {
-  /** 0..1 — drives the cone → onion → doppelzwiebel morph. */
+  /** 0..1 — locked at 1 in the new hero (no morph). Kept for back-compat. */
   morph?: number;
+  /** 0..1 — drives the camera dive trajectory. */
+  cameraProgress?: number;
   /** Edge-line opacity (loader fades from 0 → 0.18). */
   edgesOpacity?: number;
   /** Reduced lathe density on mobile. */
@@ -22,7 +24,12 @@ interface HeroSceneProps {
  * camera is close to the spire, looking up at the cross. Felt like
  * "diving into the tower" per Felix's brief.
  */
-export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: HeroSceneProps) {
+export function HeroScene({
+  morph = 1,
+  cameraProgress = 0,
+  edgesOpacity = 0.18,
+  isMobile = false,
+}: HeroSceneProps) {
   return (
     <Canvas
       // Initial camera — DiveCamera takes over on first frame
@@ -31,7 +38,7 @@ export function HeroScene({ morph = 1, edgesOpacity = 0.18, isMobile = false }: 
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       style={{ width: '100%', height: '100%', background: 'transparent' }}
     >
-      <DiveCamera morph={morph} />
+      <DiveCamera morph={cameraProgress} />
 
       <ambientLight intensity={0.14} color="#ffffff" />
       <directionalLight

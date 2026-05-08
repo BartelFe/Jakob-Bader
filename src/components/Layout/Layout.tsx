@@ -8,7 +8,7 @@ import { Cursor } from '../Cursor/Cursor';
 import { HeroExitVeil } from '../HeroExitVeil/HeroExitVeil';
 import { PageTransition, PAGE_WIPE_CLASS } from '../PageTransition/PageTransition';
 
-import { initLenis, destroyLenis } from '@/lib/lenis';
+import { destroyLenis, getLenis, initLenis } from '@/lib/lenis';
 import { scanReveals } from '@/lib/reveal';
 
 import styles from './Layout.module.css';
@@ -29,20 +29,35 @@ export function Layout() {
     return () => destroyLenis();
   }, []);
 
-  // Scroll restoration + reveal scanner on each route change
+  // Scroll restoration + reveal scanner on each route change.
+  // IMPORTANT: when Lenis is active, it owns the scroll position. Calling
+  // `window.scrollTo` only updates the native viewport but Lenis keeps
+  // its own internal state, so the page can appear to "start mid-page"
+  // until the user scrolls. Use `lenis.scrollTo(0, { immediate: true })`
+  // when available.
   useEffect(() => {
+    const lenis = getLenis();
+
     if (location.hash) {
       const id = location.hash.slice(1);
       const el = document.getElementById(id);
       if (el) {
-        // small delay so the page-wipe doesn't fight the scrollIntoView
         const t = window.setTimeout(() => {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (lenis) {
+            lenis.scrollTo(el, { offset: -84, duration: 0.9 });
+          } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }, 320);
         return () => window.clearTimeout(t);
       }
     }
-    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true, force: true });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
     return undefined;
   }, [location.pathname, location.hash]);
 

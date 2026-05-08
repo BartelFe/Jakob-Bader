@@ -12,29 +12,23 @@ const HeroScene = lazy(() =>
   import('@/three/HeroScene').then((m) => ({ default: m.HeroScene })),
 );
 
-const STATE_LABELS = [
-  { label: 'Verloren', threshold: 0 },
-  { label: 'Reduziert', threshold: 0.5 },
-  { label: 'Wiederhergestellt', threshold: 1 },
-];
-
 /**
  * HERO — left content column, right 3D canvas.
  *
- * Scroll-driven morph: as the user scrolls through the hero section,
- * the doppelzwiebel transforms from cone → onion → full doppelzwiebel.
- * Brief §7.1: "Cone (0% scroll) → einfache Zwiebel (33%) → volle
- * Doppelzwiebel (66%) → 3D dreht weg, Hero verlässt Viewport (100%)".
- *
- * The active state-label highlights as morph passes its threshold.
+ * v3 (post-feedback): the cone → onion → doppelzwiebel scroll-morph was
+ * pulled — Felix found the in-progress vertex blending visually noisy
+ * ("gequirtels"). The hero now shows the FULL doppelzwiebel statically
+ * with its idle Y-rotation + cursor-reactive group, plus the existing
+ * scroll-tied camera dive that brings the camera close to the cross at
+ * the end of the hero scroll. No state labels needed since there's no
+ * historical narrative being told via geometry change.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [morph, setMorph] = useState(1);
+  const [diveProgress, setDiveProgress] = useState(0);
   const [canRender3D, setCanRender3D] = useState<boolean | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect WebGL + reduced-motion + viewport once on mount.
   useEffect(() => {
     const ok = hasWebGL() && !prefersReducedMotion();
     setCanRender3D(ok);
@@ -45,18 +39,8 @@ export function Hero() {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  // Scroll choreography: map hero's scroll progress to morph 0..1.
-  //
-  // The hero is min-height: 180vh (sticky canvas inside), so we have
-  // 100vh worth of scroll to drive the cone → onion → doppelzwiebel
-  // morph. Rect.top goes from 0 (hero at top of viewport) to -hero_height
-  // (hero fully scrolled past). We map -80vh of scroll progress to
-  // morph 0..1, leaving a 20vh tail at the end where morph=1 holds and
-  // the camera completes its dive into the spire.
-  //
-  // Morph values are quantized to 1/64 steps to limit LatheGeometry
-  // rebuilds during scroll — anything finer is invisible to the eye
-  // but doubles the per-frame vertex work.
+  // Scroll choreography: now drives ONLY the camera dive, not the morph.
+  // diveProgress 0..1 across the sticky 180vh hero.
   useEffect(() => {
     if (canRender3D === false) return;
     const el = sectionRef.current;
@@ -67,14 +51,12 @@ export function Hero() {
     const onScroll = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // p goes 0 (hero top at viewport top) → 1 (hero scrolled by 80vh)
       const scrolled = -rect.top;
       const p = Math.max(0, Math.min(1, scrolled / (vh * 0.8)));
-      // Quantize to 1/64 steps
       const quantized = Math.round(p * 64) / 64;
       if (quantized !== lastQuantized) {
         lastQuantized = quantized;
-        setMorph(quantized);
+        setDiveProgress(quantized);
       }
     };
 
@@ -93,12 +75,8 @@ export function Hero() {
       <div className={styles.canvas}>
         <div className={styles.canvasInner}>
           {canRender3D === true ? (
-            <Suspense
-              fallback={
-                <FallbackVisual />
-              }
-            >
-              <HeroScene morph={morph} edgesOpacity={0.18} isMobile={isMobile} />
+            <Suspense fallback={<FallbackVisual />}>
+              <HeroScene morph={1} cameraProgress={diveProgress} edgesOpacity={0.18} isMobile={isMobile} />
             </Suspense>
           ) : (
             <FallbackVisual />
@@ -122,26 +100,6 @@ export function Hero() {
       <span className={styles.scroll} aria-hidden="true">
         Scroll ↓
       </span>
-
-      <div className={styles.stateLabels} aria-hidden="true">
-        {STATE_LABELS.map((s, i) => {
-          const active =
-            morph >= s.threshold &&
-            (i === STATE_LABELS.length - 1 || morph < (STATE_LABELS[i + 1]?.threshold ?? 1));
-          return (
-            <span key={s.label} style={{ display: 'inline-flex', gap: '24px' }}>
-              <span
-                className={`${styles.stateLabel} ${active ? styles.stateLabelActive : ''}`}
-              >
-                {s.label}
-              </span>
-              {i < STATE_LABELS.length - 1 ? (
-                <span className={styles.stateLabelDivider}>·</span>
-              ) : null}
-            </span>
-          );
-        })}
-      </div>
     </section>
   );
 }
