@@ -1,70 +1,70 @@
-import { useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 
 import { HERO } from '@/data/manifest';
+import { hasWebGL, prefersReducedMotion } from '@/lib/webgl';
 
 import styles from './Hero.module.css';
 
+// Lazy-load the R3F scene so three.js + r3f stay out of the initial chunk.
+const HeroScene = lazy(() =>
+  import('@/three/HeroScene').then((m) => ({ default: m.HeroScene })),
+);
+
 /**
- * HERO — final v4.
+ * HERO — v5: WebGL helm + supporting context (gables + roof).
  *
- * The WebGL Doppelzwiebel-Lathe was pulled in favour of the actual
- * architectural section drawing (`/projekte/p48/p48-helm-pure.png` —
- * cropped from `p48-schnitt.jpg`). The drawing reads with the proper
- * red-on-white architectural convention (cut/section on the left side
- * of the helm, exterior outline on the right) — something a 3D mesh
- * could never communicate.
+ * The 3D approach was the right *feel* — Felix wanted that — but v3 had
+ * the helm floating in dark space with off proportions. v5:
+ *   - Profile re-traced from the actual section drawing (better
+ *     proportions: fatter lower bulb, taller pedestal, longer spire)
+ *   - Adds supporting context: small slate cap + roof slab + two
+ *     cream-plaster gable peaks. The helm now stands on something.
+ *   - Camera framing widened to show the whole composition; dive at end
+ *     of scroll keeps the cinematic gesture.
  *
- * Bundle impact: ~240 kB lazy chunk (three + drei + RGBELoader + R3F)
- * removed. The hero now ships zero JS for its visual.
- *
- * Felt-like: a printed architectural drawing pinned on a deep stage,
- * slowly drifting upward as the user scrolls (parallax).
+ * Fallback (no-WebGL or reduced-motion): the actual architectural
+ * section drawing from /projekte/p48/p48-helm-pure.* — way prettier
+ * than the previous SVG-from-profile fallback.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [diveProgress, setDiveProgress] = useState(0);
+  const [canRender3D, setCanRender3D] = useState<boolean | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Subtle vertical parallax on the helm card — driven by scroll position
-  // through the hero. Translates the card upward as user scrolls past,
-  // giving a "rising" feel without changing the card's content.
   useEffect(() => {
+    const ok = hasWebGL() && !prefersReducedMotion();
+    setCanRender3D(ok);
+    const mq = window.matchMedia('(max-width: 880px)');
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (canRender3D === false) return;
     const el = sectionRef.current;
     if (!el) return;
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    let raf = 0;
-    let pending = false;
-
-    const tick = () => {
-      pending = false;
-      const card = cardRef.current;
-      if (!card) return;
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // Progress 0..1 across the hero
-      const scrolled = -rect.top;
-      const total = rect.height - vh;
-      const p = total <= 0 ? 0 : Math.max(0, Math.min(1, scrolled / total));
-      const offset = p * 90; // px, gentle
-      card.style.transform = `translateY(${(-offset).toFixed(1)}px)`;
-    };
+    let lastQuantized = -1;
 
     const onScroll = () => {
-      if (pending) return;
-      pending = true;
-      raf = requestAnimationFrame(tick);
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / (vh * 0.8)));
+      const quantized = Math.round(p * 64) / 64;
+      if (quantized !== lastQuantized) {
+        lastQuantized = quantized;
+        setDiveProgress(quantized);
+      }
     };
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [canRender3D]);
 
   return (
     <section
@@ -73,33 +73,22 @@ export function Hero() {
       className={`${styles.hero} surface-deep`}
       aria-labelledby="hero-heading"
     >
-      <figure className={styles.helmStage} aria-hidden="false">
-        <span className={styles.helmCornerTL} aria-hidden="true" />
-        <span className={styles.helmCornerTR} aria-hidden="true" />
-        <span className={styles.helmCornerBL} aria-hidden="true" />
-        <span className={styles.helmCornerBR} aria-hidden="true" />
-        <div className={styles.helmCard} ref={cardRef}>
-          <picture className={styles.helmImage}>
-            <source srcSet="/projekte/p48/p48-helm-pure.avif" type="image/avif" />
-            <source srcSet="/projekte/p48/p48-helm-pure.webp" type="image/webp" />
-            <img
-              src="/projekte/p48/p48-helm-pure.png"
-              alt="Krachers Doppelzwiebel — Architekturzeichnung im Schnitt, JBA 2025"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </picture>
+      <div className={styles.canvas}>
+        <div className={styles.canvasInner}>
+          {canRender3D === true ? (
+            <Suspense fallback={<FallbackVisual />}>
+              <HeroScene
+                morph={1}
+                cameraProgress={diveProgress}
+                edgesOpacity={0.18}
+                isMobile={isMobile}
+              />
+            </Suspense>
+          ) : (
+            <FallbackVisual />
+          )}
         </div>
-        <figcaption className={styles.helmCaption}>
-          <span className={styles.helmCaptionTitle}>
-            Krachers Doppelzwiebel
-          </span>
-          <span className={styles.helmCaptionMeta}>
-            Schnitt · 1890 / 2025 · JBA
-          </span>
-        </figcaption>
-      </figure>
+      </div>
 
       <div className={styles.content}>
         <p className={styles.eyebrow}>{HERO.eyebrow}</p>
@@ -121,10 +110,45 @@ export function Hero() {
   );
 }
 
-// Keep the lazy-loaded HeroScene file in src/three/ for now — it's
-// no longer wired but the code is preserved as a reference. Tree-shaking
-// won't include it because nothing imports it anymore.
-
-// Used to live here:
-//   const HeroScene = lazy(() => import('@/three/HeroScene')...);
-// + WebGL detection state + cameraProgress hook + DiveCamera composition.
+/**
+ * Fallback for no-WebGL / reduced-motion: render the actual
+ * architectural drawing as the helm visual. Way prettier than an
+ * SVG approximation, and uses the AVIF the pipeline already generates.
+ */
+function FallbackVisual() {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 'clamp(20px, 3vw, 40px)',
+      }}
+    >
+      <picture
+        style={{
+          display: 'block',
+          maxHeight: '90%',
+          maxWidth: '100%',
+          background: 'var(--bg-paper)',
+          padding: 'clamp(20px, 3vw, 40px)',
+          boxShadow: '0 16px 40px -16px rgba(0,0,0,0.5)',
+        }}
+      >
+        <source srcSet="/projekte/p48/p48-helm-pure.avif" type="image/avif" />
+        <source srcSet="/projekte/p48/p48-helm-pure.webp" type="image/webp" />
+        <img
+          src="/projekte/p48/p48-helm-pure.png"
+          alt="Doppelzwiebel — Architektur-Schnitt JBA 2025"
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '70vh',
+            objectFit: 'contain',
+          }}
+        />
+      </picture>
+    </div>
+  );
+}
