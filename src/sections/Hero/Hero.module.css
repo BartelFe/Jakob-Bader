@@ -162,29 +162,60 @@
 @media (max-width: 880px) {
   .hero {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 60vh;
+    grid-template-rows: auto 60vh;
     /* Mobile: simple stacked layout, no sticky scroll-through */
-    min-height: 100vh;
-    gap: 32px;
+    min-height: auto;
+    padding-top: clamp(96px, 12vh, 140px);
+    padding-bottom: clamp(64px, 10vh, 120px);
+    gap: clamp(32px, 5vh, 56px);
   }
   .content {
     grid-column: 1;
     grid-row: 1;
+    max-width: none;
   }
   .canvas {
     grid-column: 1;
     grid-row: 2;
     position: relative;
+    top: auto;
     height: 60vh;
-    min-height: 360px;
+    min-height: 320px;
   }
-  .stateLabels {
-    display: none;
+  .quote {
+    max-width: none;
+  }
+  .sub {
+    max-width: none;
   }
 }
 
 @media (max-width: 720px) {
   .scroll {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-top: clamp(88px, 11vh, 120px);
+    padding-bottom: 56px;
+    gap: 32px;
+    grid-template-rows: auto 50vh;
+  }
+  .canvas {
+    height: 50vh;
+    min-height: 280px;
+  }
+  .headline {
+    /* Headline gets snug on small phones; the clamp's lower bound was
+       96px which can wrap awkwardly on narrow screens */
+    font-size: clamp(72px, 19vw, 110px);
+  }
+  .sub {
+    font-size: clamp(20px, 5vw, 28px);
+  }
+  .quote {
+    font-size: 14px;
   }
 }

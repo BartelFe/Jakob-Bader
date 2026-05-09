@@ -456,8 +456,59 @@
   }
 }
 
+@media (max-width: 720px) {
+  .person {
+    padding: clamp(80px, 12vh, 140px) var(--gutter);
+  }
+  .kanzler {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: clamp(32px, 4vh, 56px);
+  }
+  .kanzlerRow {
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+  }
+  .kanzlerLine {
+    font-size: clamp(17px, 4.5vw, 22px);
+  }
+  .secondText {
+    padding-left: 16px;
+  }
+  .secondText::before {
+    font-size: clamp(80px, 22vw, 160px);
+    top: -20px;
+    left: -4px;
+  }
+}
+
 @media (max-width: 600px) {
   .timeline {
     grid-template-columns: 1fr;
+  }
+  .headline {
+    font-size: clamp(48px, 12vw, 80px);
+  }
+  .lineageWall {
+    grid-template-columns: 1fr;
+  }
+  .lineageItem {
+    padding: 22px 18px;
+  }
+  /* Membership grid: stacks instead of wide auto-fit */
+  .membershipsList {
+    grid-template-columns: 1fr;
+  }
+  .crossLinks {
+    grid-template-columns: 1fr;
+  }
+  .crossLink {
+    padding: 22px 22px;
+  }
+  /* On touch: lineage reasons should be visible (no hover possible) */
+  .lineageReason {
+    opacity: 1;
+    max-height: 96px;
   }
 }

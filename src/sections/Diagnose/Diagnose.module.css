@@ -89,8 +89,29 @@
 }
 
 @media (max-width: 880px) {
+  .diagnose {
+    padding: clamp(80px, 12vh, 140px) var(--gutter);
+  }
   .grid {
     grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 40px;
+  }
+  .number {
+    font-size: clamp(120px, 38vw, 280px);
+  }
+  .text {
+    font-size: clamp(28px, 7vw, 56px);
+  }
+  .coda {
+    font-size: var(--fs-body);
+  }
+}
+
+@media (max-width: 480px) {
+  .number {
+    font-size: clamp(96px, 36vw, 200px);
+  }
+  .text {
+    font-size: clamp(24px, 7.5vw, 40px);
   }
 }

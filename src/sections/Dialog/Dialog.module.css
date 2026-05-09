@@ -276,3 +276,21 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 480px) {
+  .dialog {
+    padding: clamp(72px, 10vh, 120px) var(--gutter);
+  }
+  .headline {
+    font-size: clamp(48px, 13vw, 80px);
+  }
+  .ctaPrimary,
+  .ctaSecondary {
+    padding: 18px 24px;
+    font-size: 11px;
+  }
+  .map {
+    padding: 20px;
+    gap: 24px;
+  }
+}

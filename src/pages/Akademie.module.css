@@ -349,6 +349,70 @@
   }
 }
 
+@media (max-width: 480px) {
+  .venueMap {
+    padding: 16px;
+  }
+  .venueGroup {
+    padding-bottom: 20px;
+  }
+  .venueEvent {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+  .venueEventDate {
+    min-width: 0;
+  }
+}
+
+/* Single-event detail page body */
+.eventBody {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: clamp(48px, 6vw, 120px);
+  align-items: start;
+  padding-block: 48px;
+  border-top: 1px solid var(--line-on-deep);
+}
+
+.eventBodyLabel {
+  font-family: var(--mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+
+.eventBodyText {
+  font-size: var(--fs-body-lg);
+  line-height: 1.65;
+  color: var(--paper-on-deep-soft);
+  max-width: 720px;
+}
+
+.eventBodyText strong {
+  color: var(--paper-on-deep);
+}
+
+.eventBack {
+  display: inline-block;
+  margin-bottom: 32px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-sm);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.eventBack:hover,
+.eventBack:focus-visible {
+  opacity: 1;
+  color: var(--accent-soft);
+}
+
 @media (max-width: 880px) {
   .listItem {
     grid-template-columns: 1fr;
@@ -357,5 +421,33 @@
   }
   .listItem:hover {
     padding-left: 0;
+  }
+  .eventBody {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-block: 32px;
+  }
+  .filters {
+    gap: 8px;
+  }
+  .filterBtn {
+    padding: 7px 13px;
+    font-size: 10px;
+  }
+  .listDate {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterBtn {
+    padding: 6px 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .viewToggleBtn {
+    padding: 8px 14px;
+    font-size: 10px;
   }
 }

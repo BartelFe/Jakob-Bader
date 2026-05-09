@@ -20,6 +20,12 @@
   -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
+.headerMobileOpen {
+  background: var(--bg-deep);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -133,6 +139,133 @@
   }
 }
 
+/* ─── Mobile menu toggle (hamburger) ─────────────────────────────── */
+.mobileToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.mobileToggleIcon {
+  position: relative;
+  width: 22px;
+  height: 2px;
+  background: var(--paper-on-deep);
+  display: block;
+  transition: background-color 0.1s var(--ease-out-quart);
+}
+
+.mobileToggleIcon::before,
+.mobileToggleIcon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--paper-on-deep);
+  transition: transform var(--t-base) var(--ease-out-quart);
+}
+
+.mobileToggleIcon::before {
+  top: -7px;
+}
+
+.mobileToggleIcon::after {
+  top: 7px;
+}
+
+.mobileToggleIconOpen {
+  background: transparent;
+}
+
+.mobileToggleIconOpen::before {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobileToggleIconOpen::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ─── Mobile menu overlay (only used below 600px) ────────────────── */
+.mobileMenu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
+  background: var(--bg-deep);
+  padding: calc(var(--header-height) + clamp(40px, 8vh, 80px)) var(--gutter)
+    clamp(40px, 8vh, 80px);
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(40px, 6vh, 80px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--t-base) var(--ease-out-quart),
+    visibility 0s linear var(--t-base);
+}
+
+.mobileMenuOpen {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--t-base) var(--ease-out-quart),
+    visibility 0s;
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3.5vh, 36px);
+}
+
+.mobileNavLink {
+  font-family: var(--serif);
+  font-size: clamp(40px, 9vw, 64px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 0.95;
+  color: var(--paper-on-deep);
+  text-decoration: none;
+}
+
+.mobileNavLink:active {
+  color: var(--accent-soft);
+}
+
+.mobileNext {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  padding: 12px 20px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent-soft);
+  text-decoration: none;
+}
+
+.mobileMenuFoot {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--paper-on-deep-soft);
+}
+
+/* ─── Breakpoints ────────────────────────────────────────────────── */
 @media (max-width: 880px) {
   .nav {
     gap: 22px;
@@ -146,7 +279,23 @@
 }
 
 @media (max-width: 600px) {
+  .header {
+    padding: 16px var(--gutter);
+  }
   .nav {
     display: none;
+  }
+  .mobileToggle {
+    display: inline-flex;
+  }
+  .mobileMenu {
+    display: flex;
+  }
+  .brandText {
+    font-size: 18px;
+  }
+  .brandMark {
+    width: 32px;
+    height: 32px;
   }
 }

@@ -353,6 +353,9 @@
 }
 
 @media (max-width: 720px) {
+  .akademie {
+    padding: clamp(80px, 12vh, 140px) var(--gutter);
+  }
   .intro {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -364,5 +367,30 @@
   }
   .row:hover {
     padding-left: 0;
+  }
+  .rowTitle {
+    font-size: 19px;
+  }
+  /* Tooltip on touch: position above and limit width */
+  .speakerBio {
+    max-width: calc(100vw - 48px);
+    left: 0;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: clamp(48px, 13vw, 80px);
+  }
+  .photo {
+    aspect-ratio: 4/3;
+  }
+  .limitGauge {
+    padding: 14px 16px;
+  }
+  .tag {
+    font-size: 9px;
+    padding: 5px 10px;
   }
 }

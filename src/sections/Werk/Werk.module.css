@@ -249,4 +249,36 @@
     grid-template-columns: 1fr;
     gap: 32px;
   }
+  .heroProject {
+    margin-bottom: clamp(56px, 8vh, 96px);
+  }
+  .projectName {
+    font-size: clamp(32px, 8vw, 48px);
+  }
+  .grid {
+    gap: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .werk {
+    padding: clamp(72px, 10vh, 120px) var(--gutter);
+  }
+  .title {
+    font-size: clamp(48px, 12vw, 80px);
+  }
+  .cardName {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+  .projectName {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+  .projectMeta {
+    gap: 12px;
+    font-size: 10px;
+  }
+  /* Disable card tilt on very small phones — no perspective room */
+  .card {
+    transform: none;
+  }
 }

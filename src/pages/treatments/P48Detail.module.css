@@ -465,3 +465,21 @@
   .akademieCard { grid-template-columns: 1fr; }
   .span8, .span4, .span6 { grid-column: span 12; }
 }
+
+@media (max-width: 720px) {
+  .milestone {
+    padding: 32px 0;
+  }
+  .milestoneCard {
+    padding: 28px 24px;
+  }
+  .milestoneYear {
+    font-size: clamp(56px, 16vw, 96px);
+  }
+  .milestoneTitle {
+    font-size: clamp(24px, 6vw, 36px);
+  }
+  .gallery {
+    gap: 12px;
+  }
+}

@@ -26,18 +26,7 @@ export function AkademieEvent() {
   return (
     <article className={styles.page}>
       <header className={styles.intro}>
-        <Link
-          to="/akademie"
-          style={{
-            display: 'inline-block',
-            marginBottom: '32px',
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-mono-sm)',
-            letterSpacing: 'var(--ls-mono)',
-            textTransform: 'uppercase',
-            opacity: 0.62,
-          }}
-        >
+        <Link to="/akademie" className={styles.eventBack}>
           ← Akademie-Archiv
         </Link>
         <p className={styles.eyebrow}>
@@ -46,39 +35,11 @@ export function AkademieEvent() {
         <h1 className={styles.headline}>{event.title}</h1>
       </header>
 
-      <div
-        style={{
-          maxWidth: 'var(--max)',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1.6fr',
-          gap: 'clamp(48px, 6vw, 120px)',
-          alignItems: 'start',
-          paddingBlock: '48px',
-          borderTop: '1px solid var(--line-on-deep)',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--mono)',
-            fontSize: 'var(--fs-eyebrow)',
-            letterSpacing: 'var(--ls-eyebrow)',
-            textTransform: 'uppercase',
-            color: 'var(--paper-on-deep-soft)',
-          }}
-        >
-          Werkbericht
-        </div>
-        <div
-          style={{
-            fontSize: 'var(--fs-body-lg)',
-            lineHeight: 1.65,
-            color: 'var(--paper-on-deep-soft)',
-            maxWidth: '720px',
-          }}
-        >
+      <div className={styles.eventBody}>
+        <div className={styles.eventBodyLabel}>Werkbericht</div>
+        <div className={styles.eventBodyText}>
           <p style={{ marginBottom: '24px' }}>
-            <strong style={{ color: 'var(--paper-on-deep)' }}>{event.speaker}</strong>
+            <strong>{event.speaker}</strong>
             {event.isGuest ? ' (Gast)' : ''} · {event.venue}
             {event.city ? `, ${event.city}` : ''}
             {event.time ? ` · ${event.time}` : ''}

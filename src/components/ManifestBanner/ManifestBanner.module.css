@@ -118,4 +118,29 @@
     /* shorter on mobile so the page doesn't feel padded with banner sections */
     min-height: 130vh;
   }
+  .lead {
+    font-size: clamp(36px, 9vw, 80px);
+  }
+  .bold {
+    font-size: clamp(48px, 13vw, 120px);
+  }
+  .progressLine {
+    left: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    min-height: 110vh;
+  }
+  .lead {
+    font-size: clamp(30px, 9vw, 56px);
+  }
+  .bold {
+    font-size: clamp(40px, 13vw, 84px);
+  }
+  .coda {
+    font-size: 11px;
+    margin-top: 32px;
+  }
 }
