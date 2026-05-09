@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PROJEKTE, PROJEKTE_BY_SLUG, type Projekt, type ProjektSlug } from '@/data/projekte';
+import { AKADEMIE_EVENTS } from '@/data/akademie';
 import { ResponsiveImage } from '@/components/ResponsiveImage/ResponsiveImage';
 
 import { NotFound } from './NotFound';
@@ -122,7 +123,14 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
         </div>
       ) : null}
 
+      {/* Rich editorial: lede, chapters, lineage strip — only when data set */}
+      {projekt.rich ? <RichEditorial projekt={projekt} /> : null}
+
       {Showcase ? <Showcase projekt={projekt} /> : <DefaultGallery projekt={projekt} />}
+
+      {projekt.rich?.relatedAkademie?.length ? (
+        <RelatedAkademie slugs={projekt.rich.relatedAkademie} />
+      ) : null}
 
       <div className={styles.related}>
         <p className={styles.relatedTitle}>Weitere Bauten</p>
@@ -145,6 +153,92 @@ function StandardProjektDetail({ projekt }: { projekt: Projekt }) {
 }
 
 const GALLERY_LAYOUT = ['gallerySpan8', 'gallerySpan4', 'gallerySpan6', 'gallerySpan6', 'gallerySpan12', 'gallerySpan8', 'gallerySpan4', 'gallerySpan12'] as const;
+
+/** Rich editorial extension — lede + chapters + lineage strip. Only
+ *  rendered when `projekt.rich` is set. The chapters use sticky-on-desktop
+ *  headings (eyebrow + title) with body text on the right; the lineage
+ *  strip shows architectural references + material notes between chapters
+ *  and the gallery. */
+function RichEditorial({ projekt }: { projekt: Projekt }) {
+  const rich = projekt.rich!;
+  return (
+    <>
+      <p className={styles.lede}>{rich.lede}</p>
+
+      <div className={styles.chapters}>
+        {rich.chapters.map((c, i) => (
+          <article key={i} className={styles.chapter}>
+            <header className={styles.chapterHead}>
+              <span className={styles.chapterEyebrow}>{c.eyebrow}</span>
+              <h2 className={styles.chapterTitle}>{c.title}</h2>
+            </header>
+            <div className={styles.chapterBody}>
+              <p>{c.body}</p>
+              {c.pullQuote ? (
+                <p className={styles.chapterPullQuote}>{c.pullQuote}</p>
+              ) : null}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {rich.lineage?.length || rich.materialNotes?.length ? (
+        <section className={styles.lineageStrip}>
+          {rich.lineage?.length ? (
+            <div>
+              <p className={styles.lineageStripLabel}>Geistige Familie</p>
+              <ul className={styles.lineageList}>
+                {rich.lineage.map((name) => (
+                  <li key={name} className={styles.lineageItem}>
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <div />
+          )}
+          {rich.materialNotes?.length ? (
+            <div>
+              <p className={styles.lineageStripLabel}>Material · Detail</p>
+              <ol className={styles.materialList}>
+                {rich.materialNotes.map((note) => (
+                  <li key={note} className={styles.materialItem}>
+                    {note}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+    </>
+  );
+}
+
+/** Cross-link cards to related Akademie events. */
+function RelatedAkademie({ slugs }: { slugs: string[] }) {
+  const events = slugs
+    .map((s) => AKADEMIE_EVENTS.find((e) => e.slug === s))
+    .filter((e): e is (typeof AKADEMIE_EVENTS)[number] => !!e);
+  if (events.length === 0) return null;
+  return (
+    <section className={styles.akademieLinks}>
+      <p className={styles.akademieLinksLabel}>Verwandte Akademie-Vorträge</p>
+      {events.map((e) => (
+        <Link
+          key={e.slug}
+          to={`/akademie/${e.slug}`}
+          className={styles.akademieLinkCard}
+        >
+          <span className={styles.akademieLinkDate}>{e.dateLabel}</span>
+          <span className={styles.akademieLinkTitle}>{e.title}</span>
+          <span className={styles.akademieLinkArrow}>Werkbericht →</span>
+        </Link>
+      ))}
+    </section>
+  );
+}
 
 /** Fallback gallery for projects without a treatment-specific showcase. */
 function DefaultGallery({ projekt }: { projekt: Projekt }) {

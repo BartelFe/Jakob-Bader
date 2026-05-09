@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, Html } from '@react-three/drei';
-import { Suspense, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Group, MathUtils, Vector3 } from 'three';
 
 import { Doppelzwiebel } from './Doppelzwiebel';
@@ -35,13 +35,24 @@ interface P48SceneProps {
 export function P48Scene({ progress = 0 }: P48SceneProps) {
   const isMobile = useIsMobile();
 
+  // R3F's resize observer occasionally captures 0×0 dimensions when its
+  // parent is `position: sticky` inside a lazy-loaded Suspense boundary,
+  // leaving the canvas stuck at the 300×150 HTML default. Forcing a
+  // window resize after mount makes R3F re-measure the parent. Cheap.
+  useEffect(() => {
+    const ts = [50, 200, 600].map((d) =>
+      window.setTimeout(() => window.dispatchEvent(new Event('resize')), d),
+    );
+    return () => ts.forEach((t) => window.clearTimeout(t));
+  }, []);
+
   return (
     <Canvas
       camera={{ position: [2, 18, 0.5], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       shadows
-      style={{ width: '100%', height: '100%', background: 'transparent' }}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent' }}
     >
       <ambientLight intensity={0.45} color="#fff5e8" />
       <directionalLight

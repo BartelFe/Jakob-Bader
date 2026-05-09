@@ -5,6 +5,13 @@
 
 export type ProjektSlug = 'p48' | 'akpl22' | 'lupo' | 'hausw' | 't61' | 'vs15';
 
+export interface ProjektChapter {
+  eyebrow: string;
+  title: string;
+  body: string;
+  pullQuote?: string;
+}
+
 export interface Projekt {
   slug: ProjektSlug;
   code: string;
@@ -20,6 +27,15 @@ export interface Projekt {
   images: string[];
   plans?: string[];
   treatment: 'editorial' | 'gallery' | 'before-after' | 'split-view' | 'detail-cards' | 'typographic';
+  /** Optional rich-editorial extension — when present, ProjektDetail
+   *  renders the deep version (with chapters, lineage, related Akademie). */
+  rich?: {
+    lede: string;
+    chapters: ProjektChapter[];
+    lineage?: string[];
+    materialNotes?: string[];
+    relatedAkademie?: string[];
+  };
 }
 
 export const PROJEKTE: Projekt[] = [
@@ -76,6 +92,41 @@ export const PROJEKTE: Projekt[] = [
     ],
     plans: ['/projekte/akpl22/akpl22-grundriss.jpg'],
     treatment: 'gallery',
+    rich: {
+      lede:
+        'Eine mondäne Stadtwohnung in Alt-Schwabing, 2025 unter Denkmalschutz gestellt. Statt umzubauen, haben wir den Bestand ernster genommen als der Bestand sich selbst.',
+      chapters: [
+        {
+          eyebrow: 'Bestand · Ernst Barth, 1903',
+          title: 'Ein Meisterarchitekt der Moderne, lange übersehen.',
+          body:
+            'Ernst Barth war einer der frühen Münchner Modernen — sachlich, wohlproportioniert, mit Sinn für die richtige Türhöhe und das stimmige Gesims. Sein Schwabinger Werk wurde lange als zweite Reihe gehandelt; erst 2025 stellte München diesen Bau unter Denkmalschutz. Die Aufgabe war damit nicht, ein neues Statement zu setzen, sondern ein vorhandenes wieder lesbar zu machen.',
+        },
+        {
+          eyebrow: 'Haltung',
+          title: 'Die beste Version ihrer selbst.',
+          body:
+            'Wir haben sehr wenig verändert — und genau das richtige. Original-Stuckdecken bleiben. Türhöhen bleiben. Der Grundriss wird minimal entflochten, sodass die Räume wieder ihre originale Sequenz erhalten. Was hinzukommt — das Fischgrätparkett, die Mailand-Farbpalette, die Spiegelflächen — folgt der Logik des Bestands, statt sich gegen ihn zu stellen.',
+          pullQuote:
+            'Eingriffe so klein wie möglich, so groß wie nötig.',
+        },
+        {
+          eyebrow: 'Material · Palette',
+          title: 'Mailand statt München.',
+          body:
+            'Eine sehr dezent farbige Palette: Salbei, Aubergine, gedämpftes Petrol. Geräuchertes Fischgrätparkett, das ein wenig Pariser Wohnung mitbringt. Verspiegelte Oberschränke, die Räume optisch öffnen. Eine Petersburger Hängung mit Familienportraits — das macht aus der Wohnung ein bewohntes Statement, kein Schauraum.',
+        },
+      ],
+      lineage: ['Ernst Barth', 'Mailand-Atmosphäre', 'Petersburger Hängung', 'Geräuchertes Fischgrät'],
+      materialNotes: [
+        'Geräuchertes Fischgrätparkett',
+        'Verspiegelte Oberschränke an der Decke',
+        'Salbei · Aubergine · gedämpftes Petrol',
+        'Originale Stuckdecken erhalten',
+        'Petersburger Hängung mit Familienportraits',
+      ],
+      relatedAkademie: ['ernst-barth-i', 'ernst-barth-ii', 'ernst-barth-iii'],
+    },
   },
   {
     slug: 'lupo',
@@ -111,6 +162,45 @@ export const PROJEKTE: Projekt[] = [
       '/projekte/hausw/hausw-05.jpg',
     ],
     treatment: 'split-view',
+    rich: {
+      lede:
+        'Eine Villa für einen Geschichtsprofessor in einem grünen Berliner Vorort. Frontal auf die Kirche im Kreisverkehr. Pate standen Schinkel und das Farnsworth House — Tessenow oder Loos hätten den Bau ebenso entworfen.',
+      chapters: [
+        {
+          eyebrow: 'Standort',
+          title: 'Eine Achse zur Kirche.',
+          body:
+            'Der Bauplatz liegt direkt am Kreisverkehr, mit der Kirche im Brennpunkt. Ein Bauherr, der Geschichte lehrt, will ein Haus, das in einer Geschichte steht. Wir haben den Standpunkt frontal genommen — gegen den anfänglichen Widerstand der Behörde, der es zu feudal erschien. Architektur kennt Hierarchien; sie verschweigt sie nicht.',
+          pullQuote: 'Architektur kennt Hierarchien; sie verschweigt sie nicht.',
+        },
+        {
+          eyebrow: 'Linie',
+          title: 'Schinkel meets Farnsworth.',
+          body:
+            'Klare Symmetrie auf einem strengen Grundriss. Eine Naturstein-Plinthe trägt das klassische Gebälk; zwischen Plinthe und Gebälk: Glas. Wo Mies das Skelett verschwinden ließe, lassen wir das Gebälk als architektonisches Wort durchscheinen. Tessenow hätte den Maßstab so gewählt, Loos die Materialwürde so gefordert. Eine Villa, die ihre Bibliothek ernst nimmt.',
+        },
+        {
+          eyebrow: 'Material',
+          title: 'Stein, Stuck, Glas.',
+          body:
+            'Innenboden: Eichenholz im Fischgrät. Außenmaterial: muschelkalk-graue Naturstein-Plinthe und matter weißer Stuck im Klassizismus-Profil. Die Glasflächen sind so gesetzt, dass sie die Sequenz Plinthe–Gebälk nicht zerschneiden, sondern rhythmisieren. Kein Bauteil ist Detail um des Details willen.',
+        },
+      ],
+      lineage: [
+        'Karl Friedrich Schinkel',
+        'Ludwig Mies van der Rohe (Farnsworth)',
+        'Heinrich Tessenow',
+        'Adolf Loos',
+      ],
+      materialNotes: [
+        'Naturstein-Plinthe in Muschelkalk',
+        'Klassisches Gebälk in Stuck',
+        'Glasflächen rhythmisieren, ohne zu zerschneiden',
+        'Innenböden: Eiche im Fischgrät',
+        'Symmetrie auf strengem Grundriss',
+      ],
+      relatedAkademie: [],
+    },
   },
   {
     slug: 't61',

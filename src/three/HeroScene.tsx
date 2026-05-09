@@ -30,13 +30,22 @@ export function HeroScene({
   edgesOpacity = 0.18,
   isMobile = false,
 }: HeroSceneProps) {
+  // Defensive resize trigger — see P48Scene for rationale. Cheap insurance
+  // against R3F mounting before its parent's sticky height is computed.
+  useEffect(() => {
+    const ts = [50, 200].map((d) =>
+      window.setTimeout(() => window.dispatchEvent(new Event('resize')), d),
+    );
+    return () => ts.forEach((t) => window.clearTimeout(t));
+  }, []);
+
   return (
     <Canvas
       // Initial camera — DiveCamera takes over on first frame
       camera={{ position: [0, 0, 22], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      style={{ width: '100%', height: '100%', background: 'transparent' }}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent' }}
     >
       <DiveCamera morph={cameraProgress} />
 
