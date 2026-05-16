@@ -11,116 +11,261 @@ import {
   Vector2,
 } from 'three';
 
-import { HEIGHT, morphProfile } from './profile';
+import {
+  HEIGHT,
+  LANTERN_RADIUS,
+  Y_LANTERN_BOTTOM,
+  Y_LANTERN_TOP,
+  getLowerLatheProfile,
+  getUpperLatheProfile,
+} from './profile';
 
 interface DoppelzwiebelProps {
-  /** 0 = cone (1924 reduced) · 0.5 = onion · 1 = doppelzwiebel (1890/2025) */
+  /**
+   * Legacy prop — kept for API compatibility with existing call sites
+   * (HeroScene, P48Scene). The split-lathe renderer only fully composes
+   * at morph=1; lower morph values render a partial / "becoming"
+   * silhouette useful for loader-style reveals. For most production
+   * use, leave at 1.
+   */
   morph?: number;
-  /** Lathe segment count — high desktop, capped on mobile. */
+  /** Lathe segment count — high desktop, capped on mobile for perf. */
   segments?: number;
   /** Edge-line opacity (0..1). Faded in by the loader's reveal phase. */
   edgesOpacity?: number;
-  /** Optional sweep angle in radians for loader's "build live" effect (default: full circle). */
+  /** Optional sweep angle for build-live loader effects (default: full circle). */
   phiLength?: number;
   /** Show the spire's cross finial. */
   withCross?: boolean;
 }
 
 /**
- * The doppelzwiebel itself.
+ * Krachers Doppelzwiebel — refactored as a 3-part assembly:
  *
- * Two materials:
- *   1. MeshStandardMaterial — aged zinc, dark anthracite + warm metalness
- *   2. LineSegments via EdgesGeometry — warm-gold falz suggestions
+ *   ┌──────────────┐  spire + upper bulb (LatheGeometry, anthracite zinc)
+ *   │   ◯ ◯ ◯ ◯   │  lantern (8 columns + drum + cornices, NOT a lathe)
+ *   └──────────────┘  pedestal + lower bulb (LatheGeometry, anthracite zinc)
  *
- * The lathe is centered so its visual mid-point sits at world-y=0.
+ * The split is required because the lantern's open-column architecture
+ * cannot be represented by a single LatheGeometry. The dome's overall
+ * shape (the silhouette) is still controlled by the profile functions
+ * in `./profile.ts` — see the comment block there for proportions.
  */
 export function Doppelzwiebel({
-  morph = 1,
-  segments = 72,
+  segments = 64,
   edgesOpacity = 0.18,
   phiLength = Math.PI * 2,
   withCross = true,
 }: DoppelzwiebelProps) {
   const groupRef = useRef<Group>(null);
 
-  // Profile + LatheGeometry rebuild on morph or segments change.
-  const { lathe, edges, edgesMaterial, latheMaterial } = useMemo(() => {
-    const points = morphProfile(morph).map(([x, y]) => new Vector2(x, y));
-    const latheGeo = new LatheGeometry(points, segments, 0, phiLength);
-    latheGeo.computeVertexNormals();
-    const edgesGeo = new EdgesGeometry(latheGeo, 8);
-    const mat = new MeshStandardMaterial({
-      color: '#2a2826',
-      metalness: 0.78,
-      roughness: 0.42,
-      flatShading: false,
-    });
-    const lineMat = new LineBasicMaterial({
-      color: '#c9b896',
-      transparent: true,
-      opacity: edgesOpacity,
-    });
-    return { lathe: latheGeo, edges: edgesGeo, edgesMaterial: lineMat, latheMaterial: mat };
-    // edgesOpacity intentionally NOT a dep — set imperatively below to avoid geo rebuild
+  // ─── Geometries (memoized; rebuild only on segments/phiLength change) ─
+  const { lowerLathe, upperLathe, lowerEdges, upperEdges } = useMemo(() => {
+    const lowerPts = getLowerLatheProfile(36).map(([x, y]) => new Vector2(x, y));
+    const upperPts = getUpperLatheProfile(36).map(([x, y]) => new Vector2(x, y));
+    const lower = new LatheGeometry(lowerPts, segments, 0, phiLength);
+    const upper = new LatheGeometry(upperPts, segments, 0, phiLength);
+    lower.computeVertexNormals();
+    upper.computeVertexNormals();
+    return {
+      lowerLathe: lower,
+      upperLathe: upper,
+      lowerEdges: new EdgesGeometry(lower, 12),
+      upperEdges: new EdgesGeometry(upper, 12),
+    };
+  }, [segments, phiLength]);
+
+  // ─── Materials ──────────────────────────────────────────────────────
+  const zincMat = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: '#3a3d42',
+        metalness: 0.88,
+        roughness: 0.32,
+        envMapIntensity: 1.15,
+      }),
+    [],
+  );
+
+  const edgeMat = useMemo(
+    () =>
+      new LineBasicMaterial({
+        color: '#c9b896',
+        transparent: true,
+        opacity: edgesOpacity,
+      }),
+    // intentionally not depending on edgesOpacity — updated imperatively below
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [morph, segments, phiLength]);
+    [],
+  );
 
-  // Update edge opacity without rebuilding geometry.
   useEffect(() => {
-    edgesMaterial.opacity = edgesOpacity;
-  }, [edgesMaterial, edgesOpacity]);
+    edgeMat.opacity = edgesOpacity;
+  }, [edgeMat, edgesOpacity]);
 
-  // Dispose on unmount.
+  // ─── Disposal (avoid GPU memory leaks on HMR or unmount) ────────────
   useEffect(() => {
     return () => {
-      lathe.dispose();
-      edges.dispose();
-      latheMaterial.dispose();
-      edgesMaterial.dispose();
+      lowerLathe.dispose();
+      upperLathe.dispose();
+      lowerEdges.dispose();
+      upperEdges.dispose();
+      zincMat.dispose();
+      edgeMat.dispose();
     };
-  }, [lathe, edges, latheMaterial, edgesMaterial]);
+  }, [lowerLathe, upperLathe, lowerEdges, upperEdges, zincMat, edgeMat]);
 
-  // Slow idle Y-rotation + subtle floating sine.
+  // ─── Idle rotation + subtle float (slower than v1 — gives detail time) ─
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-    groupRef.current.rotation.y += 0.18 * delta;
-    groupRef.current.position.y =
-      MathUtils.lerp(
-        groupRef.current.position.y,
-        Math.sin(state.clock.elapsedTime * 0.6) * 0.04 - HEIGHT / 2,
-        0.08,
-      );
+    groupRef.current.rotation.y += 0.10 * delta;
+    groupRef.current.position.y = MathUtils.lerp(
+      groupRef.current.position.y,
+      Math.sin(state.clock.elapsedTime * 0.6) * 0.04 - HEIGHT / 2,
+      0.08,
+    );
   });
 
   return (
     <group ref={groupRef} position={[0, -HEIGHT / 2, 0]}>
-      <mesh geometry={lathe} material={latheMaterial} castShadow receiveShadow />
+      {/* LOWER half — pedestal + lower bulb + neck taper */}
+      <mesh geometry={lowerLathe} material={zincMat} castShadow receiveShadow />
       <primitive
-        object={new LineSegments(edges, edgesMaterial)}
-        // Tiny outward scale so edges never z-fight with the surface.
+        object={new LineSegments(lowerEdges, edgeMat)}
         scale={[1.0008, 1.0008, 1.0008]}
       />
-      {withCross && morph > 0.4 ? <SpireCross y={HEIGHT - 0.05} /> : null}
+
+      {/* LANTERN — separate octagonal pavilion (cannot be a lathe) */}
+      <Lantern
+        y={Y_LANTERN_BOTTOM}
+        radius={LANTERN_RADIUS}
+        height={Y_LANTERN_TOP - Y_LANTERN_BOTTOM}
+        drumSegments={Math.min(segments, 64)}
+      />
+
+      {/* UPPER half — small bulb + spire */}
+      <mesh geometry={upperLathe} material={zincMat} castShadow receiveShadow />
+      <primitive
+        object={new LineSegments(upperEdges, edgeMat)}
+        scale={[1.0008, 1.0008, 1.0008]}
+      />
+
+      {withCross ? <SpireCross y={HEIGHT - 0.05} /> : null}
     </group>
   );
 }
 
-/**
- * Tiny cross finial above the doppelzwiebel — two thin orthogonal boxes.
- * Renders only when morph is past the cone state (>0.4) so the cone keyframe
- * stays bare (it lost its cross historically).
- */
+/* ═══════════════════════════════════════════════════════════════════
+ * LANTERN — octagonal pillared pavilion
+ *
+ * Architectural anatomy (bottom to top):
+ *   1. Bottom cornice ring — dark zinc, octagonal, slightly wider than columns
+ *   2. Inner drum (limestone/cream) visible BEHIND the columns
+ *   3. Eight cream columns standing in a circle at radius=LANTERN_RADIUS
+ *   4. Top cornice ring — dark zinc, octagonal, mirror of bottom
+ *
+ * The columns are rotated by π/8 (22.5°) so they sit at the octagonal
+ * cornices' corners rather than centered on the flat sides — matches
+ * the photographic reference.
+ * ═══════════════════════════════════════════════════════════════════ */
+function Lantern({
+  y,
+  radius,
+  height,
+  drumSegments,
+}: {
+  y: number;
+  radius: number;
+  height: number;
+  drumSegments: number;
+}) {
+  const COLUMN_COUNT = 8;
+  const COLUMN_RADIUS = 0.038;
+  const BASE_CORNICE_HEIGHT = 0.10;
+  const TOP_CORNICE_HEIGHT = 0.12;
+  const columnHeight = height - BASE_CORNICE_HEIGHT - TOP_CORNICE_HEIGHT;
+  const columnY = y + BASE_CORNICE_HEIGHT + columnHeight / 2;
+
+  return (
+    <group>
+      {/* Bottom cornice — dark zinc, octagonal, with slight outward taper */}
+      <mesh
+        position={[0, y + BASE_CORNICE_HEIGHT / 2, 0]}
+        castShadow
+        receiveShadow
+      >
+        <cylinderGeometry
+          args={[radius + 0.04, radius + 0.06, BASE_CORNICE_HEIGHT, 8]}
+        />
+        <meshStandardMaterial
+          color="#3a3d42"
+          metalness={0.88}
+          roughness={0.32}
+          envMapIntensity={1.1}
+        />
+      </mesh>
+
+      {/* Inner drum — limestone cream, visible between columns */}
+      <mesh position={[0, columnY, 0]} receiveShadow>
+        <cylinderGeometry
+          args={[radius - 0.12, radius - 0.12, columnHeight, drumSegments]}
+        />
+        <meshStandardMaterial color="#d8c8a8" metalness={0.04} roughness={0.88} />
+      </mesh>
+
+      {/* 8 columns — cream painted limestone, evenly spaced */}
+      {Array.from({ length: COLUMN_COUNT }).map((_, i) => {
+        const angle = (i / COLUMN_COUNT) * Math.PI * 2 + Math.PI / 8;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        return (
+          <mesh key={i} position={[x, columnY, z]} castShadow>
+            <cylinderGeometry
+              args={[COLUMN_RADIUS, COLUMN_RADIUS, columnHeight, 12]}
+            />
+            <meshStandardMaterial
+              color="#e8e2d4"
+              metalness={0.05}
+              roughness={0.85}
+            />
+          </mesh>
+        );
+      })}
+
+      {/* Top cornice — dark zinc, octagonal, slightly wider than bottom */}
+      <mesh
+        position={[0, y + height - TOP_CORNICE_HEIGHT / 2, 0]}
+        castShadow
+        receiveShadow
+      >
+        <cylinderGeometry
+          args={[radius + 0.08, radius + 0.04, TOP_CORNICE_HEIGHT, 8]}
+        />
+        <meshStandardMaterial
+          color="#3a3d42"
+          metalness={0.88}
+          roughness={0.32}
+          envMapIntensity={1.1}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ * SPIRE CROSS — finial atop the upper bulb's spire
+ * Two thin orthogonal warm-gold boxes. Renders only when withCross=true.
+ * ═══════════════════════════════════════════════════════════════════ */
 function SpireCross({ y }: { y: number }) {
   return (
     <group position={[0, y, 0]}>
       <mesh>
-        <boxGeometry args={[0.04, 0.55, 0.04]} />
-        <meshStandardMaterial color="#c9b896" metalness={0.9} roughness={0.3} />
+        <boxGeometry args={[0.035, 0.55, 0.035]} />
+        <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
       </mesh>
       <mesh position={[0, 0.18, 0]}>
-        <boxGeometry args={[0.32, 0.04, 0.04]} />
-        <meshStandardMaterial color="#c9b896" metalness={0.9} roughness={0.3} />
+        <boxGeometry args={[0.30, 0.035, 0.035]} />
+        <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
       </mesh>
     </group>
   );

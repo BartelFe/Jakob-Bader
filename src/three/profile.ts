@@ -191,6 +191,98 @@ export function morphProfile(progress: number, numPoints = NUM_POINTS): ProfileP
   return out;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+ * SPLIT-LATHE GEOMETRY for the doppelzwiebel hero
+ *
+ * The doppelzwiebel is rendered as THREE separate parts to enable the
+ * lantern's open-column architecture, which is impossible inside a
+ * single LatheGeometry (a lathe surface is a continuous rotational
+ * solid and cannot have holes).
+ *
+ *   y range            | rendered as
+ *   ───────────────────┼─────────────────────────────────────────
+ *   0 → Y_LANTERN_BOT  | LOWER lathe — pedestal + lower bulb + neck
+ *   Y_LANTERN_BOT → Y_LANTERN_TOP | LANTERN — separate group (Doppelzwiebel.tsx)
+ *   Y_LANTERN_TOP → HEIGHT | UPPER lathe — small bulb + spire
+ *
+ * The lantern radius is wider than the necks at its base/top, so a
+ * visible cornice "shelf" appears at each end — that's the correct
+ * architectural read.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/** Y-coordinate (world units) where the lantern's bottom cornice sits. */
+export const Y_LANTERN_BOTTOM = 4.0;
+
+/** Y-coordinate where the lantern's top cornice sits. */
+export const Y_LANTERN_TOP = 5.5;
+
+/** Outer radius of the lantern's columns (column-center radius). */
+export const LANTERN_RADIUS = 0.52;
+
+/**
+ * Profile for the LOWER lathe — pedestal + lower bulb + neck taper.
+ *
+ * Spans y = 0 to Y_LANTERN_BOTTOM (4.0 units). Designed wider than tall
+ * to give the bulb its characteristic Bavarian fatness (~1.4:1 ratio).
+ */
+export function getLowerLatheProfile(numPoints = 36): ProfilePoint[] {
+  const pts: ProfilePoint[] = [];
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+    const y = t * Y_LANTERN_BOTTOM;
+    let r: number;
+
+    if (t < 0.275) {
+      r = 0.94;
+    } else if (t < 0.32) {
+      const local = (t - 0.275) / 0.045;
+      r = 0.94 + (0.55 - 0.94) * local;
+    } else if (t < 0.88) {
+      const local = (t - 0.32) / 0.56;
+      r = bulb(local, 0.55, 1.50, 0.30);
+    } else {
+      const local = (t - 0.88) / 0.12;
+      r = 0.30 + (0.16 - 0.30) * local;
+    }
+
+    pts.push([Math.max(0.001, r), y]);
+  }
+  return pts;
+}
+
+/**
+ * Profile for the UPPER lathe — small upper bulb + spire needle.
+ *
+ * Spans y = Y_LANTERN_TOP to HEIGHT (4.5 units). Same ogee shape as
+ * the lower bulb, scaled to ~58% (max r=0.88 vs lower's 1.50).
+ */
+export function getUpperLatheProfile(numPoints = 36): ProfilePoint[] {
+  const pts: ProfilePoint[] = [];
+  const ySpan = HEIGHT - Y_LANTERN_TOP;
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+    const y = Y_LANTERN_TOP + t * ySpan;
+    let r: number;
+
+    if (t < 0.06) {
+      const local = t / 0.06;
+      r = 0.16 + (0.42 - 0.16) * local;
+    } else if (t < 0.42) {
+      const local = (t - 0.06) / 0.36;
+      r = bulb(local, 0.42, 0.88, 0.14);
+    } else if (t < 0.48) {
+      const local = (t - 0.42) / 0.06;
+      r = 0.14 + (0.05 - 0.14) * local;
+    } else {
+      const local = (t - 0.48) / 0.52;
+      r = 0.05 * Math.pow(1 - local, 1.9);
+    }
+
+    pts.push([Math.max(0.001, r), y]);
+  }
+  return pts;
+}
+
 export function profileToSvgPath(state: ProfileState, width = 200, height = 260): string {
   const points = getProfile(state, NUM_POINTS);
   const cx = width / 2;

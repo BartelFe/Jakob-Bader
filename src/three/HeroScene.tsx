@@ -61,7 +61,7 @@ export function HeroScene({
       <directionalLight
         position={[6, 9, 7]}
         color="#ffd9a8"
-        intensity={1.5}
+        intensity={1.3}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -76,7 +76,7 @@ export function HeroScene({
       <CursorReactiveLight basePosition={[0, 4, -8]} color="#ffffff" intensity={0.5} />
 
       <Suspense fallback={null}>
-        <Environment preset="studio" background={false} environmentIntensity={0.45} />
+        <Environment preset="city" background={false} environmentIntensity={0.7} />
       </Suspense>
 
       <CursorReactiveGroup>
