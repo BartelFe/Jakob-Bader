@@ -83,7 +83,7 @@ export function Doppelzwiebel({
   const zincMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#454a52',
+        color: '#5c636a',
         metalness: 0.88,
         roughness: 0.32,
         envMapIntensity: 1.25,
@@ -138,8 +138,8 @@ export function Doppelzwiebel({
         object={new LineSegments(lowerEdges, edgeMat)}
         scale={[1.0008, 1.0008, 1.0008]}
       />
-      {/* Stehfalze on the lower bulb — 16 ribs for the larger surface */}
-      <DomeRibs profile={getLowerLatheProfile(48)} ribCount={16} />
+      {/* Stehfalze on the lower bulb — 20 ribs (matches reference image density) */}
+      <DomeRibs profile={getLowerLatheProfile(48)} ribCount={20} />
 
       {/* LANTERN — separate octagonal pavilion (cannot be a lathe) */}
       <Lantern
@@ -155,8 +155,9 @@ export function Doppelzwiebel({
         object={new LineSegments(upperEdges, edgeMat)}
         scale={[1.0008, 1.0008, 1.0008]}
       />
-      {/* Stehfalze on the upper bulb — 12 ribs (smaller circumference) */}
-      <DomeRibs profile={getUpperLatheProfile(48)} ribCount={12} />
+      {/* Stehfalze on the upper bulb — 16 ribs (smaller circumference,
+          reference shows higher density than initial v3 estimate) */}
+      <DomeRibs profile={getUpperLatheProfile(48)} ribCount={16} />
 
       {withCross ? <WeatherVane y={HEIGHT - 0.05} /> : null}
     </group>
@@ -206,7 +207,7 @@ function Lantern({
           args={[radius + 0.04, radius + 0.06, BASE_CORNICE_HEIGHT, 8]}
         />
         <meshStandardMaterial
-          color="#454a52"
+          color="#5c636a"
           metalness={0.88}
           roughness={0.32}
           envMapIntensity={1.1}
@@ -271,7 +272,7 @@ function Lantern({
           args={[radius + 0.08, radius + 0.04, TOP_CORNICE_HEIGHT, 8]}
         />
         <meshStandardMaterial
-          color="#454a52"
+          color="#5c636a"
           metalness={0.88}
           roughness={0.32}
           envMapIntensity={1.1}
@@ -303,7 +304,7 @@ function DomeRibs({
   profile,
   ribCount,
   ribRadius = 0.022,
-  protrusion = 1.018,
+  protrusion = 1.025,
 }: {
   profile: ProfilePoint[];
   ribCount: number;
