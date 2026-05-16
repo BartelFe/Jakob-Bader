@@ -1,40 +1,38 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 
 import { HERO } from '@/data/manifest';
-import { hasWebGL, prefersReducedMotion } from '@/lib/webgl';
+import { prefersReducedMotion } from '@/lib/webgl';
 
 import styles from './Hero.module.css';
 
-// Lazy-load the R3F scene so three.js + r3f stay out of the initial chunk.
-const HeroScene = lazy(() =>
-  import('@/three/HeroScene').then((m) => ({ default: m.HeroScene })),
+// Lazy-load so gsap + the canvas particle field stay out of the initial chunk.
+const HeroImageScene = lazy(() =>
+  import('@/three/HeroImageScene').then((m) => ({ default: m.HeroImageScene })),
 );
 
 /**
- * HERO — v5: WebGL helm + supporting context (gables + roof).
+ * HERO — v4 image-driven atmospheric composition.
  *
- * The 3D approach was the right *feel* — Felix wanted that — but v3 had
- * the helm floating in dark space with off proportions. v5:
- *   - Profile re-traced from the actual section drawing (better
- *     proportions: fatter lower bulb, taller pedestal, longer spire)
- *   - Adds supporting context: small slate cap + roof slab + two
- *     cream-plaster gable peaks. The helm now stands on something.
- *   - Camera framing widened to show the whole composition; dive at end
- *     of scroll keeps the cinematic gesture.
+ * The WebGL helm hit a fidelity wall; a GPT-Image-generated PNG of the
+ * helm reads dramatically closer to the reference building. Landing
+ * hero now embeds that PNG in a layered DOM/Canvas scene (vignette,
+ * cloud, glints, reflection, mouse-glow, particles). The 3D helm still
+ * lives in HeroScene.tsx and is reused on /werk/p48 where rotation
+ * actually adds value.
  *
- * Fallback (no-WebGL or reduced-motion): the actual architectural
- * section drawing from /projekte/p48/p48-helm-pure.* — way prettier
- * than the previous SVG-from-profile fallback.
+ * Fallback (reduced-motion): the architectural section drawing from
+ * /projekte/p48/p48-helm-pure.*
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const [diveProgress, setDiveProgress] = useState(0);
-  const [canRender3D, setCanRender3D] = useState<boolean | null>(null);
+  const [canRenderScene, setCanRenderScene] = useState<boolean | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const ok = hasWebGL() && !prefersReducedMotion();
-    setCanRender3D(ok);
+    // The new image hero is DOM/Canvas only — no WebGL gate. We still
+    // fall back to the static drawing when reduced-motion is requested.
+    setCanRenderScene(!prefersReducedMotion());
     const mq = window.matchMedia('(max-width: 880px)');
     const onChange = () => setIsMobile(mq.matches);
     onChange();
@@ -43,7 +41,7 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    if (canRender3D === false) return;
+    if (canRenderScene === false) return;
     const el = sectionRef.current;
     if (!el) return;
 
@@ -64,7 +62,7 @@ export function Hero() {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [canRender3D]);
+  }, [canRenderScene]);
 
   return (
     <section
@@ -75,12 +73,10 @@ export function Hero() {
     >
       <div className={styles.canvas}>
         <div className={styles.canvasInner}>
-          {canRender3D === true ? (
+          {canRenderScene === true ? (
             <Suspense fallback={<FallbackVisual />}>
-              <HeroScene
-                morph={1}
+              <HeroImageScene
                 cameraProgress={diveProgress}
-                edgesOpacity={0.18}
                 isMobile={isMobile}
               />
             </Suspense>
