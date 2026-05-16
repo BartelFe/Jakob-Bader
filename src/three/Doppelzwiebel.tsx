@@ -214,14 +214,14 @@ function Lantern({
         />
       </mesh>
 
-      {/* Inner core — very small + dark, suggests depth behind the open
-          columns. The point is to read as "void" behind the colonnade,
-          not as a wall. */}
+      {/* Inner core — even smaller + darker than v3 so the colonnade reads
+          as openly arcaded, with deep void behind. The point is to suggest
+          "hollow architecture," not "wall behind bars." */}
       <mesh position={[0, columnY, 0]} receiveShadow>
         <cylinderGeometry
-          args={[radius - 0.32, radius - 0.32, columnHeight * 0.85, drumSegments]}
+          args={[radius - 0.36, radius - 0.36, columnHeight * 0.85, drumSegments]}
         />
-        <meshStandardMaterial color="#1a1c20" metalness={0.2} roughness={0.9} />
+        <meshStandardMaterial color="#15171a" metalness={0.2} roughness={0.92} />
       </mesh>
 
       {/* 8 columns — cream painted limestone, evenly spaced */}
@@ -258,6 +258,39 @@ function Lantern({
           >
             <boxGeometry args={[0.11, 0.06, 0.11]} />
             <meshStandardMaterial color="#e8e2d4" metalness={0.05} roughness={0.85} />
+          </mesh>
+        );
+      })}
+
+      {/* Arch lintels — 8 half-torus pieces spanning between adjacent
+          column tops. Endpoints sit at the column centers (half-chord =
+          radius·sin(π/8)); apex sits just below the top cornice. This is
+          what gives the lantern its arcaded read instead of "freestanding
+          pillars in front of a wall." */}
+      {Array.from({ length: COLUMN_COUNT }).map((_, i) => {
+        const halfChord = radius * Math.sin(Math.PI / COLUMN_COUNT);
+        const midRadius = radius * Math.cos(Math.PI / COLUMN_COUNT);
+        // Midway between column i and column i+1 (columns sit at i·2π/8 + π/8)
+        const midAngle = (i + 0.5) * ((Math.PI * 2) / COLUMN_COUNT) + Math.PI / 8;
+        const archX = Math.cos(midAngle) * midRadius;
+        const archZ = Math.sin(midAngle) * midRadius;
+        // Apex sits 0.02 below cornice bottom; springing line is halfChord below apex
+        const archY = y + height - TOP_CORNICE_HEIGHT - halfChord - 0.02;
+        return (
+          <mesh
+            key={`arch-${i}`}
+            position={[archX, archY, archZ]}
+            // Rotate around Y so the torus's default X-axis (diameter) aligns
+            // with the tangent at midAngle — endpoints land on column centers.
+            rotation={[0, -midAngle - Math.PI / 2, 0]}
+            castShadow
+          >
+            <torusGeometry args={[halfChord, 0.026, 6, 20, Math.PI]} />
+            <meshStandardMaterial
+              color="#e8e2d4"
+              metalness={0.05}
+              roughness={0.85}
+            />
           </mesh>
         );
       })}
@@ -377,6 +410,14 @@ function WeatherVane({ y }: { y: number }) {
       <mesh position={[0, 0.15, 0]}>
         <sphereGeometry args={[0.05, 16, 12]} />
         <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
+      </mesh>
+      {/* Pennant banner — small triangular flag rotating freely on the pole.
+          The reference photo shows a flag-like vane below the compass; this
+          is its thin sheet-metal stand-in. Slightly darker bronze tone than
+          the rest of the vane so it reads as the "moving" part. */}
+      <mesh position={[0.085, 0.27, 0]} rotation={[0, 0, 0]} castShadow>
+        <boxGeometry args={[0.16, 0.09, 0.004]} />
+        <meshStandardMaterial color="#a89578" metalness={0.88} roughness={0.32} />
       </mesh>
       {/* Compass-rose crossbar (4 arms) */}
       <mesh position={[0, 0.38, 0]}>
