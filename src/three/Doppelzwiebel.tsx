@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
+  CatmullRomCurve3,
   EdgesGeometry,
   Group,
   LatheGeometry,
@@ -8,7 +9,9 @@ import {
   LineSegments,
   MathUtils,
   MeshStandardMaterial,
+  TubeGeometry,
   Vector2,
+  Vector3,
 } from 'three';
 
 import {
@@ -18,6 +21,7 @@ import {
   Y_LANTERN_TOP,
   getLowerLatheProfile,
   getUpperLatheProfile,
+  type ProfilePoint,
 } from './profile';
 
 interface DoppelzwiebelProps {
@@ -79,10 +83,10 @@ export function Doppelzwiebel({
   const zincMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#3a3d42',
+        color: '#454a52',
         metalness: 0.88,
         roughness: 0.32,
-        envMapIntensity: 1.15,
+        envMapIntensity: 1.25,
       }),
     [],
   );
@@ -134,6 +138,8 @@ export function Doppelzwiebel({
         object={new LineSegments(lowerEdges, edgeMat)}
         scale={[1.0008, 1.0008, 1.0008]}
       />
+      {/* Stehfalze on the lower bulb — 16 ribs for the larger surface */}
+      <DomeRibs profile={getLowerLatheProfile(48)} ribCount={16} />
 
       {/* LANTERN — separate octagonal pavilion (cannot be a lathe) */}
       <Lantern
@@ -149,8 +155,10 @@ export function Doppelzwiebel({
         object={new LineSegments(upperEdges, edgeMat)}
         scale={[1.0008, 1.0008, 1.0008]}
       />
+      {/* Stehfalze on the upper bulb — 12 ribs (smaller circumference) */}
+      <DomeRibs profile={getUpperLatheProfile(48)} ribCount={12} />
 
-      {withCross ? <SpireCross y={HEIGHT - 0.05} /> : null}
+      {withCross ? <WeatherVane y={HEIGHT - 0.05} /> : null}
     </group>
   );
 }
@@ -198,7 +206,7 @@ function Lantern({
           args={[radius + 0.04, radius + 0.06, BASE_CORNICE_HEIGHT, 8]}
         />
         <meshStandardMaterial
-          color="#3a3d42"
+          color="#454a52"
           metalness={0.88}
           roughness={0.32}
           envMapIntensity={1.1}
@@ -263,7 +271,7 @@ function Lantern({
           args={[radius + 0.08, radius + 0.04, TOP_CORNICE_HEIGHT, 8]}
         />
         <meshStandardMaterial
-          color="#3a3d42"
+          color="#454a52"
           metalness={0.88}
           roughness={0.32}
           envMapIntensity={1.1}
@@ -274,18 +282,113 @@ function Lantern({
 }
 
 /* ═══════════════════════════════════════════════════════════════════
- * SPIRE CROSS — finial atop the upper bulb's spire
- * Two thin orthogonal warm-gold boxes. Renders only when withCross=true.
+ * DOME RIBS — vertical zinc seams (Stehfalze)
+ *
+ * The defining surface detail of a real Bavarian onion dome. Each rib
+ * is a thin TubeGeometry following the lathe's profile curve at a
+ * single radial angle. The rib stands slightly outward from the
+ * surface (controlled by `protrusion`), simulating where two zinc
+ * sheets fold together into a raised seam.
+ *
+ * Rib material is slightly lighter and more reflective than the dome
+ * surface, so the seams catch highlights along their crests — the
+ * effect that makes the dome read as "constructed metal" rather than
+ * "molded surface."
+ *
+ * Profile points where r < 0.06 are filtered out — at the spire tip
+ * the surface is thinner than the rib itself, and a tube there would
+ * just be a degenerate overlap.
  * ═══════════════════════════════════════════════════════════════════ */
-function SpireCross({ y }: { y: number }) {
+function DomeRibs({
+  profile,
+  ribCount,
+  ribRadius = 0.022,
+  protrusion = 1.018,
+}: {
+  profile: ProfilePoint[];
+  ribCount: number;
+  ribRadius?: number;
+  protrusion?: number;
+}) {
+  const geometries = useMemo(() => {
+    const usablePoints = profile.filter(([r]) => r > 0.06);
+    if (usablePoints.length < 2) return [];
+
+    return Array.from({ length: ribCount }).map((_, i) => {
+      const angle = (i / ribCount) * Math.PI * 2;
+      const points = usablePoints.map(
+        ([r, y]) =>
+          new Vector3(
+            Math.cos(angle) * r * protrusion,
+            y,
+            Math.sin(angle) * r * protrusion,
+          ),
+      );
+      const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.5);
+      return new TubeGeometry(curve, 48, ribRadius, 6, false);
+    });
+  }, [profile, ribCount, ribRadius, protrusion]);
+
+  const ribMaterial = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: '#5a5d62',
+        metalness: 0.94,
+        roughness: 0.22,
+        envMapIntensity: 1.35,
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    return () => {
+      geometries.forEach((g) => g.dispose());
+      ribMaterial.dispose();
+    };
+  }, [geometries, ribMaterial]);
+
+  return (
+    <>
+      {geometries.map((geo, i) => (
+        <mesh key={i} geometry={geo} material={ribMaterial} castShadow />
+      ))}
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ * WEATHER VANE — finial atop the upper bulb's spire
+ *
+ * Historically correct for the P48 building: a 1890 residential
+ * Wohnhaus by Ludwig Kracher, not a church, so a Wetterfahne (not a
+ * Christian cross) crowns the helm. The `withCross` prop name is
+ * kept for API compat with existing call sites (HeroScene, P48Scene).
+ * ═══════════════════════════════════════════════════════════════════ */
+function WeatherVane({ y }: { y: number }) {
   return (
     <group position={[0, y, 0]}>
+      {/* Vertical pole */}
       <mesh>
-        <boxGeometry args={[0.035, 0.55, 0.035]} />
+        <cylinderGeometry args={[0.018, 0.018, 0.85, 12]} />
         <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
       </mesh>
-      <mesh position={[0, 0.18, 0]}>
-        <boxGeometry args={[0.30, 0.035, 0.035]} />
+      {/* Small finial ball ~60% up the pole */}
+      <mesh position={[0, 0.15, 0]}>
+        <sphereGeometry args={[0.05, 16, 12]} />
+        <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
+      </mesh>
+      {/* Compass-rose crossbar (4 arms) */}
+      <mesh position={[0, 0.38, 0]}>
+        <boxGeometry args={[0.34, 0.025, 0.025]} />
+        <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
+      </mesh>
+      <mesh position={[0, 0.38, 0]}>
+        <boxGeometry args={[0.025, 0.025, 0.34]} />
+        <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
+      </mesh>
+      {/* Top ornament */}
+      <mesh position={[0, 0.46, 0]}>
+        <sphereGeometry args={[0.035, 12, 8]} />
         <meshStandardMaterial color="#c9b896" metalness={0.92} roughness={0.28} />
       </mesh>
     </group>
