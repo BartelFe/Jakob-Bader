@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Group, MathUtils, PointLight, Shape, Vector3 } from 'three';
+import { Group, MathUtils, PointLight, Vector3 } from 'three';
 
 import { Doppelzwiebel } from './Doppelzwiebel';
 import { HEIGHT } from './profile';
@@ -43,7 +43,7 @@ export function HeroScene({
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 22], fov: 38 }}
+      camera={{ position: [0, 0, 18], fov: 38 }}
       dpr={[1, isMobile ? 1.4 : 2]}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       shadows
@@ -110,22 +110,9 @@ function HelmComposition({
   edgesOpacity: number;
   isMobile: boolean;
 }) {
-  // Triangular gable shape — rises 5 units tall, spans 4 units wide
-  const gableShape = useMemo(() => {
-    const s = new Shape();
-    s.moveTo(-2, 0);
-    s.lineTo(2, 0);
-    s.lineTo(0, 5);
-    s.lineTo(-2, 0);
-    return s;
-  }, []);
-
   return (
     <group position={[0, -HEIGHT / 2, 0]}>
-      {/* ─── Helm lathe (the doppelzwiebel itself) ──────────────── */}
-      {/* The Doppelzwiebel component already centers itself; we offset
-          the WHOLE composition down by HEIGHT/2 so the pedestal base
-          sits at the world origin. */}
+      {/* The helm itself — sculptural, no surrounding building geometry */}
       <group position={[0, HEIGHT / 2, 0]}>
         <Doppelzwiebel
           morph={morph}
@@ -134,79 +121,22 @@ function HelmComposition({
         />
       </group>
 
-      {/* ─── Small octagonal cap directly under the helm pedestal ── */}
-      <mesh position={[0, -0.18, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[1.0, 1.2, 0.36, 8]} />
-        <meshStandardMaterial color="#2c2c30" roughness={0.6} metalness={0.18} />
-      </mesh>
-
-      {/* Thin terracotta cornice ring at the cap base */}
-      <mesh position={[0, -0.38, 0]}>
-        <cylinderGeometry args={[1.22, 1.22, 0.06, 8]} />
-        <meshStandardMaterial color="#c44e2c" roughness={0.55} metalness={0.05} />
-      </mesh>
-
-      {/* ─── Roof slab — wide slate platform ─────────────────────── */}
-      <mesh position={[0, -0.65, 0]} receiveShadow castShadow>
-        <boxGeometry args={[8, 0.4, 4]} />
-        <meshStandardMaterial color="#2c2c30" roughness={0.55} metalness={0.18} />
-      </mesh>
-
-      {/* ─── Left gable peak (cream plaster, behind the helm) ──── */}
+      {/* Subtle ground reflection — suggests the helm sits on SOMETHING
+          without committing to a literal roof. Dark, semi-metallic,
+          fading at the edges via the circle geometry. */}
       <mesh
-        position={[-2.4, -0.45, -0.4]}
-        rotation={[0, Math.PI / 2, 0]}
-        castShadow
+        position={[0, -0.05, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
       >
-        <extrudeGeometry args={[gableShape, { depth: 1.4, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#ede0c8" roughness={0.78} metalness={0.0} />
-      </mesh>
-
-      {/* Left gable's slate roof cap — small triangular slate strip */}
-      <mesh
-        position={[-2.4, -0.43, -0.4]}
-        rotation={[0, Math.PI / 2, 0]}
-        castShadow
-      >
-        <extrudeGeometry
-          args={[
-            (() => {
-              const s = new Shape();
-              s.moveTo(-2.05, 0);
-              s.lineTo(0, 5.05);
-              s.lineTo(2.05, 0);
-              s.lineTo(2.05, 0.12);
-              s.lineTo(0, 5.17);
-              s.lineTo(-2.05, 0.12);
-              s.lineTo(-2.05, 0);
-              return s;
-            })(),
-            { depth: 1.42, bevelEnabled: false },
-          ]}
+        <circleGeometry args={[5, 64]} />
+        <meshStandardMaterial
+          color="#1a1612"
+          metalness={0.4}
+          roughness={0.75}
+          transparent
+          opacity={0.6}
         />
-        <meshStandardMaterial color="#1f1f22" roughness={0.55} metalness={0.18} />
-      </mesh>
-
-      {/* ─── Right gable (mirror) ────────────────────────────────── */}
-      <mesh
-        position={[2.4, -0.45, -0.4]}
-        rotation={[0, Math.PI / 2, 0]}
-        castShadow
-        receiveShadow
-      >
-        <extrudeGeometry args={[gableShape, { depth: 1.4, bevelEnabled: false }]} />
-        <meshStandardMaterial color="#ede0c8" roughness={0.78} metalness={0.0} />
-      </mesh>
-
-      {/* ─── Roof slope — sloping plane behind everything ────────── */}
-      <mesh
-        position={[0, -1.6, -1.5]}
-        rotation={[Math.PI / 2.3, 0, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[10, 6]} />
-        <meshStandardMaterial color="#26262a" roughness={0.55} metalness={0.16} />
       </mesh>
     </group>
   );
@@ -229,11 +159,11 @@ function DiveCamera({ morph }: { morph: number }) {
     const wRecognize = MathUtils.clamp((morph - 0.40) / 0.35, 0, 1);
     const wDive = MathUtils.clamp((morph - 0.75) / 0.25, 0, 1);
 
-    const py = 1 + (2.5 - 1) * wRecognize + (4.5 - 2.5) * wDive;
-    const pz = 24 + (16 - 24) * wRecognize + (8 - 16) * wDive;
+    const py = 0 + (2.0 - 0) * wRecognize + (4.0 - 2.0) * wDive;
+    const pz = 18 + (12 - 18) * wRecognize + (7 - 12) * wDive;
     targetPos.set(0, py, pz);
 
-    const ly = 0 + (1.5 - 0) * wRecognize + (4.5 - 1.5) * wDive;
+    const ly = 0.5 + (2.0 - 0.5) * wRecognize + (4.5 - 2.0) * wDive;
     targetLook.set(0, ly, 0);
 
     camera.position.lerp(targetPos, 0.08);

@@ -180,7 +180,7 @@ function Lantern({
   drumSegments: number;
 }) {
   const COLUMN_COUNT = 8;
-  const COLUMN_RADIUS = 0.038;
+  const COLUMN_RADIUS = 0.045;
   const BASE_CORNICE_HEIGHT = 0.10;
   const TOP_CORNICE_HEIGHT = 0.12;
   const columnHeight = height - BASE_CORNICE_HEIGHT - TOP_CORNICE_HEIGHT;
@@ -205,12 +205,14 @@ function Lantern({
         />
       </mesh>
 
-      {/* Inner drum — limestone cream, visible between columns */}
+      {/* Inner core — very small + dark, suggests depth behind the open
+          columns. The point is to read as "void" behind the colonnade,
+          not as a wall. */}
       <mesh position={[0, columnY, 0]} receiveShadow>
         <cylinderGeometry
-          args={[radius - 0.12, radius - 0.12, columnHeight, drumSegments]}
+          args={[radius - 0.32, radius - 0.32, columnHeight * 0.85, drumSegments]}
         />
-        <meshStandardMaterial color="#d8c8a8" metalness={0.04} roughness={0.88} />
+        <meshStandardMaterial color="#1a1c20" metalness={0.2} roughness={0.9} />
       </mesh>
 
       {/* 8 columns — cream painted limestone, evenly spaced */}
@@ -228,6 +230,25 @@ function Lantern({
               metalness={0.05}
               roughness={0.85}
             />
+          </mesh>
+        );
+      })}
+
+      {/* Capitals — small cream blocks above each column, suggesting
+          where the arches would spring from. Gives the colonnade
+          architectural weight at the top. */}
+      {Array.from({ length: COLUMN_COUNT }).map((_, i) => {
+        const angle = (i / COLUMN_COUNT) * Math.PI * 2 + Math.PI / 8;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        return (
+          <mesh
+            key={`cap-${i}`}
+            position={[x, y + height - TOP_CORNICE_HEIGHT - 0.04, z]}
+            castShadow
+          >
+            <boxGeometry args={[0.11, 0.06, 0.11]} />
+            <meshStandardMaterial color="#e8e2d4" metalness={0.05} roughness={0.85} />
           </mesh>
         );
       })}
