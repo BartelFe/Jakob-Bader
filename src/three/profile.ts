@@ -264,17 +264,28 @@ export function getUpperLatheProfile(numPoints = 36): ProfilePoint[] {
     const y = Y_LANTERN_TOP + t * ySpan;
     let r: number;
 
-    if (t < 0.06) {
-      const local = t / 0.06;
-      r = 0.16 + (0.42 - 0.16) * local;
-    } else if (t < 0.42) {
-      const local = (t - 0.06) / 0.36;
-      r = bulb(local, 0.42, 0.88, 0.14);
+    if (t < 0.07) {
+      // Short neck flare from lantern top — kept narrow so the bulb
+      // base starts pinched, giving the onion its characteristic
+      // tropfen shape (not a flattened sphere).
+      const local = t / 0.07;
+      r = 0.18 + (0.24 - 0.18) * local;
     } else if (t < 0.48) {
-      const local = (t - 0.42) / 0.06;
-      r = 0.14 + (0.05 - 0.14) * local;
+      // UPPER BULB — proper onion shape. Base/max ratio is now 0.28
+      // (was 0.48 — i.e. base was nearly half the max width, making
+      // the bulb spherical). Now base is just 28% of max, matching
+      // the lower bulb's 0.55/1.50 = 37% but even more pinched at
+      // base. Max radius slightly nudged from 0.88 to 0.86.
+      const local = (t - 0.07) / 0.41;
+      r = bulb(local, 0.24, 0.86, 0.12);
+    } else if (t < 0.54) {
+      // Neck pinch before spire — bulb taper now ends at 0.12 instead
+      // of 0.14, so the pinch starts from a narrower point.
+      const local = (t - 0.48) / 0.06;
+      r = 0.12 + (0.05 - 0.12) * local;
     } else {
-      const local = (t - 0.48) / 0.52;
+      // Spire — long thin needle, asymptotic taper to zero.
+      const local = (t - 0.54) / 0.46;
       r = 0.05 * Math.pow(1 - local, 1.9);
     }
 
