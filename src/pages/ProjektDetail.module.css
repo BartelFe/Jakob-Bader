@@ -91,7 +91,7 @@
   text-transform: uppercase;
   color: var(--ink-soft);
   position: sticky;
-  top: 120px;
+  top: calc(var(--header-height) + 36px);
 }
 
 .bodyText {
@@ -127,6 +127,10 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: clamp(20px, 2vw, 40px);
+}
+
+.gallery > * {
+  min-width: 0;
 }
 
 .galleryItem {
@@ -460,6 +464,10 @@
   gap: 32px;
 }
 
+.relatedGrid > * {
+  min-width: 0;
+}
+
 .relatedCard {
   display: block;
   color: inherit;
@@ -586,12 +594,36 @@
 
 @media (max-width: 480px) {
   .headline {
-    font-size: clamp(48px, 14vw, 72px);
+    font-size: clamp(44px, 13vw, 68px);
+    margin-bottom: 28px;
   }
   .back {
     margin-bottom: 32px;
   }
+  .meta {
+    margin-bottom: 24px;
+  }
   .gallery {
     gap: 12px;
+  }
+  .akademieLinkCard {
+    padding: 22px 18px;
+    gap: 6px;
+  }
+  .lineageStrip {
+    padding-block: clamp(28px, 5vh, 56px);
+  }
+  .materialItem {
+    font-size: var(--fs-body-sm);
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .headline {
+    font-size: clamp(36px, 12.5vw, 56px);
+  }
+  .chapterTitle {
+    font-size: clamp(24px, 7vw, 36px);
   }
 }

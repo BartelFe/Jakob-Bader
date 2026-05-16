@@ -40,11 +40,17 @@
   align-items: start;
 }
 
+.spread > *,
+.second > * {
+  min-width: 0;
+}
+
 .portrait {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4/5;
   background: var(--bg-paper-warm);
+  max-width: 720px;
 }
 
 .portrait img {
@@ -259,6 +265,9 @@
   overflow: hidden;
   aspect-ratio: 4/5;
   background: var(--bg-paper-warm);
+  max-width: 640px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 .secondImg img {
@@ -488,7 +497,7 @@
     grid-template-columns: 1fr;
   }
   .headline {
-    font-size: clamp(48px, 12vw, 80px);
+    font-size: clamp(40px, 11vw, 72px);
   }
   .lineageWall {
     grid-template-columns: 1fr;
@@ -500,6 +509,11 @@
   .membershipsList {
     grid-template-columns: 1fr;
   }
+  .membership {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 22px 18px;
+  }
   .crossLinks {
     grid-template-columns: 1fr;
   }
@@ -510,5 +524,21 @@
   .lineageReason {
     opacity: 1;
     max-height: 96px;
+  }
+  .secondText {
+    font-size: clamp(22px, 7vw, 36px);
+  }
+}
+
+@media (max-width: 360px) {
+  .headline {
+    font-size: clamp(34px, 10.5vw, 56px);
+  }
+  .kanzlerRow {
+    grid-template-columns: 78px 1fr;
+    gap: 12px;
+  }
+  .lineageItem {
+    padding: 18px 14px;
   }
 }

@@ -179,6 +179,11 @@
   gap: clamp(20px, 2vw, 40px);
 }
 
+.gallery > *,
+.swatches > * {
+  min-width: 0;
+}
+
 .galleryItem {
   background: var(--bg-paper-warm);
   overflow: hidden;
@@ -199,4 +204,23 @@
     grid-template-columns: 1fr;
   }
   .span8, .span4 { grid-column: span 12; }
+}
+
+@media (max-width: 480px) {
+  .equationDisplay {
+    font-size: clamp(80px, 26vw, 200px);
+    gap: 14px;
+  }
+  .swatches {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .swatch {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .swatches {
+    grid-template-columns: 1fr;
+  }
 }

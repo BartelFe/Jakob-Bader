@@ -280,7 +280,7 @@
 
 @media (max-width: 600px) {
   .header {
-    padding: 16px var(--gutter);
+    padding: 12px var(--gutter);
   }
   .nav {
     display: none;
@@ -292,10 +292,26 @@
     display: flex;
   }
   .brandText {
-    font-size: 18px;
+    font-size: 17px;
   }
   .brandMark {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brandText {
+    font-size: 15px;
+  }
+  .brandMark {
+    width: 26px;
+    height: 26px;
+  }
+  .brand {
+    gap: 10px;
+  }
+  .mobileNavLink {
+    font-size: clamp(36px, 11vw, 56px);
   }
 }

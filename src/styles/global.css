@@ -13,6 +13,12 @@
   padding-inline: var(--gutter);
 }
 
+/* Defensive: long URLs and German compound words shouldn't push a
+   container past its width on narrow screens. */
+:where(p, li, h1, h2, h3, h4) {
+  overflow-wrap: anywhere;
+}
+
 .container-prose {
   max-width: var(--max-prose);
 }

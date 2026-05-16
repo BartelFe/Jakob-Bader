@@ -33,13 +33,15 @@
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: 'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
 
-  /* Type — Scale (clamp values per brief §10) */
-  --fs-hero: clamp(96px, 13vw, 280px);
-  --fs-h2: clamp(56px, 9vw, 160px);
-  --fs-h3: clamp(38px, 5.5vw, 92px);
-  --fs-sub: clamp(28px, 3.2vw, 52px);
-  --fs-pull: clamp(22px, 2.4vw, 40px);
-  --fs-body-lg: clamp(18px, 1.4vw, 22px);
+  /* Type — Scale (clamp values per brief §10).
+     Lower bounds are calibrated for ~375px viewports; upper bounds keep
+     things readable past 2560px without runaway display type. */
+  --fs-hero: clamp(64px, 12.5vw, 280px);
+  --fs-h2: clamp(44px, 9vw, 160px);
+  --fs-h3: clamp(34px, 5.5vw, 92px);
+  --fs-sub: clamp(24px, 3.2vw, 52px);
+  --fs-pull: clamp(20px, 2.4vw, 40px);
+  --fs-body-lg: clamp(17px, 1.2vw, 22px);
   --fs-body: 17px;
   --fs-body-sm: 15px;
   --fs-eyebrow: 11px;
@@ -67,6 +69,9 @@
   /* Header height (logo+nav padding 22px × 2 + content ≈ 38px). Used by
      sticky panels that need to sit below the fixed header. */
   --header-height: 84px;
+  /* Mobile-only header reduction so sticky offsets / hero padding shrink
+     in lockstep with the smaller header bar (see Header.module.css). */
+  --header-height-mobile: 64px;
 
   /* Easing — brief §9 */
   --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
@@ -89,6 +94,41 @@
   --z-header: 100;
   --z-modal: 200;
   --z-loader: 999;
+}
+
+/* Ultra-wide tier — 27"+ monitors and beyond.
+   The default `--max: 1640` keeps editorial column rhythm; on big
+   displays we widen the container and gutter so the page breathes
+   with the screen instead of stranding the layout in a narrow strip. */
+@media (min-width: 1920px) {
+  :root {
+    --max: 1840px;
+    --gutter: clamp(72px, 6vw, 160px);
+    --gap-section: clamp(120px, 16vh, 240px);
+  }
+}
+
+@media (min-width: 2400px) {
+  :root {
+    --max: 2080px;
+    --gutter: clamp(96px, 6vw, 200px);
+  }
+}
+
+/* Phones (≤600px) — shrink header so sticky offsets and hero padding
+   shrink in lockstep with the smaller fixed header bar. */
+@media (max-width: 600px) {
+  :root {
+    --header-height: var(--header-height-mobile);
+  }
+}
+
+/* Tiny phones (≤360px) — Galaxy S8 class. Trim gutter so 12-col grids
+   and side-by-side meta blocks still fit without horizontal scroll. */
+@media (max-width: 360px) {
+  :root {
+    --gutter: 16px;
+  }
 }
 
 /* Reduced motion: collapse durations, but keep some structure visible */

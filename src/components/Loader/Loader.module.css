@@ -193,3 +193,27 @@
     transition: none;
   }
 }
+
+@media (max-width: 480px) {
+  .svgWrap {
+    width: 180px;
+    height: 230px;
+  }
+  .progress {
+    width: 180px;
+  }
+  .caption {
+    max-width: min(280px, calc(100vw - 48px));
+    font-size: 11px;
+    padding-inline: 16px;
+  }
+  .captionEm {
+    font-size: 16px;
+  }
+  .skip {
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 14px;
+    font-size: 10px;
+  }
+}

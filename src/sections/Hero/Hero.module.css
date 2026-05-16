@@ -10,6 +10,8 @@
   padding-bottom: clamp(80px, 12vh, 140px);
   isolation: isolate;
   gap: clamp(40px, 4vw, 80px);
+  max-width: 2400px;
+  margin-inline: auto;
 }
 
 /* ─── 3D canvas (right column, sticky) ────────────────────────── */
@@ -51,6 +53,18 @@
   z-index: 1;
   max-width: 720px;
   align-self: start;
+}
+
+/* Ultra-wide: cap the headline column so display type doesn't sprawl
+   to absurd line lengths on 2560+ monitors. */
+@media (min-width: 1920px) {
+  .content {
+    max-width: 880px;
+  }
+  .canvas {
+    /* Slightly pulled in so the 3D doesn't dominate at huge widths */
+    transform: translateX(-4%);
+  }
 }
 
 .eyebrow {
@@ -164,22 +178,37 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding-top: clamp(88px, 11vh, 120px);
-    padding-bottom: 56px;
-    gap: 32px;
-    grid-template-rows: auto 50vh;
+    padding-top: clamp(80px, 10vh, 112px);
+    padding-bottom: 48px;
+    gap: 28px;
+    grid-template-rows: auto 48vh;
   }
   .canvas {
-    height: 50vh;
-    min-height: 280px;
+    height: 48vh;
+    min-height: 260px;
   }
   .headline {
-    font-size: clamp(72px, 19vw, 110px);
+    font-size: clamp(56px, 15.5vw, 96px);
+    margin-bottom: 24px;
   }
   .sub {
-    font-size: clamp(20px, 5vw, 28px);
+    font-size: clamp(19px, 5vw, 26px);
+    margin-bottom: 36px;
   }
   .quote {
-    font-size: 14px;
+    font-size: 13px;
+    padding-left: 16px;
+  }
+  .eyebrow {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .headline {
+    font-size: clamp(48px, 15vw, 80px);
+  }
+  .sub {
+    font-size: 18px;
   }
 }

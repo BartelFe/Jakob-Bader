@@ -327,7 +327,7 @@
   text-transform: uppercase;
   color: var(--ink-soft);
   position: sticky;
-  top: 120px;
+  top: calc(var(--header-height) + 36px);
 }
 
 .bodyText {
@@ -441,6 +441,10 @@
   gap: clamp(20px, 2vw, 40px);
 }
 
+.galleryInner > * {
+  min-width: 0;
+}
+
 .galleryItem {
   background: var(--bg-paper-warm);
   overflow: hidden;
@@ -481,5 +485,39 @@
   }
   .gallery {
     gap: 12px;
+  }
+  .akademieCard {
+    padding: clamp(24px, 5vw, 36px);
+  }
+  .stageMeta {
+    top: 16px;
+    left: 16px;
+    font-size: 10px;
+  }
+  .stageTimeline {
+    gap: 14px;
+    font-size: 10px;
+    bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headline {
+    font-size: clamp(56px, 16vw, 88px);
+  }
+  .short {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+  .prizeName {
+    font-size: clamp(34px, 10vw, 56px);
+  }
+  .milestoneText {
+    padding: 22px 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .headline {
+    font-size: clamp(44px, 14vw, 72px);
   }
 }
