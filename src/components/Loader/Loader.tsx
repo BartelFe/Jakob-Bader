@@ -27,8 +27,8 @@ const PREROLL_IMG = '/preroll-doppelzwiebel.png';
  * Skippable after 0.6s. Won't show again in the same session.
  * Reduced-motion: collapses to instant render → 200ms fade-out.
  *
- * The image is RGB (no alpha), so we mix-blend screen-mode it onto
- * --bg-deep — black pixels disappear, white wireframe lines glow.
+ * The PNG has a transparent background with dark wireframe lines; CSS
+ * `filter: invert(1)` flips them to white so they read on --bg-deep.
  */
 export function Loader() {
   const { shouldShow, phase, setPhase, markDone } = useLoader();

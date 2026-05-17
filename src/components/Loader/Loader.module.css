@@ -60,14 +60,15 @@
   }
 }
 
-/* Wireframe helm image. PNG ist RGB (kein Alpha) — mix-blend screen
-   eliminiert den schwarzen Hintergrund auf dem dunklen Overlay,
-   die weißen Linien strahlen wie eine Blueprint-Skizze. */
+/* Wireframe helm image. PNG hat transparenten Hintergrund mit DUNKLEN
+   Linien — invert(1) flippt die RGB-Kanäle (dunkel → hell) während der
+   Alpha-Kanal unangetastet bleibt, ergo: weiße Blueprint-Linien auf
+   transparentem Grund, sichtbar gegen --bg-deep. */
 .img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  mix-blend-mode: screen;
+  filter: invert(1);
   user-select: none;
   -webkit-user-drag: none;
   opacity: 0;
