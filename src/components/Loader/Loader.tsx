@@ -14,7 +14,10 @@ const SCHEDULE: { phase: LoaderPhase; afterMs: number }[] = [
 ];
 
 const SKIP_AVAILABLE_AT = 600;
-const PREROLL_IMG = '/preroll-doppelzwiebel.png';
+// `?v=` cache-buster: Vercel serves /preroll-doppelzwiebel.png with
+// Cache-Control: max-age=31536000, immutable. Bumping this version
+// forces browsers to refetch when we swap the underlying PNG.
+const PREROLL_IMG = '/preroll-doppelzwiebel.png?v=2';
 
 /**
  * Pre-Hero loader.

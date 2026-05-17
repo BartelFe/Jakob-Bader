@@ -60,8 +60,9 @@
       rel="stylesheet"
     />
 
-    <!-- LCP preload — the preroll wireframe is the first paint on every entry -->
-    <link rel="preload" as="image" href="/preroll-doppelzwiebel.png" type="image/png" fetchpriority="high" />
+    <!-- LCP preload — the preroll wireframe is the first paint on every entry.
+         ?v= must match Loader.tsx's PREROLL_IMG for the preload to be used. -->
+    <link rel="preload" as="image" href="/preroll-doppelzwiebel.png?v=2" type="image/png" fetchpriority="high" />
 
     <!-- JSON-LD: Architect (Person + ProfessionalService) -->
     <script type="application/ld+json">
