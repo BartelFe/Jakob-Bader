@@ -150,32 +150,34 @@ export function HeroImageScene({
       <div ref={cloudRef} className={styles.cloud} />
 
       <div ref={helmRef} className={styles.helm}>
-        <img
-          src={HELM_SRC}
-          alt="Doppelzwiebel-Helm des Wohngebäudes P48 von Jakob Bader"
-          draggable={false}
-        />
+        <div className={styles.helmFrame}>
+          <img
+            src={HELM_SRC}
+            alt="Doppelzwiebel-Helm des Wohngebäudes P48 von Jakob Bader"
+            draggable={false}
+          />
 
-        <svg
-          ref={glintsRef}
-          className={styles.glints}
-          viewBox="0 0 100 200"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
-        >
-          <defs>
-            <radialGradient id="glint1" cx="50%" cy="35%" r="35%">
-              <stop offset="0%" stopColor="#fff" stopOpacity="0.4" />
-              <stop offset="60%" stopColor="#fff" stopOpacity="0" />
-            </radialGradient>
-            <radialGradient id="glint2" cx="55%" cy="75%" r="25%">
-              <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
-              <stop offset="60%" stopColor="#fff" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <ellipse cx="50" cy="70" rx="35" ry="50" fill="url(#glint1)" />
-          <ellipse cx="55" cy="150" rx="30" ry="40" fill="url(#glint2)" />
-        </svg>
+          <svg
+            ref={glintsRef}
+            className={styles.glints}
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid slice"
+            aria-hidden="true"
+          >
+            <defs>
+              <radialGradient id="glint1" cx="50%" cy="32%" r="22%">
+                <stop offset="0%" stopColor="#fff" stopOpacity="0.45" />
+                <stop offset="60%" stopColor="#fff" stopOpacity="0" />
+              </radialGradient>
+              <radialGradient id="glint2" cx="56%" cy="70%" r="20%">
+                <stop offset="0%" stopColor="#fff" stopOpacity="0.32" />
+                <stop offset="60%" stopColor="#fff" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <ellipse cx="50" cy="32" rx="22" ry="28" fill="url(#glint1)" />
+            <ellipse cx="56" cy="70" rx="20" ry="22" fill="url(#glint2)" />
+          </svg>
+        </div>
       </div>
 
       <div className={styles.reflection} />

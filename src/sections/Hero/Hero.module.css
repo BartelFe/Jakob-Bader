@@ -1,28 +1,29 @@
 .hero {
   position: relative;
-  /* Multi-viewport hero so the sticky canvas has scroll room */
-  min-height: 180vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  padding: 0 var(--gutter);
-  padding-top: clamp(120px, 18vh, 200px);
-  padding-bottom: clamp(80px, 12vh, 140px);
+  /* Single-viewport hero: headline + sub + helm all visible without scrolling. */
+  min-height: 100vh;
+  padding: clamp(96px, 13vh, 160px) var(--gutter) clamp(40px, 6vh, 72px);
   isolation: isolate;
-  gap: clamp(40px, 4vw, 80px);
+  overflow: hidden;
   max-width: 2400px;
   margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* ─── 3D canvas (right column, sticky) ────────────────────────── */
+/* ─── Full-bleed atmospheric canvas (sits BEHIND text) ────────── */
 .canvas {
-  position: sticky;
-  top: 0;
-  grid-column: 2;
-  grid-row: 1;
-  height: 100vh;
-  min-height: 480px;
+  position: absolute;
+  inset: 0;
   z-index: 0;
+  pointer-events: none;
+  /* Helm placement is driven by these vars — read by HeroImageScene's
+     .helm CSS. Default is centered; we shift to the right on desktop so
+     the text column has room. */
+  --helm-justify: flex-end;
+  --helm-pad-right: clamp(40px, 8vw, 180px);
+  --helm-cloud-cx: 72%;
 }
 
 .canvasInner {
@@ -31,40 +32,12 @@
   pointer-events: none;
 }
 
-/* radial wash behind the 3D so it sits in atmosphere, not on a flat plane */
-.canvas::before {
-  content: '';
-  position: absolute;
-  inset: -10%;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 45%,
-    rgba(196, 78, 44, 0.12) 0%,
-    rgba(13, 13, 12, 0) 65%
-  );
-}
-
-/* ─── Content (left column) ───────────────────────────────────── */
+/* ─── Content (overlays the canvas) ───────────────────────────── */
 .content {
-  grid-column: 1;
-  grid-row: 1;
   position: relative;
   z-index: 1;
-  max-width: 720px;
+  max-width: 640px;
   align-self: start;
-}
-
-/* Ultra-wide: cap the headline column so display type doesn't sprawl
-   to absurd line lengths on 2560+ monitors. */
-@media (min-width: 1920px) {
-  .content {
-    max-width: 880px;
-  }
-  .canvas {
-    /* Slightly pulled in so the 3D doesn't dominate at huge widths */
-    transform: translateX(-4%);
-  }
 }
 
 .eyebrow {
@@ -73,7 +46,7 @@
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
   opacity: 0.62;
-  margin-bottom: clamp(28px, 4vh, 56px);
+  margin-bottom: clamp(20px, 2.6vh, 36px);
 }
 
 .headline {
@@ -82,7 +55,7 @@
   line-height: var(--lh-tight);
   letter-spacing: var(--ls-display);
   font-weight: 400;
-  margin-bottom: clamp(28px, 4vh, 48px);
+  margin-bottom: clamp(20px, 2.6vh, 36px);
 }
 
 .headlineEm {
@@ -100,7 +73,7 @@
   font-weight: 300;
   opacity: 0.85;
   max-width: 540px;
-  margin-bottom: clamp(48px, 7vh, 88px);
+  margin-bottom: clamp(28px, 4vh, 56px);
   white-space: pre-line;
 }
 
@@ -119,7 +92,7 @@
 
 .quoteCite {
   display: block;
-  margin-top: 14px;
+  margin-top: 12px;
   font-family: var(--mono);
   font-style: normal;
   font-size: var(--fs-mono-sm);
@@ -131,7 +104,7 @@
 .scroll {
   position: absolute;
   left: var(--gutter);
-  bottom: 32px;
+  bottom: clamp(20px, 3.5vh, 32px);
   font-family: var(--mono);
   font-size: var(--fs-mono-sm);
   letter-spacing: var(--ls-mono);
@@ -140,27 +113,45 @@
   z-index: 2;
 }
 
-@media (max-width: 880px) {
-  .hero {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 60vh;
-    min-height: auto;
-    padding-top: clamp(96px, 12vh, 140px);
-    padding-bottom: clamp(64px, 10vh, 120px);
-    gap: clamp(32px, 5vh, 56px);
+/* Short viewports — drop the blockquote so headline+sub+helm fit cleanly */
+@media (max-height: 820px) {
+  .quote {
+    display: none;
   }
+  .sub {
+    margin-bottom: 0;
+  }
+}
+
+/* Ultra-wide: keep the headline column from sprawling */
+@media (min-width: 1920px) {
   .content {
-    grid-column: 1;
-    grid-row: 1;
-    max-width: none;
+    max-width: 780px;
   }
   .canvas {
-    grid-column: 1;
-    grid-row: 2;
-    position: relative;
+    --helm-pad-right: clamp(60px, 8vw, 220px);
+    --helm-cloud-cx: 70%;
+  }
+}
+
+/* Tablet / mobile: stack text on top, helm centered below */
+@media (max-width: 880px) {
+  .hero {
+    justify-content: flex-start;
+    padding-top: clamp(80px, 12vh, 120px);
+    padding-bottom: 0;
+  }
+  .canvas {
+    /* helm occupies the lower portion of the hero on mobile */
     top: auto;
-    height: 60vh;
-    min-height: 320px;
+    height: 58vh;
+    bottom: 0;
+    --helm-justify: center;
+    --helm-pad-right: 0;
+    --helm-cloud-cx: 50%;
+  }
+  .content {
+    max-width: none;
   }
   .quote {
     max-width: none;
@@ -178,37 +169,30 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding-top: clamp(80px, 10vh, 112px);
-    padding-bottom: 48px;
-    gap: 28px;
-    grid-template-rows: auto 48vh;
+    padding-top: clamp(72px, 10vh, 100px);
+    padding-bottom: 0;
   }
   .canvas {
-    height: 48vh;
-    min-height: 260px;
+    height: 52vh;
   }
   .headline {
-    font-size: clamp(56px, 15.5vw, 96px);
-    margin-bottom: 24px;
+    font-size: clamp(48px, 13vw, 80px);
+    margin-bottom: 16px;
   }
   .sub {
-    font-size: clamp(19px, 5vw, 26px);
-    margin-bottom: 36px;
-  }
-  .quote {
-    font-size: 13px;
-    padding-left: 16px;
+    font-size: clamp(18px, 4.6vw, 24px);
+    margin-bottom: 20px;
   }
   .eyebrow {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 }
 
 @media (max-width: 360px) {
   .headline {
-    font-size: clamp(48px, 15vw, 80px);
+    font-size: clamp(42px, 13vw, 72px);
   }
   .sub {
-    font-size: 18px;
+    font-size: 17px;
   }
 }

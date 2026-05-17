@@ -1,7 +1,11 @@
 /* HeroImageScene — atmospheric layer stack
    z-order (deepest → topmost):
    1 vignette · 2 skyline · 3 cloud · 4 helm · 5 reflection · 7 glow · 8 particles
-   CSS vars --scroll-* are set by the component from cameraProgress. */
+   CSS vars --scroll-* are set by the component from cameraProgress.
+   CSS vars --helm-justify / --helm-pad-right / --helm-cloud-cx can be
+   set by the parent slot to shift the helm cluster left/right while the
+   atmospheric layers (cloud, glow, particles) keep bleeding across the
+   full scene width. */
 
 .scene {
   position: absolute;
@@ -21,7 +25,7 @@
   position: absolute;
   inset: -8%;
   background: radial-gradient(
-    ellipse at center 45%,
+    ellipse at var(--helm-cloud-cx, 50%) 45%,
     rgba(60, 25, 18, 0.4) 0%,
     rgba(20, 12, 10, 0.6) 35%,
     transparent 75%
@@ -46,16 +50,20 @@
   will-change: transform;
 }
 
+/* Cloud spans the FULL scene so the warm glow bleeds across both sides;
+   the radial gradient origin is anchored to where the helm sits, so the
+   light feels emitted by the helm itself instead of a separate column. */
 .cloud {
   position: absolute;
-  inset: 18% 12% 28% 12%;
+  inset: 0;
   background: radial-gradient(
-    ellipse at 50% 55%,
-    rgba(180, 90, 50, 0.30) 0%,
-    rgba(120, 50, 30, 0.16) 30%,
-    transparent 65%
+    ellipse 65% 55% at var(--helm-cloud-cx, 50%) 50%,
+    rgba(180, 90, 50, 0.32) 0%,
+    rgba(120, 50, 30, 0.18) 22%,
+    rgba(80, 35, 25, 0.08) 45%,
+    transparent 72%
   );
-  filter: blur(38px);
+  filter: blur(28px);
   mix-blend-mode: screen;
   z-index: 3;
   will-change: transform;
@@ -65,17 +73,28 @@
 .helm {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: var(--helm-justify, center);
+  align-items: center;
+  padding-right: var(--helm-pad-right, 0px);
   z-index: 4;
   will-change: transform;
 }
 
+/* helmFrame wraps img + glints so both share the same bounding box and
+   the glints can be inset:0 + 100%/100% relative to the image area
+   (instead of the whole scene). */
+.helmFrame {
+  position: relative;
+  height: 88%;
+  max-height: 820px;
+  aspect-ratio: 1 / 1;
+}
+
 .helm img {
-  height: 82%;
-  max-height: 760px;
-  width: auto;
   display: block;
+  width: 100%;
+  height: 100%;
   user-select: none;
   -webkit-user-drag: none;
   filter:
@@ -86,10 +105,8 @@
 .glints {
   position: absolute;
   inset: 0;
-  height: 82%;
-  max-height: 760px;
-  width: auto;
-  margin: auto;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   mix-blend-mode: overlay;
   opacity: 0.6;
@@ -99,9 +116,9 @@
 .reflection {
   position: absolute;
   bottom: 6%;
-  left: 50%;
+  left: var(--helm-cloud-cx, 50%);
   transform: translateX(-50%);
-  width: 38%;
+  width: 28%;
   max-width: 380px;
   height: 36px;
   background: radial-gradient(
@@ -124,20 +141,20 @@
   will-change: background;
 }
 
-@media (max-width: 720px) {
-  .helm img {
-    height: 70%;
-  }
-  .glints {
-    height: 70%;
-  }
-  .cloud {
-    inset: 22% 6% 32% 6%;
-    filter: blur(30px);
+@media (max-width: 880px) {
+  .helmFrame {
+    height: 90%;
+    max-height: 560px;
   }
   .reflection {
-    width: 50%;
+    width: 44%;
     height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .helmFrame {
+    height: 86%;
   }
 }
 
