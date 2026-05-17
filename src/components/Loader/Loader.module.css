@@ -32,8 +32,8 @@
 .svgWrap {
   perspective: 900px;
   perspective-origin: 50% 50%;
-  width: 220px;
-  height: 280px;
+  width: 300px;
+  height: 300px;
 }
 
 .svgInner {
@@ -60,44 +60,22 @@
   }
 }
 
-.svg {
+/* Wireframe helm image. PNG ist RGB (kein Alpha) — mix-blend screen
+   eliminiert den schwarzen Hintergrund auf dem dunklen Overlay,
+   die weißen Linien strahlen wie eine Blueprint-Skizze. */
+.img {
   width: 100%;
   height: 100%;
-  overflow: visible;
-}
-
-.svg path {
-  fill: none;
-  stroke: var(--paper-on-deep);
-  stroke-width: 1.4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-/* Phase 1: line draws via stroke-dashoffset */
-.pathDraw {
-  stroke-dasharray: 1400;
-  stroke-dashoffset: 1400;
-  animation: drawProfile 0.6s var(--ease-out-quart) forwards;
-}
-
-@keyframes drawProfile {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Phase 3: gold edges fade in once the volume is "built" */
-.edges {
-  fill: var(--bg-deep);
-  stroke: var(--accent-soft);
-  stroke-width: 1;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  user-select: none;
+  -webkit-user-drag: none;
   opacity: 0;
   transition: opacity 0.6s var(--ease-out-quart);
 }
 
-.edgesVisible {
-  opacity: 0.62;
+.imgVisible {
+  opacity: 1;
 }
 
 .caption {
@@ -196,11 +174,11 @@
 
 @media (max-width: 480px) {
   .svgWrap {
-    width: 180px;
-    height: 230px;
+    width: 220px;
+    height: 220px;
   }
   .progress {
-    width: 180px;
+    width: 220px;
   }
   .caption {
     max-width: min(280px, calc(100vw - 48px));

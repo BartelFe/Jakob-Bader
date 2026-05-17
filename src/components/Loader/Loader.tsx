@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useLoader, type LoaderPhase } from '@/store/loader';
-import { profileToSvgPath } from '@/three/profile';
 import { prefersReducedMotion } from '@/lib/webgl';
 
 import styles from './Loader.module.css';
@@ -15,17 +14,21 @@ const SCHEDULE: { phase: LoaderPhase; afterMs: number }[] = [
 ];
 
 const SKIP_AVAILABLE_AT = 600;
+const PREROLL_IMG = '/preroll-doppelzwiebel.png';
 
 /**
  * Pre-Hero loader.
  *
  * Three visible phases over 1.8s, then 0.6s fade-out:
- *   1. svg-draw — profile path strokes in (vector, looks like a blueprint)
+ *   1. svg-draw — wireframe-helm image fades in (the blueprint)
  *   2. sweep    — perspective Y-rotation suggests the lathe building volume
- *   3. reveal   — gold edges fade in (the "completion")
+ *   3. reveal   — image holds at full intensity, caption appears
  *
  * Skippable after 0.6s. Won't show again in the same session.
  * Reduced-motion: collapses to instant render → 200ms fade-out.
+ *
+ * The image is RGB (no alpha), so we mix-blend screen-mode it onto
+ * --bg-deep — black pixels disappear, white wireframe lines glow.
  */
 export function Loader() {
   const { shouldShow, phase, setPhase, markDone } = useLoader();
@@ -33,9 +36,6 @@ export function Loader() {
   const [progressFull, setProgressFull] = useState(false);
 
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
-
-  const fillPath = useMemo(() => profileToSvgPath('doppelzwiebel', 220, 280), []);
-  const linePath = fillPath; // same silhouette, drawn as line in phase 1
 
   useEffect(() => {
     if (!shouldShow) return;
@@ -78,7 +78,7 @@ export function Loader() {
 
   const isFading = phase === 'fade-out';
   const showSweep = phase === 'sweep' || phase === 'reveal' || phase === 'fade-out';
-  const showEdges = phase === 'reveal' || phase === 'fade-out';
+  const imgVisible = phase !== 'idle';
 
   return (
     <div
@@ -89,20 +89,13 @@ export function Loader() {
       <div className={styles.center}>
         <div className={styles.svgWrap}>
           <div className={`${styles.svgInner} ${showSweep ? styles.svgInnerSweep : ''}`}>
-            <svg
-              className={styles.svg}
-              viewBox="0 0 220 280"
-              xmlns="http://www.w3.org/2000/svg"
+            <img
+              src={PREROLL_IMG}
+              alt=""
               aria-hidden="true"
-            >
-              {/* Phase 1: stroked profile draws in */}
-              <path className={styles.pathDraw} d={linePath} />
-              {/* Phase 3: warm-gold filled silhouette as the "completed" object */}
-              <path
-                className={`${styles.edges} ${showEdges ? styles.edgesVisible : ''}`}
-                d={fillPath}
-              />
-            </svg>
+              draggable={false}
+              className={`${styles.img} ${imgVisible ? styles.imgVisible : ''}`}
+            />
           </div>
         </div>
 
